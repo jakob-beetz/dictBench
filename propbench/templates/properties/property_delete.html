@@ -1,0 +1,86 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Delete {{ property.names.first.name|default:"Property" }} - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'properties:property_list' %}">Properties</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'properties:property_detail' pk=property.guid %}">{{ property.names.first.name|default:"Property" }}</a></li>
+                    <li class="breadcrumb-item active">Delete</li>
+                </ol>
+            </nav>
+            
+            <h1 class="text-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                Delete Property
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">Confirm Deletion</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> This action cannot be undone. Deleting this property will remove all associated data including names, definitions, and audit history.
+                    </div>
+                    
+                    <p>Are you sure you want to delete the following property?</p>
+                    
+                    <div class="border p-3 bg-light">
+                        <h6>{{ property.names.first.name|default:"Unnamed Property" }}</h6>
+                        <p class="mb-1"><strong>Dictionary:</strong> {{ property.dictionary.name }}</p>
+                        <p class="mb-1"><strong>Data Type:</strong> {{ property.data_type }}</p>
+                        <p class="mb-0"><strong>Status:</strong> {{ property.status }}</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger me-2">
+                                <i class="bi bi-trash"></i> Yes, Delete Property
+                            </button>
+                            <a href="{% url 'properties:property_detail' pk=property.guid %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">Impact Assessment</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <strong>Groups affected:</strong><br>
+                        {% if property.groups.exists %}
+                            {% for group in property.groups.all %}
+                                • {{ group.name }}<br>
+                            {% endfor %}
+                        {% else %}
+                            None<br>
+                        {% endif %}
+                        <br>
+                        <strong>Related data:</strong><br>
+                        • {{ property.names.count }} name(s)<br>
+                        • {{ property.definitions.count }} definition(s)<br>
+                        • Audit history will be preserved
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

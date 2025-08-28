@@ -100,7 +100,6 @@ class PropertyName(models.Model):
     language = models.CharField(max_length=10)  # ISO 639 language code
     
     class Meta:
-        unique_together = ['property', 'language']
         verbose_name = "Property Name"
         verbose_name_plural = "Property Names"
     
@@ -118,7 +117,6 @@ class PropertyDefinition(models.Model):
     language = models.CharField(max_length=10)  # ISO 639 language code
     
     class Meta:
-        unique_together = ['property', 'language']
         verbose_name = "Property Definition"
         verbose_name_plural = "Property Definitions"
     
