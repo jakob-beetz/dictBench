@@ -1,0 +1,492 @@
+# Claude Prompt: Implement ISO 23386 Compliant Property Management System
+
+## Project Overview
+Develop a Django-based collaborative editor system called "PropBench" for managing properties according to ISO 23386:2020 ("Building information - Properties for objects in object-oriented building information systems - Properties dictionary and property sets for objects").
+
+This system must support collaborative editing of property attributes with a structured workflow, auditability, version control, and multi-language support. It should also support the creation and management of multiple property dictionaries as specified in ISO 23386, allowing users to switch between different dictionaries.
+
+## ISO 23386 Compliance Requirements
+
+### Property Structure
+Implement a property model that includes ALL the following attributes as defined in ISO 23386:
+
+1. **Identification and Administration**
+   - Globally unique identifier (UUID)
+   - Name (in multiple languages)
+   - Definition (in multiple languages)
+   - Version number
+   - Revision number
+   - Date of activation
+   - Date of version
+   - Date of revision
+   - Date of last change
+   - Date of deactivation
+   - Registration authority
+   - Registration date
+   - Status (active, deprecated, etc.)
+   - Deprecation explanation
+   - Country of origin
+   - Countries of use
+   - Creator's language
+
+2. **Data Type Information**
+   - Property data type (string, integer, real, boolean, complex)
+   - Associated physical quantity
+   - Unit of measurement
+   - Value constraints (domain)
+
+3. **Classification**
+   - Classification reference
+   - Classification system (e.g., ISO 12006-2, Uniclass, Omniclass)
+
+4. **Relationships**
+   - Parent-child relationships
+   - Dependency relationships
+   - Alternative properties
+   - Equivalent properties
+   - Component properties
+
+5. **Extended Attributes (Non-ISO 23386)**
+   - Implement a flexible JSON field to store additional PA codes from the ISO 23386 CSV files
+   - Support for specific code types:
+     - PA0001: Property applicable values (constraints beyond standard domain)
+     - PA0002: Property default value
+     - PA0003: Property validation rules
+     - PA0004: Property display format
+     - PA0005: Property help text
+     - PA0006: Property icon or symbol
+     - PA0007: Property grouping hint
+     - PA0008: Property sorting position
+     - PA0009: Property visibility rules
+     - PA0010: Property conditional display logic
+
+### Group Structure
+Implement a group model that organizes properties according to ISO 23386 categories:
+   - Class
+   - Domain
+   - Reference Document
+   - Composed Property
+   - Alternative Use
+
+Also include a JSON field for extended attributes to support:
+   - GA0001: Group display order
+   - GA0002: Group visibility rules
+   - GA0003: Group applicability contexts
+   - GA0004: Group validation rules
+   - GA0005: Group UI representation
+
+### Property Lifecycle
+Implement a complete property lifecycle with the following states:
+   - Draft
+   - Candidate
+   - Active
+   - Deprecated
+   - Inactive
+   - Rejected
+
+Ensure all state transitions are tracked with timestamps, users, and justifications.
+
+### Auditing Requirements
+Implement comprehensive auditing that tracks:
+   - Every change to property attributes
+   - User who made the change
+   - Timestamp of the change
+   - Previous and new values
+   - Reason for change
+
+### Workflow Requirements
+Implement a change request workflow where:
+   - Changes to properties are proposed through change requests
+   - Experts review change requests
+   - Approved changes are implemented and tracked
+   - Rejected changes are archived with reasons
+
+## Technical Requirements
+
+### Backend Requirements
+1. **Django Framework**
+   - Use Django 4.2+ and Python 3.10+
+   - Implement as a modular Django project with separate apps
+
+2. **Database Models**
+   - Design proper database models for all ISO 23386 entities
+   - Ensure appropriate relationships between models
+   - Use UUID primary keys for all main entities
+   - Support for SQLite in development, PostgreSQL in production
+
+3. **API Layer**
+   - Implement a complete REST API using Django REST Framework
+   - Include authentication, permissions, and validation
+   - Support CRUD operations for all entities
+   - Implement filtering, sorting, and pagination
+
+4. **Authentication and Authorization**
+   - User roles: admin, expert, regular user
+   - Role-based permissions for different operations
+   - JWT-based authentication
+
+5. **Import/Export**
+   - Support for bulk import/export in CSV, Excel, JSON formats
+   - Validation of imported data
+   - Error handling and reporting
+
+### Frontend Requirements
+1. **Admin Interface**
+   - Extend Django admin for comprehensive management
+   - Custom admin actions for bulk operations
+   - Admin dashboard with statistics and reports
+
+2. **User Interface**
+   - Property editor with validation
+   - Group management interface
+   - Change request dashboard
+   - Search and browse interface
+   - Multi-language support in the UI
+
+## Project Structure
+
+Create a Django project with the following apps:
+
+1. **accounts**
+   - User management and authentication
+
+2. **properties**
+   - Core property models and logic
+   - ISO 23386 compliant property attributes
+   - Property relationships
+   - Property revisions
+
+3. **groups**
+   - Group models and logic
+   - Hierarchical grouping of properties
+   - ISO 23386 categories
+
+4. **requests**
+   - Change request models and workflow
+   - Review process
+   - Approval/rejection logic
+
+5. **audit**
+   - Comprehensive audit trail
+   - Activity logging
+   - Historical data
+
+6. **import_export**
+   - Bulk import/export functionality
+   - Format conversion
+   - Validation
+
+7. **dictionaries**
+   - Property dictionary models and logic
+   - Support for multiple dictionaries
+   - Dictionary management interface
+
+## Implementation Instructions
+
+1. **Start with Clean Project Structure**
+   - Set up a fresh Django project
+   - Configure settings for development
+   - Set up proper directory structure
+
+2. **Implement Core Models**
+   - Create all database models according to ISO 23386
+   - Implement relationships between models
+   - Add validation and business logic
+
+3. **Add Audit Functionality**
+   - Use Django signals to track model changes
+   - Store audit records for all operations
+   - Implement history viewing
+
+4. **Implement Change Request Workflow**
+   - Create models for change requests
+   - Implement review process
+   - Add approval/rejection logic
+
+5. **Create Admin Interface**
+   - Customize Django admin for all models
+   - Add admin actions for common operations
+   - Implement dashboard with metrics
+
+6. **Develop REST API**
+   - Create serializers for all models
+   - Implement viewsets and endpoints
+   - Add authentication and permissions
+   - Document API endpoints
+
+7. **Add Import/Export Functionality**
+   - Implement bulk operations
+   - Add validation and error handling
+   - Create job tracking for long-running tasks
+
+8. **Implement User Interface**
+   - Create property editor
+   - Implement group management
+   - Add change request dashboard
+   - Develop search and browse functionality
+
+9. **Implement Property Dictionary Management**
+   - Create models for property dictionaries
+   - Implement logic for switching active dictionaries
+   - Add admin and API support for dictionary management
+
+## Data Model Details
+
+### Property Model
+The core Property model should include:
+```python
+class Property(models.Model):
+    guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # ISO 23386 identification fields
+    version_number = models.CharField(max_length=50, blank=True, null=True)
+    revision_number = models.CharField(max_length=50, blank=True, null=True)
+    date_of_activation = models.DateTimeField(blank=True, null=True)
+    date_of_version = models.DateTimeField(blank=True, null=True)
+    date_of_revision = models.DateTimeField(blank=True, null=True)
+    date_of_last_change = models.DateTimeField(auto_now=True)
+    date_of_deactivation = models.DateTimeField(blank=True, null=True)
+    date_of_deprecation = models.DateTimeField(blank=True, null=True)
+    
+    # Authority information
+    registration_authority = models.CharField(max_length=255, blank=True, null=True)
+    registration_date = models.DateField(blank=True, null=True)
+    
+    # Status and localization
+    status = models.CharField(max_length=20, default='draft')
+    deprecation_explanation = models.TextField(blank=True)
+    country_of_origin = models.CharField(max_length=50, blank=True)
+    countries_of_use = models.CharField(max_length=255, blank=True)
+    creators_language = models.CharField(max_length=10, default='en-EN')
+    
+    # Data type information
+    data_type = models.CharField(max_length=20)
+    unit_of_measurement = models.CharField(max_length=50, blank=True)
+    value_domain = models.JSONField(blank=True, null=True)
+    
+    # Classification
+    classification_system = models.CharField(max_length=255, blank=True, null=True)
+    classification_reference = models.CharField(max_length=255, blank=True, null=True)
+    
+    # Dictionary association
+    dictionary = models.ForeignKey('dictionaries.PropertyDictionary', on_delete=models.CASCADE, 
+                                related_name='properties')
+    
+    # Extended attributes (non-ISO 23386 PA codes)
+    extended_attributes = models.JSONField(blank=True, null=True, 
+                                       help_text="Store PA codes like PA0001-PA0010 for non-standard property attributes")
+    
+    # Generic metadata for additional flexible storage
+    metadata = models.JSONField(blank=True, null=True,
+                             help_text="Flexible JSON field for storing additional metadata")
+    
+    # System fields
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='created_properties')
+    updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='updated_properties')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+```
+
+### PropertyName Model
+```python
+class PropertyName(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='names')
+    name = models.CharField(max_length=255)
+    language = models.CharField(max_length=10)  # ISO 639 language code
+```
+
+### PropertyDefinition Model
+```python
+class PropertyDefinition(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='definitions')
+    definition = models.TextField()
+    language = models.CharField(max_length=10)  # ISO 639 language code
+```
+
+### PropertyGroup Model
+```python
+class PropertyGroup(models.Model):
+    guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    type = models.CharField(max_length=20, choices=[
+        ('collection', 'Collection'),
+        ('derived_quantity', 'Derived Quantity'),
+        ('base_quantity', 'Base Quantity'),
+        ('template', 'Template'),
+        ('functional', 'Functional Group'),
+        ('classification', 'Classification Group')
+    ])
+    parent_group = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='child_groups')
+    properties = models.ManyToManyField(Property, blank=True, related_name='groups')
+    
+    # Extended attributes for GA codes
+    extended_attributes = models.JSONField(blank=True, null=True, 
+                                       help_text="Store GA codes like GA0001-GA0005 for non-standard group attributes")
+    
+    # Generic metadata
+    metadata = models.JSONField(blank=True, null=True,
+                             help_text="Flexible JSON field for storing additional group metadata")
+    
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='prop_created_groups')
+    updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='prop_updated_groups')
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+```
+
+### ChangeRequest Model
+```python
+class ChangeRequest(models.Model):
+    guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='change_requests', null=True, blank=True)
+    group = models.ForeignKey(PropertyGroup, on_delete=models.CASCADE, related_name='change_requests', null=True, blank=True)
+    proposed_changes = models.JSONField()
+    status = models.CharField(max_length=20, default='pending')
+    
+    # Extended attributes for RA codes 
+    extended_attributes = models.JSONField(blank=True, null=True,
+                                      help_text="Store RA codes like RA0001-RA0005 for request-specific attributes")
+    
+    # Generic metadata
+    metadata = models.JSONField(blank=True, null=True,
+                             help_text="Flexible JSON field for storing additional request metadata")
+    
+    requested_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='requested_changes')
+    reviewed_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='reviewed_changes', null=True, blank=True)
+    approved = models.BooleanField(null=True)
+    review_comments = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+```
+
+### Audit Model
+```python
+class Audit(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    entity_type = models.CharField(max_length=100)
+    entity_id = models.CharField(max_length=100)
+    action = models.CharField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='audit_logs')
+    data_before = models.JSONField(null=True, blank=True)
+    data_after = models.JSONField(null=True, blank=True)
+    reason = models.TextField(blank=True)
+    
+    # Extended attributes for DA codes
+    extended_attributes = models.JSONField(blank=True, null=True,
+                                       help_text="Store DA codes like DA0001-DA0005 for audit-specific attributes")
+    
+    # Generic metadata
+    metadata = models.JSONField(blank=True, null=True,
+                             help_text="Flexible JSON field for storing additional audit metadata")
+```
+
+### PropertyDictionary Model
+```python
+class PropertyDictionary(models.Model):
+    """
+    Model representing a property dictionary as defined in ISO 23386.
+    Users can create multiple dictionaries and switch between them.
+    """
+    guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    registration_authority = models.CharField(max_length=255)
+    version = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, choices=[
+        ('draft', 'Draft'),
+        ('active', 'Active'),
+        ('deprecated', 'Deprecated'),
+        ('inactive', 'Inactive')
+    ], default='draft')
+    is_default = models.BooleanField(default=False)
+    
+    # Extended attributes
+    extended_attributes = models.JSONField(blank=True, null=True,
+                                       help_text="Dictionary-specific extended attributes")
+    
+    # Generic metadata
+    metadata = models.JSONField(blank=True, null=True,
+                             help_text="Flexible JSON field for storing additional dictionary metadata")
+    
+    # System fields
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='created_dictionaries')
+    updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='updated_dictionaries')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    date_of_activation = models.DateTimeField(blank=True, null=True)
+    date_of_deprecation = models.DateTimeField(blank=True, null=True)
+    date_of_deactivation = models.DateTimeField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Property Dictionary"
+        verbose_name_plural = "Property Dictionaries"
+        ordering = ['-is_default', 'name']
+    
+    def __str__(self):
+        return f"{self.name} v{self.version}"
+    
+    def save(self, *args, **kwargs):
+        # If this is set as default, unset default flag on all other dictionaries
+        if self.is_default:
+            PropertyDictionary.objects.filter(is_default=True).update(is_default=False)
+        
+        # If no dictionaries exist, make this one default
+        if not PropertyDictionary.objects.exists():
+            self.is_default = True
+            
+        super().save(*args, **kwargs)
+```
+
+## Testing Requirements
+
+1. **Unit Tests**
+   - Test all models, views, and business logic
+   - Ensure ISO 23386 compliance
+   - Verify audit functionality
+
+2. **Integration Tests**
+   - Test API endpoints
+   - Verify workflow processes
+   - Test import/export functionality
+
+3. **Performance Tests**
+   - Test with large datasets
+   - Optimize database queries
+   - Ensure reasonable response times
+
+## Deliverables
+
+1. Complete Django project with all required apps
+2. Database migrations
+3. REST API documentation
+4. Admin interface
+5. User interface
+6. Test suite
+7. Documentation
+
+## ISO 23386 References
+
+Refer to the ISO 23386:2020 standard for complete details on property attributes, data structures, and workflows. The standard defines:
+
+- Property attribution in section 5
+- Property lifecycle in section 6
+- Data validation requirements in section 7
+- Process requirements in section 8
+- Governance requirements in section 9
+
+Ensure all implementation decisions align with these sections of the standard.
+
+## Additional Notes
+
+- Use modern Django practices including class-based views
+- Implement proper error handling and validation
+- Document all code thoroughly
+- Follow Django's security best practices
+- Optimize database queries for performance
+- Implement caching where appropriate
+- Use Django signals for audit trail implementation
+- Support internationalization throughout the application
+- Implement proper indexing for database performance

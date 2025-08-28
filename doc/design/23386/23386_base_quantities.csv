@@ -1,0 +1,8 @@
+Base quantity,Description,Dimension,SI unit,SI symbol
+Length,"One-dimensional extent of an object","L","metre","m"
+Mass,"Measure of resistance to acceleration","M","kilogram","kg"
+Time,"Duration of an event","T","second","s"
+Electric current,"Rate of flow of electrical charge","I","ampere","A"
+Thermodynamic temperature,"Average kinetic energy per degree of freedom","θ","kelvin","K"
+Amount of substance,"Number of particles referenced to 0.012 kg of 12C","N","mole","mol"
+Luminous intensity,"Wavelength-weighted power per solid angle","J","candela","cd"

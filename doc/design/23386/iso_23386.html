@@ -1,0 +1,4547 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>iso_23386</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="iso_23386_files/libs/clipboard/clipboard.min.js"></script>
+<script src="iso_23386_files/libs/quarto-html/quarto.js"></script>
+<script src="iso_23386_files/libs/quarto-html/popper.min.js"></script>
+<script src="iso_23386_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="iso_23386_files/libs/quarto-html/anchor.min.js"></script>
+<link href="iso_23386_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="iso_23386_files/libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="iso_23386_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="iso_23386_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="iso_23386_files/libs/bootstrap/bootstrap-8a79a254b8e706d3c925cde0a310d4f0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<blockquote class="blockquote">
+<p>INTERNATIONAL STANDARD</p>
+</blockquote>
+<p><strong>ISO</strong> <strong>23386</strong></p>
+<blockquote class="blockquote">
+<p>First edition 2020-03</p>
+<p><strong>Building information modelling</strong> <strong>and other digital processes used</strong> <strong>in construction — Methodology</strong> <strong>to describe, author and maintain</strong></p>
+<p><strong>properties in interconnected data</strong> <strong>dictionaries</strong></p>
+<p><em>Modélisation des informations de la construction et autres processus</em> <em>numériques utilisés en construction — Méthodologie de description,</em> <em>de création et de gestion des propriétés dans les dictionnaires de</em></p>
+<p><em>données interconnectés</em></p>
+<p>Reference number <img src="media/image106.png" style="width:0.8454in;height:0.77999in">ISO 23386:2020(E)</p>
+<p>© ISO 2020</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+</blockquote>
+<p><img src="media/image115.png" style="width:0.53691in;height:0.47063in"></p>
+<blockquote class="blockquote">
+<p><strong>COPYRIGHT PROTECTED DOCUMENT</strong></p>
+<p>© ISO 2020</p>
+<p>All rights reserved. Unless otherwise specified, or required in the context of its implementation, no part of this publication may be reproduced or utilized otherwise in any form or by any means, electronic or mechanical, including photocopying, or posting on the internet or an intranet, without prior written permission. Permission can be requested from either ISO at the address below or ISO’s member body in the country of the requester.</p>
+<p>ISO copyright office</p>
+<p>CP 401 • Ch. de Blandonnet 8<br>
+CH-1214 Vernier, Geneva<br>
+Phone: +41 22 749 01 11<br>
+Fax: +41 22 749 09 47</p>
+<p>Email: <a href="mailto:copyright@iso.org" class="email">copyright@iso.org</a><br>
+Website: <a href="http://www.iso.org">www.iso.org</a></p>
+<p>Published in Switzerland</p>
+<p>ii © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Contents</strong> Page</p>
+<p><strong>Foreword</strong> .....................................................................................................................................................................................................................................…<strong>iv</strong></p>
+<p><strong>Introduction</strong>...............................................................................................................................................................................................................................…<strong>v</strong></p>
+<p><strong>1 Scope</strong> ................................................................................................................................................................................................................................. <strong>1</strong></p>
+<p><strong>2 Normative references</strong>..................................................................................................................................................................................…. <strong>1</strong></p>
+<p><strong>3 Terms and definitions</strong> ..................................................................................................................................................................................… <strong>2</strong></p>
+<p><strong>4 Rules to define properties and groups of properties</strong> .................................................................................................…. <strong>5</strong></p>
+<p>4.1 General.......................................................................................................................................................................................................…. 5</p>
+<p>4.2 Property....................................................................................................................................................................................................…. 5</p>
+<p>4.3 Group of properties.........................................................................................................................................................................…. 6</p>
+<p>4.4 Attributes list........................................................................................................................................................................................…. 6</p>
+<p>4.4.1 Attributes of a property............................................................................................................................................. 6</p>
+<p>4.4.2 Attributes of a group of properties ...............................................................................................................18</p>
+<p><strong>5 Management rules to author and maintain properties and groups of properties</strong> ...................….<strong>24</strong> 5.1 Interactions amongst users, experts and data dictionaries ......................................................................….24</p>
+<p>5.2 Description of actions ................................................................................................................................................................….26</p>
+<p>5.2.1 General...............................................................................................................................................................................….26</p>
+<p>5.2.2 Requests............................................................................................................................................................................…27</p>
+<p>5.2.3 Management of duplicates ...............................................................................................................................….28</p>
+<p>5.3 Naming of reference documents........................................................................................................................................…28</p>
+<p>5.3.1 Standardization documents ............................................................................................................................….28</p>
+<p>5.3.2 Regulation documents .............................................................................................................................................28</p>
+<p>5.3.3 Other documents .......................................................................................................................................................…29</p>
+<p>5.4 List of request attributes..........................................................................................................................................................…29</p>
+<p>5.5 Connection between data dictionaries, sharing and mapping properties and</p>
+<p>groups of properties........................................................................................................................................................................31</p>
+<p>5.6 Data dictionaries interconnection.......................................................................................................................................31</p>
+<p><strong>6 Governance of a data dictionary</strong>....................................................................................................................................................….<strong>31</strong></p>
+<p>6.1 General....................................................................................................................................................................................................….31</p>
+<p>6.2 Experts' management structure ........................................................................................................................................…31</p>
+<p>6.3 Commissions of experts ...............................................................................................................................................................32</p>
+<p>6.3.1 General...............................................................................................................................................................................….32</p>
+<p>6.3.2 Missions of the commissions of experts...................................................................................................32</p>
+<p>6.3.3 Opinions of the commissions of experts ..............................................................................................….32</p>
+<p><strong>7 Governance of a network of data dictionaries</strong>................................................................................................................….<strong>32</strong></p>
+<p><strong>Annex A</strong> (informative) <strong>Implementation of the process for a manufacturer searching for</strong></p>
+<p><strong>product properties related to fire regulations</strong>................................................................................................................…<strong>33</strong></p>
+<p><strong>Annex B</strong> (informative) <strong>Examples of composition of a management structure</strong>......................................................<strong>35</strong> <strong>Annex C</strong> (informative) <strong>Example of base and derived quantities</strong>........................................................................................…<strong>37</strong></p>
+<p><strong>Annex D</strong> (informative) <strong>Example of composition of a commission of experts</strong>.......................................................…<strong>39</strong> <strong>Bibliography</strong> .........................................................................................................................................................................................................................….<strong>40</strong></p>
+<p>© ISO 2020 – All rights reserved iii</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Foreword</strong></p>
+<p>ISO (the International Organization for Standardization) is a worldwide federation of national standards bodies (ISO member bodies). The work of preparing International Standards is normally carried out through ISO technical committees. Each member body interested in a subject for which a technical committee has been established has the right to be represented on that committee. International organizations, governmental and non-governmental, in liaison with ISO, also take part in the work. ISO collaborates closely with the International Electrotechnical Commission (IEC) on all matters of electrotechnical standardization.</p>
+<p>The procedures used to develop this document and those intended for its further maintenance are described in the ISO/IEC Directives, Part 1. In particular, the different approval criteria needed for the different types of ISO documents should be noted. This document was drafted in accordance with the editorial rules of the ISO/IEC Directives, Part 2 (see <a href="http://www.iso.org/directives"><u>www.iso.org/directives</u></a>).</p>
+<p>Attention is drawn to the possibility that some of the elements of this document may be the subject of patent rights. ISO shall not be held responsible for identifying any or all such patent rights. Details of any patent rights identified during the development of the document will be in the Introduction and/or on the ISO list of patent declarations received (see <a href="http://www.iso.org/patents"><u>www.iso.org/patents</u></a>).</p>
+<p>Any trade name used in this document is information given for the convenience of users and does not constitute an endorsement.</p>
+<p>For an explanation of the voluntary nature of standards, the meaning of ISO specific terms and expressions related to conformity assessment, as well as information about ISO's adherence to the World Trade Organization (WTO) principles in the Technical Barriers to Trade (TBT) see <a href="http://www.iso.org/iso/foreword.html"><u>www.iso.org/iso/foreword.html</u></a>.</p>
+<p>This document was prepared by the European Committee for Standardization (CEN) Technical Committee CEN/TC 442, <em>Building Information Modelling (BIM)</em>, in collaboration with ISO Technical Committee ISO/TC 59, <em>Buildings and civil engineering works</em>, Subcommittee SC 13, <em>Organization and</em> <em>digitization of information about buildings and civil engineering works, including building information</em> <em>modelling (BIM)</em>, in accordance with the Agreement on technical cooperation between ISO and CEN (Vienna Agreement).</p>
+<p>Any feedback or questions on this document should be directed to the user’s national standards body. A complete listing of these bodies can be found at <a href="http://www.iso.org/members.html"><u>www.iso.org/members.html</u></a>.</p>
+<p>iv © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Introduction</strong></p>
+<p>In the digital built environment, there will not be a single data dictionary which comprises all the definitions which are needed in all BIM domains. Different groups, possibly in different countries, will create or have created separate data dictionaries, specialized for their needs, based on the legislation and culture. We are, and will be faced with, various separated data dictionaries. They may even reside on the same platform yet logically they are detached.</p>
+<p>For the future of BIM, it is important to ensure that these data dictionaries can be interoperable in tools and applications.</p>
+<p>— The elements of the data dictionaries need to be described by the same attributes. If this is agreed and done by all data dictionary providers, it becomes possible to map properties in one data dictionary to properties in other data dictionaries. This can lead to reuse of properties and to the harmonization of properties across data dictionaries. In addition, this is an important step to allow BIM applications to use multiple data dictionaries consistently.</p>
+<p>— The governance of the data dictionaries needs to follow the same rules with respect to the building</p>
+<p>and development of the data dictionaries’ content.</p>
+<p>The assumption is that the data dictionaries are independent from each other, they are connected in</p>
+<p>a coordinated network of data dictionaries (again, there may exist several of these networks). Within the network, the data dictionaries are related, which is visible, for instance, using a specific attribute which maps properties and groups of properties of different data dictionaries to each other. Any data dictionary in the network of coordinated data dictionaries is independent, i.e.&nbsp;it has its own processes and committees to control the development and evolution of the data dictionary; meanwhile, they all follow the same description and governance rules described in this document.</p>
+<p>This document specifies the attributes to define properties and groups of properties of a single data dictionary as well as the processes and commissions/roles for the governance of a single data dictionary in a network of coordinated data dictionaries. In the governance processes, it is described how the single data dictionary deals with queries and change requests and the extension of queries to other connected data dictionaries; information of other connected data dictionaries regarding change is an integral part of this process.</p>
+<p>This document contributes to ensuring the quality and the unicity of property descriptions and avoiding the creation of duplicates.</p>
+<p>© ISO 2020 – All rights reserved v</p>
+<p><strong>INTERNATIONAL STANDARD ISO 23386:2020(E)</strong></p>
+<p><strong>Building information modelling and other digital</strong></p>
+<p><strong>processes used in construction — Methodology to describe,</strong> <strong>author and maintain properties in interconnected data</strong> <strong>dictionaries</strong></p>
+<p><strong>1 Scope</strong></p>
+<p>This document establishes the rules for defining properties used in construction and a methodology for authoring and maintaining them, for a confident and seamless digital share among stakeholders following a BIM process.</p>
+<p>Regarding the definition of properties and groups of properties, this document provides:</p>
+<p>— definitions of properties and groups of properties as a list of attributes;</p>
+<p>— definitions of all the provided attributes.</p>
+<p>Regarding the authoring and maintaining process, this document provides:</p>
+<p>— definitions and roles of applicants;</p>
+<p>— definitions and roles of experts and the commission of experts;</p>
+<p>— definitions of request’s attributes;</p>
+<p>— definitions of expert’s attributes;</p>
+<p>— requirements to establish the management rules to interconnect data dictionaries through the</p>
+<p>mapping process for properties and groups of properties.</p>
+<p>To apply the methodology of this document, it is presupposed that the following are in place:</p>
+<p>— an established governance model for a data dictionary;</p>
+<p>— a framework for a network of data dictionaries.</p>
+<p>It is not in the scope of this document to provide the content of the interconnected data dictionaries.</p>
+<p><strong>2 Normative references</strong></p>
+<p>The following documents are referred to in the text in such a way that some or all of their content constitutes requirements of this document. For dated references, only the edition cited applies. For undated references, the latest edition of the referenced document (including any amendments) applies.</p>
+<p>ISO 639-1, <em>Codes for the representation of names of languages — Part 1: Alpha-2 code</em></p>
+<p>ISO 3166-1, <em>Codes for the representation of names of countries and their subdivisions — Part 1: Country codes</em> ISO 3166-2, <em>Codes for the representation of names of countries and their subdivisions — Part 2: Country</em> <em>subdivision code</em></p>
+<p>ISO 4217, <em>Codes for the representation of currencies</em></p>
+<p>ISO 8601 (all parts), <em>Date and time — Representations for information interchange</em><br>
+ISO/IEC 11404, <em>Information technology — General-Purpose Datatypes (GPD)</em></p>
+<p>© ISO 2020 – All rights reserved <strong>1</strong></p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p>ISO 12006-3, <em>Building construction — Organization of information about construction works — Part 3:</em> <em>Framework for object-oriented information</em></p>
+<p>ISO 80000 (all parts), <em>Quantities and units</em></p>
+<p>IETF <a href="https://www.ietf.org/"><u>https://www.ietf.org/</u></a></p>
+<p><strong>3 Terms and definitions</strong></p>
+<p>For the purposes of this document, the following terms and definitions apply.</p>
+<p>ISO and IEC maintain terminological databases for use in standardization at the following addresses:</p>
+<p>— ISO Online browsing platform: available at <a href="https://www.iso.org/obp"><u>https://www.iso.org/obp</u></a></p>
+<p>— IEC Electropedia: available at <a href="http://www.electropedia.org/"><u>http://www.electropedia.org/</u></a></p>
+<p><strong>3.1</strong></p>
+<p><strong>alternative use</strong></p>
+<p>category of <em>group of properties</em> (<u>3.14</u>) not corresponding to <em>class</em> (<u>3.7</u>), <em>domain</em> (<u>3.11</u>), <em>reference document</em> (<u>3.18</u>) or <em>composed property</em> (<u>3.8</u>)</p>
+<p>Note 1 to entry: This category of group of properties shall be used only after having considered the possible use of all the other categories.</p>
+<p><strong>3.2</strong></p>
+<p><strong>applicant</strong></p>
+<p><em>user</em> (<u>3.21</u>) formulating a request for the creation, modification or deactivation of a <em>property</em> (<u>3.17</u>) or a <em>group of properties</em> (<u>3.14</u>)</p>
+<p><strong>3.3</strong></p>
+<p><strong>area of competence</strong></p>
+<p>area of an <em>expert</em>’s (<u>3.12</u>) proficiency and knowledge associated to one or several <em>groups of properties</em> (<u>3.14</u>)</p>
+<p>EXAMPLE An area of competence could be:</p>
+<p>— <em>domain</em> (<u>3.11</u>);</p>
+<p>— <em>class</em> (<u>3.7</u>);</p>
+<p>— <em>reference document</em> (<u>3.18</u>).</p>
+<p><strong>3.4</strong></p>
+<p><strong>attribute</strong></p>
+<p>data element for the computer-sensible description of a <em>property</em> (<u>3.17</u>), a <em>group of properties</em> (<u>3.14</u>), etc.</p>
+<p>Note 1 to entry: An attribute describes only one single detail of a property or a group of properties.</p>
+<p>EXAMPLE The name of a property, the definition of a group of properties.</p>
+<p>[SOURCE: ISO 13584-42:2010, 3.3, modified — In the definition and Note 1 to entry, references to "a relation or a class" have been replaced with "a group of properties"; the EXAMPLE has been updated.]</p>
+<p><strong>3.5</strong></p>
+<p><strong>base quantity</strong></p>
+<p>quantity in a conventionally chosen subset of a given system of quantities, where no <em>quantity</em> (<u>3.16</u>) in the subset can be expressed in terms of the other quantities within that subset</p>
+<p>[SOURCE: ISO 80000-1:2009, 3.4, modified — NOTEs 1 to 4 have been removed.]</p>
+<p><strong>2</strong> © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>3.6</strong></p>
+<p><strong>building information modelling</strong></p>
+<p><strong>BIM</strong></p>
+<p>use of a shared digital representation of an asset to facilitate design, construction and operation processes to form a reliable basis for decisions</p>
+<p>[SOURCE: ISO 19650-1:2018, 3.3.14, modified — The wording "a built asset" has been changed to "an asset"; Note 1 to entry has been removed.]</p>
+<p><strong>3.7</strong></p>
+<p><strong>class</strong></p>
+<p>description of a set of objects that share the same characteristics</p>
+<p>Note 1 to entry: The characteristics may be embodied by the use of properties, operations, methods, relations, semantics, etc.</p>
+<p>Note 2 to entry: Each class is a hierarchical element of a classification.</p>
+<p>[SOURCE: ISO 22274:2013, 3.4, modified — Note 2 to entry has been added.]</p>
+<p><strong>3.8</strong></p>
+<p><strong>composed property</strong></p>
+<p>category of <em>group of properties</em> (<u>3.14</u>) corresponding to a feature needing multiple properties to be defined</p>
+<p>Note 1 to entry: Using this category of group of properties requires to fill all the properties part of the composed property. There is no <em>value</em> (<u>3.20</u>) attached to the group of properties.</p>
+<p>EXAMPLE To describe the characteristic “concrete facing quality” it is mandatory to describe 3 properties: concrete planarity, concrete hue, concrete texture.</p>
+<p><strong>3.9</strong></p>
+<p><strong>data dictionary</strong></p>
+<p>centralized repository of information about data such as meaning, relationships to other data, origin, usage and format</p>
+<p>Note 1 to entry: The definition is from IBM Dictionary of Computing<sup>[<u>15</u>]</sup>.</p>
+<p><strong>3.10</strong></p>
+<p><strong>derived quantity</strong></p>
+<p><em>quantity</em> (<u>3.16</u>), in a system of quantities, defined in terms of the <em>base quantities</em> (<u>3.5</u>) of that system</p>
+<p>EXAMPLE In a system of quantities having the base quantities length and mass, mass density is a derived quantity defined as the quotient of mass and volume (length to the power three).</p>
+<p>[SOURCE: ISO 80000-1:2009, 3.5, modified — The NOTE has been removed.]<br>
+<strong>3.11</strong></p>
+<p><strong>domain</strong></p>
+<p>area of activity covering a science, a technique, a material, etc.</p>
+<p>Note 1 to entry: A domain can be associated with a group to which the <em>property</em> (<u>3.17</u>) applies.</p>
+<p><strong>3.12</strong></p>
+<p><strong>expert</strong></p>
+<p>person who, through knowledge or experience, has competence to give an opinion in the fields about which he/she is consulted</p>
+<p>[SOURCE: ISO 13302:2003, 3.10, modified — The domain "&lt;general sense&gt;" has been removed; the NOTE has been removed.]</p>
+<p>© ISO 2020 – All rights reserved <strong>3</strong></p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>3.13</strong></p>
+<p><strong>globally unique identifier</strong></p>
+<p><strong>GUID</strong></p>
+<p>unique identifier generated using an algorithm</p>
+<p>Note 1 to entry: In ISO 16739-1 and ISO 12006-3 the compressed version of GUID is used.<br>
+<strong>3.14</strong></p>
+<p><strong>group of properties</strong></p>
+<p>collection enabling the <em>properties</em> (<u>3.17</u>) to be prearranged or organized</p>
+<p>Note 1 to entry: A Property Set as defined in ISO 16739-1 is a group of properties, but a group of properties is not necessarily a Property Set.</p>
+<p>Note 2 to entry: There are five categories of possible groups of properties: <em>class</em> (<u>3.7</u>), <em>domain</em> (<u>3.11</u>), <em>reference</em> <em>document</em> (<u>3.18</u>), <em>composed property</em> (<u>3.8</u>), <em>alternative use</em> (<u>3.1</u>).</p>
+<p>Note 3 to entry: The category of group of properties alternative use shall be used only after having considered the possible use of all the other categories.</p>
+<p>Note 4 to entry: A <em>property</em> (<u>3.17</u>) can be member of several groups of properties. A property cannot be member of several Property Sets as defined in ISO 16739-1.</p>
+<p><strong>3.15</strong></p>
+<p><strong>interconnected data dictionaries</strong></p>
+<p>set of <em>data dictionaries</em> (<u>3.9</u>) following this document and connected using specific <em>attributes</em> (<u>3.4</u>)</p>
+<p><strong>3.16</strong></p>
+<p><strong>quantity</strong></p>
+<p><em>property</em> (<u>3.17</u>) of a phenomenon, body, or substance, where the property has a magnitude that can be expressed by means of a number and a reference</p>
+<p>Note 1 to entry: Quantities can appear as <em>base quantities</em> (<u>3.5</u>) or <em>derived quantities</em> (<u>3.10</u>).</p>
+<p>EXAMPLE 1 Length, mass, electric current (ISQ base quantities).</p>
+<p>EXAMPLE 2 Plane angle, force, power (derived quantities).</p>
+<p>[SOURCE: ISO 80000-1:2009, 3.1, modified — NOTEs 1 to 6 have been removed; new Note 1 to entry and two EXAMPLEs have been added.]</p>
+<p><strong>3.17</strong></p>
+<p><strong>property</strong></p>
+<p>inherent or acquired feature of an item</p>
+<p>EXAMPLE Thermal efficiency, heat flow, sound reduction index, sound power level, colour.</p>
+<p>[SOURCE: ISO 6707-1:2017, <a href="http://3.7.1.3">3.7.1.3</a>, modified — The EXAMPLE has been added.]</p>
+<p><strong>3.18</strong></p>
+<p><strong>reference document</strong></p>
+<p>publication that is consulted to find specific information, particularly in a technical or scientific <em>domain</em> (<u>3.11</u>)</p>
+<p>Note 1 to entry: A reference document can be associated with any data present in a <em>data dictionary</em> (<u>3.9</u>).</p>
+<p><strong>4</strong> © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>3.19</strong><br>
+<strong>unit</strong><br>
+unit of measurement</p>
+<p>measurement unit</p>
+<p>real scalar quantity, defined and adopted by convention, with which any other quantity of the same kind can be compared to express the ratio of the second quantity to the first one as a number</p>
+<p>[SOURCE: ISO 80000-1:2009, 3.9, modified — NOTEs 1 to 5 have been removed; "unit" has been changed to be a preferred term and "unit of measurement" an admitted term.]</p>
+<p><strong>3.20</strong></p>
+<p><strong>value</strong></p>
+<p>quantity value</p>
+<p>value of a quantity</p>
+<p>number and reference together expressing magnitude of a quantity</p>
+<p>EXAMPLE 1 Length of a given rod: 5,34 m or 534 cm.</p>
+<p>EXAMPLE 2 Mass of a given body: 0,152 kg or 152 g.</p>
+<p>EXAMPLE 3 Curvature of a given arc: 112 m<sup>−1</sup>.</p>
+<p>EXAMPLE 4 Celsius temperature of a given sample: −5 °C.</p>
+<p>EXAMPLE 5 Electric impedance of a given circuit element at a given frequency, where j is the imaginary <em>unit</em> (<u>3.19</u>): (7 + 3j) Ω.</p>
+<p>EXAMPLE 6 Refractive index of a given sample of glass: 1,32.</p>
+<p>EXAMPLE 7 Rockwell C hardness of a given sample (150 kg load): 43,5 HRC (150 kg).</p>
+<p>EXAMPLE 8 Mass fraction of cadmium in a given sample of copper: 3 µg/kg or 3 × 10<sup>−9</sup>.</p>
+<p>EXAMPLE 9 Molality of Pb2+ in a given sample of water: 1,76 µmol/kg.</p>
+<p>EXAMPLE 10 Amount-of-substance concentration of lutropin in a given sample of plasma (WHO international standard 80/552): 5,0 IU/l (WHO International Units per litre).</p>
+<p>[SOURCE: ISO 80000-1:2009, 3.19, modified — NOTEs 1 to 5 have been removed; "value" has been changed to be a preferred term and "quantity value" an admitted term.]</p>
+<p><strong>3.21</strong><br>
+<strong>user</strong><br>
+person or legal entity that interacts with the <em>interconnected data dictionaries</em> (<u>3.15</u>) via an interface</p>
+<p>providing access to the network of <em>data dictionaries</em> (<u>3.9</u>)</p>
+<p><strong>4 Rules to define properties and groups of properties</strong><br>
+<strong>4.1 General</strong></p>
+<p>To be non-ambiguous, machine-readable as well as human-understandable, properties and groups of properties shall be defined by a set of attributes. Some attributes are mandatory, and others are optional.</p>
+<p>For a property to be human-understandable, any application following this document may be able to display the value of many attributes defining this property, for example name, name of the reference document, test method, unit, etc.</p>
+<p><strong>4.2 Property</strong></p>
+<p>A property shall be defined using the set of attributes as listed in <u>Table 1</u>.</p>
+<p>© ISO 2020 – All rights reserved <strong>5</strong></p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>4.3 Group of properties</strong></p>
+<p>A group of properties shall be defined using the set of attributes as listed in <u>Table 2</u>.</p>
+<p>Applicants can propose a group of properties as appropriate for their needs.</p>
+<p>The different categories of a group of properties are (exhaustive list):</p>
+<p>— alternative use;</p>
+<p>— class;</p>
+<p>— composed property;</p>
+<p>— domain;</p>
+<p>— reference document.</p>
+<p>Groups of properties can be organised in tree structures. Any property attached to a group of properties is inherited by the sub-group(s) of properties.</p>
+<p>Any property may be included in several groups of properties.<br>
+EXAMPLE</p>
+<p>— class: Panel (class corresponding to a family of products in a classification);</p>
+<p>— class: ifcWall;</p>
+<p>— domain: Acoustic (domain corresponding to a scientific discipline), architecture, economy;</p>
+<p>— composed property: “concrete facing quality” is a group of properties linking 3 properties (concrete</p>
+<p>planarity, concrete hue, concrete texture).<br>
+<strong>4.4 Attributes list</strong></p>
+<p><strong>4.4.1 Attributes of a property</strong></p>
+<p><u>Table 1</u> provides an exhaustive list of attributes used to manage a property within a data dictionary.<br>
+<u>Table 1</u> contains 8 columns:</p>
+<p>— Code: code that can be used to identify the attribute;</p>
+<p>— Name: name of the attribute;</p>
+<p>— Description: description of the attribute, and how it shall be used;</p>
+<p>— Example: some examples of possible values for the attribute;</p>
+<p>— Interconnected data dictionaries management rule: rule that defines if it is mandatory or not to</p>
+<p>provide a value for the attribute. When “calculated” is noticed, this means that the value of the attribute is provided by the system managing a data dictionary, not by a user (i.e.&nbsp;when a request has been validated, the system shall change the property’s attribute “status” to “active”);</p>
+<p>— Request form management rule: rule that defines if it is mandatory or not relevant to provide a</p>
+<p>value for the attribute in a request form to interact with the data dictionary;<br>
+— Type: datatype of the attribute;</p>
+<p>— List of values: list of possible values for the attribute.</p>
+<p><strong>6</strong> © ISO 2020 – All rights reserved</p>
+<p><img src="media/image139.png" style="width:9.79735in;height:0.69679in"><strong>Table 1 — Property attributes</strong></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 16%">
+<col style="width: 15%">
+<col style="width: 18%">
+<col style="width: 17%">
+<col style="width: 10%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA001</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Globally unique</p>
+</blockquote>
+<p>identifier</p></td>
+<td><blockquote class="blockquote">
+<p>Globally unique identifier</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>936DA01F-9ABD-4D9D-</em> <em>80C7-02AF85C822A8</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory Calculated</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Not relevant</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String Single-value</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA002</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Status</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Status of the property</p>
+</blockquote>
+<p>during its life cycle</p></td>
+<td><blockquote class="blockquote">
+<p><em>Active</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote>
+<p>Calculated</p></td>
+<td><blockquote class="blockquote">
+<p>Not relevant</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Enumeration</p>
+</blockquote>
+<p>Single-value</p></td>
+<td><blockquote class="blockquote">
+<p>Active Inactive</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA003</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of creation</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of validation of the property creation</p>
+</blockquote>
+<p>request by experts</p></td>
+<td><em>2014-04-30T10:39:53Z</em></td>
+<td>Mandatory Calculated</td>
+<td><blockquote class="blockquote">
+<p>Not relevant</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote>
+<p>In accordance with ISO 8601</p>
+<blockquote class="blockquote">
+<p>(all parts)</p>
+<p>Format =<br>
+YYYY-MM-DDThh:mm:ssTZD</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA004</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of activation</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date after when the property can be used</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>2014-04-30T10:39:53Z</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the property is</p>
+<p>validated Calculated</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Not relevant</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote>
+<p>In accordance with ISO 8601</p>
+<blockquote class="blockquote">
+<p>(all parts)</p>
+<p>Format =<br>
+YYYY-MM-DDThh:mm:ssTZD</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA005</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of last change</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of validation of</p>
+<p>the last change re- quest by experts</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>2014-04-30T10:39:53Z</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the property has changed</p>
+</blockquote>
+<p>Calculated</p></td>
+<td><blockquote class="blockquote">
+<p>Not relevant</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote>
+<p>In accordance with ISO 8601</p>
+<blockquote class="blockquote">
+<p>(all parts)</p>
+<p>Format =<br>
+YYYY-MM-DDThh:mm:ssTZD</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA006</strong></p>
+</blockquote></td>
+<td>Date of revision</td>
+<td>Date of the revision</td>
+<td><em>2014-04-30T10:39:53Z</em></td>
+<td>Mandatory Calculated</td>
+<td><blockquote class="blockquote">
+<p>Not relevant</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote>
+<p>In accordance with ISO 8601</p>
+<blockquote class="blockquote">
+<p>(all parts)</p>
+<p>Format =<br>
+YYYY-MM-DDThh:mm:ssTZD</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA007</strong></p>
+</blockquote></td>
+<td>Date of version</td>
+<td>Date of the version</td>
+<td><em>2014-04-30T10:39:53Z</em></td>
+<td>Mandatory Calculated</td>
+<td><blockquote class="blockquote">
+<p>Not relevant</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote>
+<p>In accordance with ISO 8601</p>
+<blockquote class="blockquote">
+<p>(all parts)</p>
+<p>Format =<br>
+YYYY-MM-DDThh:mm:ssTZD</p>
+</blockquote></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image143.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 26%">
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 14%">
+<col style="width: 8%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA008</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of deactivation</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date as of which the</p>
+<p>property becomes obsolete; the property is maintained in the data dictionary</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>2014-04-30T10:39:53Z</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the property is</p>
+<p>deactivated Calculated</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Not relevant</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote>
+<p>In accordance with ISO 8601</p>
+<blockquote class="blockquote">
+<p>(all parts)</p>
+<p>Format =<br>
+YYYY-MM-DDThh:mm:ssTZD</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA009</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Version number</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>This version number</p>
+<p>allows tracking of major changes. Ex- perts decide if a new version number must be applied</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>2</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Integer</p>
+</blockquote>
+<p>Single value</p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA010</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Revision number</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>This revision number</p>
+<p>allows tracking of<br>
+minor changes e.g.&nbsp;new translation, changes</p>
+<p>of typos: if the version number changes, the revision number starts again at 1</p>
+</blockquote>
+<p>Experts decide if a</p>
+<blockquote class="blockquote">
+<p>new revision number can be applied or if a new revision is needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>3</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Integer</p>
+</blockquote>
+<p>Single value</p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA011</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of replaced prop-</p>
+<p>erties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Globally unique identi- fier (attribute PA001) of the replaced prop- erty (or properties)</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(946DA01F-9ABD-</em><br>
+<em>4D9D-80C7-02AF-</em><br>
+<em>85C822A8, 946DA01F-</em></p>
+<p><em>9ABD-4D9D-80C7-</em> <em>02AF85C822A9)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the property replac- es another one</p>
+<p>Calculated</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the proper-</p>
+<p>ty replaces another one</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String</p>
+<p>Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA012</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of replacing prop-</p>
+<p>erties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Globally unique identi- fier (attribute PA001) of the replacing prop- erty (or properties)</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(935DA01F-9ABD-</em> <em>4D9D-80C7-02AF-</em> <em>85C822A8)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the property is replaced</p>
+<p>Calculated</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the property is replaced</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String</p>
+<p>Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image147.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 10%">
+<col style="width: 19%">
+<col style="width: 10%">
+<col style="width: 16%">
+<col style="width: 17%">
+<col style="width: 4%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA013</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Deprecation explanation</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Sentence explaining the reason of the dep-</p>
+<p>recation, which can explain how to con-<br>
+vert values to conform</p>
+<p>to the new property; this explanation has to be written in interna- tional English (EN)</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the</p>
+<p>property has been replaced by others</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the proper-</p>
+<p>ty has been replaced by others</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String<br>
+Single value</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA014</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Relation of the prop- erty identifiers in the</p>
+<p>interconnected data dictionaries</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (property internal identifier, corresponding data dictionary identifier)</p>
+<p>This attribute should be used for compati- bility between already existing properties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(internalGUID1,</em> bsdd. buildingsmart.org<em>),</em></p>
+<p><em>(internalGUID2, PPBIM)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Mandatory if the property is in interconnected data dictionaries</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional, Mandatory if the property is in intercon- nected data dictionaries</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs<br>
+Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA015</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Language of the crea-</p>
+</blockquote>
+<p>tor of the property</p></td>
+<td><blockquote class="blockquote">
+<p><em>en-EN</em> <em>en-GB</em> <em>IFC-IFC</em></p>
+<p><em>EN (for international</em> <em>English)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String<br>
+Single value</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>The lan-<br>
+guage shall consist of an ISO 639-1 letter code followed by a dash</p>
+<p>and then an ISO 3166-1 alpha-2 letter code + “IFC- IFC”</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image153.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 17%">
+<col style="width: 12%">
+<col style="width: 15%">
+<col style="width: 22%">
+<col style="width: 4%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA016</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Names in language N</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (name of the property and</p>
+</blockquote>
+<p>language)</p>
+<blockquote class="blockquote">
+<p>This attribute can be used to add synonyms for different domains</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(</em></p>
+<p><em>(PropertyName | en-</em> <em>EN),</em></p>
+<p><em>(Nompropriété | fr-FR),</em> <em>(IfcPropertyName | IFC)</em></p>
+<p><em>)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+<p>The minimum it shall contain is</p>
+<p>a name in inter- national English and a name in the creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory The mini-<br>
+mum it shall contain is</p>
+<p>a name in international English and</p>
+<p>a name in</p>
+<p>the creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs<br>
+Multiple values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>The second part of the</p>
+<p>pair shall con- sist of an ISO 639-1 letter code followed by a dash and then an ISO<br>
+3166-1 alpha- 2 letter code + “IFC-IFC”</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA017</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Definitions in language</p>
+<p>N</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (defini- tion of the property, language)</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote>
+<p>The minimum</p>
+<blockquote class="blockquote">
+<p>it shall contain is a definition</p>
+<p>in international English and a definition in</p>
+<p>the creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory The mini-<br>
+mum it shall contain is a definition in international English and a definition in the creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs<br>
+Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA018</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Descriptions in lan-</p>
+<p>guage N</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (descrip- tion of the property, language)</p>
+<p>This attribute is used to provide a plain language description of the property</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs</p>
+</blockquote>
+<p>Multiple values</p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA019</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Examples in language N</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (example</p>
+</blockquote>
+<p>values, language)</p>
+<blockquote class="blockquote">
+<p>This attribute can be used to illustrate the possible values of the property</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs</p>
+</blockquote>
+<p>Multiple values</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image157.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 8%">
+<col style="width: 26%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 9%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA020</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Connected properties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of the globally unique identifier of</p>
+<p>the connected proper- ties (attribute PA001); the value of one</p>
+<p>property is related to the values of the other ones. For example,</p>
+<p>a sound absorption coefficient is given for a specific frequency,</p>
+<p>in this case sound absorption and fre- quency are connected properties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(945DA01F-9BBD-</em> <em>4D9D-80C7-02AF-</em> <em>85C822A8,</em></p>
+<p><em>945DA01F-9BBD-4D9D-</em> <em>80C7-02AF85C822A7)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of GUIDs Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA021</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Group(s) of properties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of globally unique identifiers of groups of properties (attribute</p>
+<p>GA001) to which the property is attached</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(945DA01F-9BBD-</em> <em>4D9D-80C7-02AF-</em> <em>85C822A8,</em></p>
+<p><em>945DA01F-9BBD-4D9D-</em> <em>80C7-02AF85C822A7)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of GUIDs Multiple values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of all the groups.</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA022</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Symbols of the proper-</p>
+<p>ty in a given property group</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (symbol</p>
+<p>of the property, glob- ally unique identifier of the group of proper- ties (attribute GA001))</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(λ, 936DA01F-9ABD-</em> <em>4B6D-80C7-03BF-</em><br>
+<em>85C822A8)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Unicode, text Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA023</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Visual representation</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Visual representa- tion of the property</p>
+<p>through sketches, pho- tos, videos or other<br>
+multimedia objects</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Multiple values</p>
+</blockquote>
+<p>It can be a URL code</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image161.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 42%">
+<col style="width: 4%">
+<col style="width: 12%">
+<col style="width: 11%">
+<col style="width: 4%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA024</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Country of use</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Country (group of countries, continent)</p>
+<p>in which the proper- ty is relevant for the market the stakehold-</p>
+</blockquote>
+<p>ers operate in</p>
+<p>For example:</p>
+<blockquote class="blockquote">
+<p>ISOLE (The "ISOLE" usage profile is de- signed to make it eas- ier to express of the suitability of insula- tion products relative to the needs of users, and as set out in a<br>
+number of codified<br>
+texts) has a country of use: Europe</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(FR, US, NO)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Choose<br>
+Multiple values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In accord- ance with ISO 3166-1</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA025</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Subdivision of use</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Documented geo- graphical region of</p>
+</blockquote>
+<p>use of the property</p></td>
+<td><blockquote class="blockquote">
+<p><em>(US-MT)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+<p>Depending on country of use</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Depending</p>
+<p>on country of use</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Choose<br>
+Multiple values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In accord- ance with ISO 3166-2,</p>
+<p>and other subdivisions (thermal regulation</p>
+<p>"RT 2012" zones, seismic zones fixed by decree etc.)</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA026</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Country of origin</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Country from where</p>
+<p>the requirement for this property origi- nated</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>FR</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String</p>
+</blockquote>
+<p>Single value</p></td>
+<td><blockquote class="blockquote">
+<p>In accord- ance with ISO 3166-1</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image165.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 36%">
+<col style="width: 9%">
+<col style="width: 12%">
+<col style="width: 11%">
+<col style="width: 4%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA027</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Physical quantity</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (physical</p>
+<p>quantity | language) Physical quantities are expressed in International System (SI) units</p>
+<p>Non-physical quanti- ties such as text are expressed with the value "without"</p>
+<p>This is equivalent to a measure in ISO 16739- 1 and ISO 10303</p>
+<p>Only one physical quantity can be attached to a proper- ty. This attribute is used to provide the quantity in plain text with all the needed translations</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(</em></p>
+<p><em>(Mass | en-EN),</em> <em>(Masse | fr-FR)</em></p>
+<p><em>)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String</p>
+</blockquote>
+<p>Multiple values</p></td>
+<td><blockquote class="blockquote">
+<p>First part of the pair in ac- cordance with ISO 80000 (all</p>
+<p>parts) -- or "without"</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image169.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 15%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 14%">
+<col style="width: 11%">
+<col style="width: 9%">
+<col style="width: 18%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>
+<blockquote class="blockquote">
+<p>
+<strong>Code</strong>
+</p>
+</blockquote>
+</th>
+<th>
+<blockquote class="blockquote">
+<p>
+<strong>Name</strong>
+</p>
+</blockquote>
+</th>
+<th colspan="7">
+<blockquote class="blockquote">
+<p>
+<strong>Description</strong>
+</p>
+</blockquote>
+</th>
+<th>
+<blockquote class="blockquote">
+<p>
+<strong>Example</strong>
+</p>
+</blockquote>
+</th>
+<th>
+<blockquote class="blockquote">
+<p>
+<strong>Interconnected</strong>
+</p>
+<p>
+<strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong>
+</p>
+</blockquote>
+</th>
+<th>
+<blockquote class="blockquote">
+<p>
+<strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong>
+</p>
+</blockquote>
+</th>
+<th>
+<blockquote class="blockquote">
+<p>
+<strong>Type</strong>
+</p>
+</blockquote>
+</th>
+<th>
+<blockquote class="blockquote">
+<p>
+<strong>List of values</strong>
+</p>
+</blockquote>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="2">
+<blockquote class="blockquote">
+<p>
+<strong>PA028</strong>
+</p>
+</blockquote>
+</td>
+<td rowspan="2">
+<blockquote class="blockquote">
+<p>
+Dimension
+</p>
+</blockquote>
+</td>
+<td colspan="7">
+<blockquote class="blockquote">
+<p>
+In case of a physical
+</p>
+</blockquote>
+<p>
+quantity, dimen-
+</p>
+<p>
+sion according to
+</p>
+<p>
+ISO 80000 (all parts)
+</p>
+<blockquote class="blockquote">
+<p>
+This attribute allows the dimension to be machine readable; as all physical quanti- ties are derived from 7 base quantities, it
+</p>
+<p>
+is provided with the power (as a rational number) attached to a basic dimension in the following order and with one space between each
+</p>
+<p>
+Examples of dimen- sions are provided in Annex C
+</p>
+</blockquote>
+</td>
+<td rowspan="2">
+<blockquote class="blockquote">
+<p>
+<em>For acceleration (L T<sup>−2</sup>)</em> <em>the value to provide is</em>
+</p>
+<p>
+<em>1 0 −2 0 0 0 0</em>
+</p>
+<p>
+<em>For capacitance</em>
+</p>
+<p>
+<em>(L</em><sup>−<em>2</em></sup> <em>M</em><sup>−<em>1</em></sup><em>T<sup>4</sup> I<sup>2</sup>) the value</em> <em>to provide is</em>
+</p>
+<p>
+<em>−2 −1 4 2 0 0 0</em>
+</p>
+</blockquote>
+</td>
+<td rowspan="2">
+<blockquote class="blockquote">
+<p>
+Mandatory if<br> physical quantity
+</p>
+</blockquote>
+</td>
+<td rowspan="2">
+<blockquote class="blockquote">
+<p>
+Mandatory if physical quantity
+</p>
+</blockquote>
+</td>
+<td rowspan="2">
+<blockquote class="blockquote">
+<p>
+String
+</p>
+</blockquote>
+</td>
+<td rowspan="2">
+<blockquote class="blockquote">
+<p>
+In accord-
+</p>
+<p>
+ance with ISO 80000
+</p>
+</blockquote>
+<p>
+(all parts)
+</p>
+</td>
+</tr>
+<tr class="even">
+<td>
+<blockquote class="blockquote">
+<p>
+L
+</p>
+</blockquote>
+</td>
+<td>
+<blockquote class="blockquote">
+<p>
+M
+</p>
+</blockquote>
+</td>
+<td>
+<blockquote class="blockquote">
+<p>
+T
+</p>
+</blockquote>
+</td>
+<td>
+<blockquote class="blockquote">
+<p>
+I
+</p>
+</blockquote>
+</td>
+<td>
+<blockquote class="blockquote">
+<p>
+θ
+</p>
+</blockquote>
+</td>
+<td>
+<blockquote class="blockquote">
+<p>
+N
+</p>
+</blockquote>
+</td>
+<td>
+<blockquote class="blockquote">
+<p>
+J
+</p>
+</blockquote>
+</td>
+</tr>
+<tr class="odd">
+<td>
+<blockquote class="blockquote">
+<p>
+<strong>PA029</strong>
+</p>
+</blockquote>
+</td>
+<td>
+<blockquote class="blockquote">
+<p>
+Method of measurement
+</p>
+</blockquote>
+</td>
+<td colspan="7">
+<blockquote class="blockquote">
+<p>
+Evaluation of con- struction products to
+</p>
+<p>
+ensure their fitness according to require- ments in harmonised technical specifica- tions
+</p>
+</blockquote>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image176.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 8%">
+<col style="width: 29%">
+<col style="width: 20%">
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 4%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA030</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Data type</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Format for express-</p>
+<p>ing the value of the property</p>
+<p>This can be under- stood as the storage type from a software perspective</p>
+<p>In case of a dynamic property the value of this attribute is the datatype of the result of the calculation by the formula</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(numerical, numerical)</em> <em>real</em></p>
+<p><em>integer</em></p>
+<p><em>array (1..m) of integer</em> <em>array (1..2) of integer</em> <em>array (1..m , 1..n) of real</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory Derived from at- tribute “Physical quantity”</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String<br>
+Single value</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In accordance with ISO/</p>
+<p>IEC 11404</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA031</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Dynamic property</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>If this is a dynamic property, the value is</p>
+<p>dependent on the pa- rameters provided in the attribute PA032</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>No</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String</p>
+</blockquote>
+<p>Single value</p></td>
+<td><blockquote class="blockquote">
+<p>Yes No</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA032</strong></p>
+</blockquote></td>
+<td>Parameters of the dynamic property</td>
+<td><blockquote class="blockquote">
+<p>List of GUIDS of properties which are parameters of the function for a dynamic property</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+<p>Mandatory if dynamic property = yes</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Mandatory if dynamic property = yes</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of GUID</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA033</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Units</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>A unit to represent a</p>
+<p>scale that enables a value to be measured</p>
+<p>It is possible to use this attribute to explain there is no unit attached to the property by using “unitless”</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(m<sup>2</sup>)</em></p>
+<p><em>(mm , m)</em> <em>(kg)</em><br>
+<em>(unitless)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Consistent with “physical quanti- ty”</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Consistent with “physi- cal quantity”</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String</p>
+<p>Multiple values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In accord-<br>
+ance with<br>
+ISO 80000 (all</p>
+<p>parts)--</p>
+<p>or</p>
+<p>ISO 4217</p>
+<p>or</p>
+<p>ISO 8601 (all parts)</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image180.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 29%">
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 14%">
+<col style="width: 7%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA034</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Names of the defining</p>
+<p>values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In case of an array,</p>
+<p>this attribute provides the names of the column headers de- fined as a list of pairs (name, language)</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>In case of array (3, 2)</em></p>
+<p><em>(</em></p>
+<p><em>(frequency|en-EN),</em> <em>(fréquence|fr-FR)</em></p>
+<p><em>)</em></p>
+<p><em>In case of array (3, 3)</em></p>
+<p><em>(</em></p>
+<p><em>(</em></p>
+<p><em>(temperature|en-EN),</em> <em>(température|fr-FR)</em></p>
+<p><em>),</em></p>
+<p><em>(</em></p>
+<p><em>(air flow|en-EN),</em> <em>(flux d’air|fr-FR)</em></p>
+<p><em>)</em></p>
+<p><em>)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Mandatory if datatype is an array</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Mandatory if datatype is an array</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs of string</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA035</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Defining values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In case of an array,</p>
+</blockquote>
+<p>this attribute provides</p>
+<blockquote class="blockquote">
+<p>the defining values when applicable, the datatype is given by the attribute PA030</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>In case of array (3, 2)</em></p>
+<p><em>(</em></p>
+<p><em>(25, 50, 75),</em> <em>(0.4,0.5,06)</em></p>
+<p><em>)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List</p>
+</blockquote></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image184.png" style="width:9.79735in;height:0.69679in"><strong>Table 1</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 26%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 4%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong></p>
+<p><strong>data diction-</strong> <strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request</strong> <strong>from man-</strong> <strong>agement</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA036</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Tolerance</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>For numerical values;</p>
+</blockquote>
+<p>the total amount</p>
+<blockquote class="blockquote">
+<p>that a specific unit is permitted to vary; it is the difference be- tween the maximum and the minimum limits for the unit</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Multiple values</p>
+</blockquote>
+<p>Real</p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA037</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Digital format</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Pair for digital text type (precision, unit)</p>
+<p>Precision is the num- ber of significant digits</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(1E-2, W/m<sup>2</sup>. K)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+<p>Derived from “units”</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Derived from “units”</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA038</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Text format</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Pair for text type</p>
+<p>(encoding, number of characters)</p>
+<p>The encoding is set according to “Name of encoding standard” of IANA, RFC 2978</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(UTF-8, 32)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+<p>Mandatory if data type is</p>
+</blockquote>
+<p>a string</p></td>
+<td><blockquote class="blockquote">
+<p>Single value</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>PA039</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of possible values in</p>
+<p>language N</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (possible value for the property and language)</p>
+<p>Values can be string or numbers</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>((Yes | en-EN),</em></p>
+<p><em>(No| en-EN)</em></p>
+<p><em>(Not Applicable | en-</em> <em>EN))</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs<br>
+Multiple values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>The second part of the<br>
+pair shall consist of an ISO 639-1 letter code followed by a dash and then an ISO 3166-1 alpha-2 letter code + “IFC- IFC”</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>PA040</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Boundary values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Pair (list of boundary</p>
+<p>intervals of possible values for the proper- ty, unit)</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>({(</em><sup>−</sup><em>15,</em><sup>−</sup><em>10),(</em><sup>−</sup><em>5,15)},°C)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>4.4.2 Attributes of a group of properties</strong></p>
+<p><u>Table 2</u> provides an exhaustive list of attributes used to manage a group of properties within a data dictionary.</p>
+<p><u>Table 2</u> contains 8 columns:</p>
+<p>— Code: code that can be used to identify the attribute;</p>
+<p>— Name: name of the attribute;</p>
+<p>— Description: description of the attribute, and how it shall be used;</p>
+<p>— Example: some examples of possible values for the attribute;</p>
+<p>— Interconnected data dictionaries management rule: rule that defines if it is mandatory or not to</p>
+<p>provide a value for the attribute. When “calculated” is noticed, this means that the value of the attribute is provided by the system managing a data dictionary, not by a user (i.e.&nbsp;when a request has been validated, the system shall change the group of properties attribute “status” to “active”);</p>
+<p>— Request form management rule: rule that defines if it is mandatory or not relevant to provide a</p>
+<p>value for the attribute in a request form to interact with the data dictionary;<br>
+— Type: datatype of the attribute;</p>
+<p>— List of values: List of possible values for the attribute.</p>
+<p><strong>18</strong> © ISO 2020 – All rights reserved</p>
+<p><img src="media/image189.png" style="width:9.79749in;height:0.69679in"><strong>Table 2 — Group of properties attributes</strong></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 18%">
+<col style="width: 9%">
+<col style="width: 18%">
+<col style="width: 15%">
+<col style="width: 14%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong> <strong>data diction-</strong></p>
+<p><strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request form</strong> <strong>management</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA001</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Globally unique</p>
+</blockquote>
+<p>identifier</p></td>
+<td><blockquote class="blockquote">
+<p>Globally unique identifier</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>936DA01F-9ABD-4D9D-</em></p>
+</blockquote>
+<p><em>80C7-02AF85C822A8</em></p></td>
+<td><blockquote class="blockquote">
+<p>Mandatory Calculated</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Not needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String</p>
+</blockquote>
+<p>Single value</p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA002</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Status</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Status of the group of prop-</p>
+</blockquote>
+<p>erties during its life cycle</p></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote>
+<p>Calculated</p></td>
+<td><blockquote class="blockquote">
+<p>Not needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Enumeration</p>
+</blockquote>
+<p>Single value</p></td>
+<td><blockquote class="blockquote">
+<p>Active Inactive</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA003</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of creation</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of validation of the group of properties crea-</p>
+</blockquote>
+<p>tion request by experts</p></td>
+<td><em>2014-04-30T10:39:53Z</em></td>
+<td>Mandatory Calculated</td>
+<td><blockquote class="blockquote">
+<p>Not needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+<p>In accordance with ISO 8601 (all parts)</p>
+<p>Format = YYYY-MM</p>
+</blockquote>
+<p>-DDThh:mm:</p>
+<p>ssTZD</p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA004</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of activation</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date after when the group</p>
+</blockquote>
+<p>of properties can be used</p></td>
+<td><blockquote class="blockquote">
+<p><em>2014-04-30T10:39:53Z</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the group of proper- ties is validated</p>
+</blockquote>
+<p>Calculated</p></td>
+<td><blockquote class="blockquote">
+<p>Not needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+<p>In accordance with ISO 8601 (all parts)</p>
+<p>Format = YYYY-MM</p>
+</blockquote>
+<p>-DDThh:mm:</p>
+<p>ssTZD</p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA005</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of last change</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of validation of the last</p>
+</blockquote>
+<p>change request by experts</p></td>
+<td><em>2014-04-30T10:39:53Z</em></td>
+<td>Mandatory Calculated</td>
+<td><blockquote class="blockquote">
+<p>Not needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+<p>In accordance with ISO 8601 (all parts)</p>
+<p>Format = YYYY-MM</p>
+</blockquote>
+<p>-DDThh:mm:</p>
+<p>ssTZD</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image193.png" style="width:9.79749in;height:0.69679in"><strong>Table 2</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 35%">
+<col style="width: 7%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong> <strong>data diction-</strong></p>
+<p><strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request form</strong> <strong>management</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA006</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of revision</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of the revision</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>2014-04-30T10:39:53Z</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Not needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote>
+<p>In accordance</p>
+<blockquote class="blockquote">
+<p>with ISO 8601 (all parts)</p>
+<p>Format = YYYY-MM</p>
+</blockquote>
+<p>-DDThh:mm:</p>
+<p>ssTZD</p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA007</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of version</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of the version</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>2014-04-30T10:39:53Z</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Not needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote>
+<p>In accordance</p>
+<blockquote class="blockquote">
+<p>with ISO 8601 (all parts)</p>
+<p>Format = YYYY-MM</p>
+</blockquote>
+<p>-DDThh:mm:</p>
+<p>ssTZD</p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA008</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of deactivation</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date as of which the group of properties becomes obsolete; the group of properties is maintained in the data dictionary</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>2014-04-30T10:39:53Z</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if</p>
+<p>the group of properties is deactivated</p>
+</blockquote>
+<p>Calculated</p></td>
+<td><blockquote class="blockquote">
+<p>Not needed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+<p>In accordance with ISO 8601 (all parts)</p>
+<p>Format = YYYY-MM</p>
+</blockquote>
+<p>-DDThh:mm:</p>
+<p>ssTZD</p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA009</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Version number</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>This version number allows</p>
+</blockquote>
+<p>tracking of major changes.</p>
+<blockquote class="blockquote">
+<p>It is the experts who decide if the version number has</p>
+</blockquote>
+<p>to be changed or not</p></td>
+<td><blockquote class="blockquote">
+<p><em>2</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Integer</p>
+</blockquote>
+<p>Single value</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image197.png" style="width:9.79749in;height:0.69679in"><strong>Table 2</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 11%">
+<col style="width: 38%">
+<col style="width: 9%">
+<col style="width: 12%">
+<col style="width: 13%">
+<col style="width: 6%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong> <strong>data diction-</strong></p>
+<p><strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request form</strong> <strong>management</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA010</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Revision number</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>This revision number<br>
+allows tracking of minor</p>
+<p>changes e.g.&nbsp;new transla- tion, changes of typos; if the version number changes,</p>
+<p>the revision number starts again at 1. It is the experts who decide about the revi- sion number change</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>3</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Integer</p>
+</blockquote>
+<p>Single value</p></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA011</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of replaced groups of prop- erties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of globally unique identifiers of the replaced groups of properties</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the</p>
+<p>group of prop- erties replaces another one</p>
+</blockquote>
+<p>Calculated</p></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of GUIDS</p>
+</blockquote>
+<p>Multiple values</p></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA012</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of replacing</p>
+<p>groups of prop- erties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of globally unique identifiers of the replacing groups of properties</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the</p>
+<p>group of proper- ties is replaced</p>
+</blockquote>
+<p>Calculated</p></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the group of proper- ties is replaced</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of GUIDS Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA013</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Deprecation ex-</p>
+</blockquote>
+<p>planation</p></td>
+<td><blockquote class="blockquote">
+<p>Sentence explaining the reason of the deprecation, which can explain how to convert values to conform to the new group of prop- erties; this explanation has to be written in interna- tional English</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if</p>
+<p>the group of properties has been replaced by others</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory if the group of properties has been replaced by others</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String<br>
+Single value</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA014</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Relation of the group of proper-</p>
+<p>ties identifiers in the interconnect- ed data diction-</p>
+<p>aries</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (group of properties internal iden- tifier, corresponding data dictionary identifier)</p>
+<p>This attribute should be used for compatibility between already existing groups of properties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>((internalGUID1,</em> bsdd.buildingsmart. org<em>),</em></p>
+<p><em>(internalGUID2,</em> <em>PPBIM))</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Mandatory if</p>
+<p>the group of properties is in interconnected data dictionaries</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional, Mandatory if</p>
+<p>the group of properties is in interconnected data dictionaries</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Choose<br>
+Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image203.png" style="width:9.79749in;height:0.69679in"><strong>Table 2</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 6%">
+<col style="width: 20%">
+<col style="width: 12%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 5%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong> <strong>data diction-</strong></p>
+<p><strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request form</strong> <strong>management</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA015</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Language of the creator of</p>
+</blockquote>
+<p>the group of properties</p></td>
+<td><blockquote class="blockquote">
+<p><em>en-EN</em> <em>en-GB</em> <em>IFC-IFC</em></p>
+<p><em>EN (for international</em> <em>english)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String<br>
+Single value</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>The language shall consist of an ISO 639-1 letter code followed</p>
+<p>by a dash</p>
+<p>and then an ISO 3166- 1 alpha-2 letter code + “IFC-IFC”</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA016</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Names in lan-</p>
+</blockquote>
+<p>guage N</p></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (name of the group of properties and language)</p>
+<p>This attribute can be used to add synonyms for differ- ent domains</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>((GroupName | en-EN),</em> <em>(Nomgroupe | fr-FR))</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+<p>The minimum it shall contain is</p>
+<p>a name in inter- national English and a name in the creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+<p>The minimum it shall contain is</p>
+<p>a name in inter- national English and a name in the creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs<br>
+Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA017</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Definitions in</p>
+</blockquote>
+<p>language N</p></td>
+<td><blockquote class="blockquote">
+<p>List of pairs (definition of the group of properties, language)</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote>
+<p>The minimum</p>
+<blockquote class="blockquote">
+<p>it shall contain is a definition</p>
+<p>in international English and a definition in</p>
+<p>the creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+<p>The minimum</p>
+<p>it shall contain is a definition</p>
+<p>in international English and a definition in</p>
+<p>the creator’s language</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of pairs<br>
+Multiple values</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA018</strong></p>
+</blockquote></td>
+<td>Visual rep- resentation</td>
+<td><blockquote class="blockquote">
+<p>Visual representation of the group of properties through sketches, photos, videos or</p>
+<p>other multimedia objects</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Multiple values</p>
+<p>It can be a URL code</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA019</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Country of use</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Country in which the group</p>
+</blockquote>
+<p>of properties is used</p></td>
+<td><blockquote class="blockquote">
+<p><em>(FR, US)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Choose</p>
+</blockquote>
+<p>Multiple values</p></td>
+<td><blockquote class="blockquote">
+<p>In accordance with ISO 3166-1</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><img src="media/image207.png" style="width:9.79749in;height:0.69679in"><strong>Table 2</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 26%">
+<col style="width: 3%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 4%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Interconnected</strong> <strong>data diction-</strong></p>
+<p><strong>aries manage-</strong> <strong>ment rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Request form</strong> <strong>management</strong> <strong>rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA020</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Subdivision of use</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Documented geographical</p>
+<p>region of use of the group of properties</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p><em>(US-MT)</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+<p>Depending on country of use</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional Depending on country of use</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Choose<br>
+Multiple values</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In accordance with ISO 3166-2, and other subdivisions <em>(thermal</em> <em>regulation "RT 2012"</em> <em>zones, seismic zones</em> <em>fixed by decree etc.)</em></p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA021</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Country of origin</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Country from where the requirement for this group</p>
+</blockquote>
+<p>of properties originated</p></td>
+<td><blockquote class="blockquote">
+<p><em>FR</em></p>
+<p><em>UK</em></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>String<br>
+Single value</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In accordance with ISO 3166-1</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>GA022</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Category of group</p>
+</blockquote>
+<p>of properties</p></td>
+<td><blockquote class="blockquote">
+<p>Indicates the category of the group of properties created</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Choose</p>
+</blockquote>
+<p>Single value</p></td>
+<td><blockquote class="blockquote">
+<p>List of categories of group of properties:</p>
+<p>— Alternative use<br>
+— Class</p>
+<p>— Composed</p>
+<p>property<br>
+— Domain</p>
+<p>— Reference</p>
+<p>document</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>GA023</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Parent group of</p>
+</blockquote>
+<p>properties</p></td>
+<td><blockquote class="blockquote">
+<p>Enables a sub-group to be linked to a parent group via their globally unique iden- tifiers (attribute GA001)</p>
+<p>Any property attached to</p>
+<p>a group is inherited by the sub-group(s)</p>
+</blockquote></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Single value</p>
+</blockquote></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>5 Management rules to author and maintain properties and groups of properties</strong> <strong>5.1 Interactions amongst users, experts and data dictionaries</strong></p>
+<p><u>Figures 1</u> and <u>2</u> represent the interactions amongst the users, the experts, the data dictionaries and the interconnected reference system modelled in accordance with ISO/IEC 19510.</p>
+<p>These interactions shall be applied for a property (<u>Figure 1</u>) or a group of properties (<u>Figure 2</u>). An example of implementing these interactions for a group of properties is provided in <u>Annex A</u>.</p>
+<p>In the instance of new data dictionaries or existing data dictionaries that wish to conform to this document, this process can be adapted accordingly, for example experts could be users in case of a new data dictionary.</p>
+<p>In all cases the content shall be validated by experts.</p>
+<p><strong>24</strong> © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+</blockquote>
+<p><img src="media/image683.png"></p>
+<p><img src="media/image801.png" style="width:0.107in;height:0.12367in"></p>
+<p><img src="media/image1875.png" style="width:0.32033in;height:0.20867in"></p>
+<p><img src="media/image619.png" style="width:0.292in;height:0.20867in"></p>
+<p><img src="media/image2914.png"></p>
+<p><img src="media/image3074.png"></p>
+<p><img src="media/image619.png" style="width:0.292in;height:0.20867in"></p>
+<p><img src="media/image3224.png"></p>
+<p><img src="media/image3317.png" style="width:0.35367in;height:0.21033in"></p>
+<p><img src="media/image618.png" style="width:0.292in;height:0.20867in"></p>
+<blockquote class="blockquote">
+<p>NOTE For users using a printed version of this document, please find this figure in a more readable PDF format at <a href="https://standards.iso.org/iso/23386/ed-1/en"><u>https://standards.iso.org/iso/23386/ed-1/en</u></a>.</p>
+<p><strong>Figure 1 — Management of the interconnected data dictionaries for a property</strong></p>
+<p>© ISO 2020 – All rights reserved <strong>25</strong></p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+</blockquote>
+<p><img src="media/image4011.png"></p>
+<p><img src="media/image801.png" style="width:0.107in;height:0.12367in"></p>
+<p><img src="media/image1875.png" style="width:0.32033in;height:0.20867in"></p>
+<p><img src="media/image5693.png"></p>
+<p><img src="media/image619.png" style="width:0.292in;height:0.20867in"></p>
+<p><img src="media/image6437.png"></p>
+<p><img src="media/image619.png" style="width:0.292in;height:0.20867in"></p>
+<p><img src="media/image6579.png"></p>
+<p><img src="media/image312.png" style="width:0.292in;height:0.21033in"></p>
+<blockquote class="blockquote">
+<p>NOTE For users using a printed version of this document, please find this figure in a more readable PDF format at <a href="https://standards.iso.org/iso/23386/ed-1/en"><u>https://standards.iso.org/iso/23386/ed-1/en</u></a>.</p>
+<p><strong>Figure 2 — Management of the interconnected data dictionaries for a group of properties</strong></p>
+<p><strong>5.2 Description of actions</strong><br>
+<strong>5.2.1 General</strong></p>
+<p>The interactions described below apply in the same manner to properties and to groups of properties. For the user, any action on the interconnected reference system starts with a search for a property via an interface providing access to the network of data dictionaries. This interface transmits the request to all of the interconnected data dictionaries.</p>
+<p>This search leads to the compilation of the replies from the interconnected data dictionaries.</p>
+<p><strong>26</strong> © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p>If the user is satisfied with the result, the user retrieves the attributes of the property.</p>
+<p>If not, the user can modify the terms of the search or make a property creation, modification or deactivation request.</p>
+<p>The property creation, modification or deactivation request form is based on the attributes and the request form management rules specified in <u>Tables 1</u>, <u>2</u> and <u>3</u>.</p>
+<p>A search addresses all the attributes that define a property.<br>
+<strong>5.2.2 Requests</strong></p>
+<p><strong><a href="http://5.2.2.1">5.2.2.1</a> General</strong></p>
+<p>The requests correspond to property creation, modification or deactivation actions. These requests are addressed to the experts in accordance with the table of correspondence (<u>5.4</u>). These requests shall follow the management rules from <u>5.1</u> and shall be handled in the network of data dictionaries.</p>
+<p>The requests can be as follows.<br>
+<strong><a href="http://5.2.2.2">5.2.2.2</a> Creation</strong></p>
+<p>In the case of a creation request, the property is created immediately with its unique identifier. Its calculated status is "inactive".</p>
+<p>EXAMPLE Creation of a property that has not been found in the data dictionary.<br>
+<strong><a href="http://5.2.2.3">5.2.2.3</a> Modification - revision change</strong></p>
+<p>A validated modification revision change request corresponds to the updating of one or more attributes of the property.</p>
+<p>A modification revision change is a modification which changes not at all the semantic of the property. It is up to the experts to decide if the modification revision change can be accepted or if it shall be a replacement action.</p>
+<p>If the modification revision change is accepted by the experts, the attribute “revision number” of the property shall be changed.</p>
+<p>EXAMPLE Typographical (typo) correction.<br>
+<strong><a href="http://5.2.2.4">5.2.2.4</a> Deactivation</strong></p>
+<p>A deactivation request corresponds to a modification of the property. After validating of the deactivation request by the experts, the value of the calculated status of the property changes to "inactive". The property is not deleted from the system (property archive).</p>
+<p>EXAMPLE The user found a property which is no longer applicable and proposes to change its attribute “status” to “inactive”.</p>
+<p><strong><a href="http://5.2.2.5">5.2.2.5</a> Replacement (a creation and a deactivation)</strong></p>
+<p>A replacement request corresponds to the creation of the property and the deactivation of the property it replaces. After validation of the replacement request by the experts, the replaced property is deactivated. Its calculated status changes to "inactive". Its PA012 attribute is automatically populated with the globally unique identifier of the property that replaces it.</p>
+<p>EXAMPLE 1 The user found a property which is no longer applicable and has created a new one to replace it.</p>
+<p>© ISO 2020 – All rights reserved <strong>27</strong></p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p>If someone proposes to link a new property to a group of properties, this group of properties shall have a new version number.</p>
+<p>EXAMPLE 2 A user searches in the data dictionary for a group of properties “window”; he finds out that the property “height” is missing for this group of properties. This user proposes to link “height” to “window”. If this proposal is accepted by the experts, the group of properties will have a new version number.</p>
+<p>If a user removes a link from an existing property to a group of properties, a new group of properties should be created, replacing the old one.</p>
+<p>EXAMPLE 3 A user finds out that in the group of properties “window” the property “reaction to fire” will be replaced by a new one because of changes in a standard. He asks to remove the link from “reaction to fire” to “window”. A new group will be created, replacing the old one using the attributes PA011 and PA012 and the attribute “status” will be set to “inactive” for the old group. The new property will be linked to the new group of properties. The user will fill in the property attribute “deprecation explanation” of the old group.</p>
+<p><strong><a href="http://5.2.2.6">5.2.2.6</a> Fragmentation, replacement of one property by several properties (several creations</strong> <strong><a href="http://5.2.2.6">and on</a>e deactivation)</strong></p>
+<p>A fragmentation request corresponds to the deactivation of the property and the creation of several properties. After validation of the fragmentation request by the experts, the fragmented property is deactivated. Its calculated status changes to "inactive". Its PA012 attribute is automatically populated with the globally unique identifiers of the properties that replace it.</p>
+<p><strong><a href="http://5.2.2.7">5.2.2.7</a> Merging, replacement of several properties by a single property (one creation and</strong><br>
+<strong><a href="http://5.2.2.7">severa</a>l deactivations)</strong></p>
+<p>A merge request corresponds to the creation of one property and the deactivation of several properties. After validation of the merge request by the experts, the merged properties are deactivated. The calculated status of the merged properties changes to "inactive", PA012 attributes are then automatically populated with the globally unique identifier of the created property that replaces them.</p>
+<p>EXAMPLE Merging of duplicate properties.<br>
+<strong>5.2.3 Management of duplicates</strong></p>
+<p>The procedure to remove duplicate properties shall be carried out on the relevant attributes. The management of duplicates cannot be fully automated.</p>
+<p><strong>5.3 Naming of reference documents</strong><br>
+<strong>5.3.1 Standardization documents</strong></p>
+<p>Standardization documents shall be named following the ISO/IEC directives, Part 2 Principles and rules for the structure and drafting of ISO and IEC documents, 10.3.</p>
+<p><strong>5.3.2 Regulation documents</strong></p>
+<p><strong>European legislation:</strong> the code “EU” followed by "-" followed by the name; the name shall be the same as the one published in the Official Journal of the European Union</p>
+<p>EXAMPLE 1 Example for a European legislation:</p>
+<p>EU - COMMISSION REGULATION (EU) 2017/2158 of 20 November 2017 establishing mitigation measures and benchmark levels for the reduction of the presence of acrylamide in food</p>
+<p><strong>National legislation:</strong> the code of the country followed by “-” followed by the name; the name shall be the same as the one published in the Official Journal of the country</p>
+<p>EXAMPLE 2 Example for a national legislation:</p>
+<p><strong>28</strong> © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p>BS 7671:2008+A3:2015; Requirements for Electrical Installations. IET Wiring Regulations.<br>
+<strong>5.3.3 Other documents</strong></p>
+<p>The name shall unambiguously identify the document and its version.<br>
+<strong>5.4 List of request attributes</strong></p>
+<p><u>Table 3</u> defines the list of required information to manage actions on properties and groups of properties.</p>
+<p>© ISO 2020 – All rights reserved <strong>29</strong></p>
+<p><img src="media/image6841.png" style="width:9.79735in;height:0.21068in"><strong>Table 3 — Attributes of a request</strong></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 15%">
+<col style="width: 39%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 4%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Management rule</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Type</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>List of values</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>RA001</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Globally unique identifier of the prop-</p>
+<p>erty (or properties) concerned</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Mandatory</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>RA004</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Language code</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Language code of the creator</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>FR</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Values from IETF language-TAG +</p>
+</blockquote>
+<p>“IFC-IFC”</p></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>RA005</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>External status</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Status of the request which indicates its stage of progress in the process between the creator and the experts</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Mandatory</td>
+<td>List</td>
+<td><p>Undergoing analysis</p>
+<blockquote class="blockquote">
+<p>Information pending Not competent Validated</p>
+</blockquote>
+<p>Rejected</p></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>RA007</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of submission</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date of submission of the request</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>2014-04-30T10:39:53Z</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Date</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>In accordance with ISO 8601 (all</p>
+</blockquote>
+<p>parts)</p></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>RA008</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Nature</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Characterises the request with respect to the</p>
+<p>existence of a property</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>5.5 Connection between data dictionaries, sharing and mapping properties and groups</strong> <strong>of properties</strong></p>
+<p>To allow connection between data dictionaries, data dictionaries shall be identified using attributes described in <u>Table 4</u>.</p>
+<p><strong>Table 4 — Attributes of a data dictionary</strong></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 8%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><img src="media/image6851.png" style="width:6.78554in;height:0.39124in"><strong>Code</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Name</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Example</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Management</strong></p>
+<p><strong>rule</strong></p>
+</blockquote></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p><strong>DA001</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Name</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Name of the interconnect-</p>
+</blockquote>
+<p>ed data dictionary</p></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List</p>
+<p>single value</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>List of the intercon- nected data dic- tionaries</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p><strong>DA002</strong></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Data dic-</p>
+<p>tionary identifier</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Globally unique identifier</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>936DA01F-9ABD- 4D9D-80C7-02AF-</p>
+</blockquote>
+<p>85C822A8</p></td>
+<td><blockquote class="blockquote">
+<p>Mandatory</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Single</p>
+</blockquote>
+<p>value</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>5.6 Data dictionaries interconnection</strong></p>
+<p>In order to be part of a network of data dictionaries, each data dictionary shall support the exchange of properties, groups of properties, experts, users and requests. The web-based exchange shall be structured following ISO 12006-3.</p>
+<p><strong>6 Governance of a data dictionary</strong><br>
+<strong>6.1 General</strong></p>
+<p>The management of a data dictionary that is part of a network of coordinated data dictionaries following this document’s methodology requires a management structure for all the commissions of experts.</p>
+<p><strong>6.2 Experts' management structure</strong></p>
+<p>The management structure is tasked with organising the functioning of the commissions of experts:<br>
+— dealing with experts and areas of competence;</p>
+<p>— selecting the areas of competence used in the data dictionary;</p>
+<p>— seeking experts for an area of competence as necessary;</p>
+<p>— validating the admission of the experts attached to one or several areas of competence;</p>
+<p>— managing and maintaining an efficient and effective process;</p>
+<p>— the identified expert should be notified automatically that they have an approval to consider,</p>
+<p>and a clear and consistent time scale identified for approval;</p>
+<p>EXAMPLE Once the identified time has elapsed, agreement cannot be reached by the experts. If the request is outside of the area of expertise of the experts, the request will automatically be referred to the authority of the area of competence, which will be in charge of finding a new expert. There will then be a clear and consistent time scale identified for approval. The approval time scale will be stepped based on the number of requests submitted by the user, this will be clearly identified at the beginning of the approval process.</p>
+<p>— the conflicts between experts shall be arbitrated and resolved;</p>
+<p>— the management structure shall coordinate the interoperability with other data dictionaries.</p>
+<p>© ISO 2020 – All rights reserved <strong>31</strong></p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>6.3 Commissions of experts</strong><br>
+<strong>6.3.1 General</strong></p>
+<p>The implementation of the management rules defined in <u>Figure 1</u> and <u>2</u> need a commission of experts. An example of commission of experts is provided in <u>Annex D</u>.</p>
+<p><strong>6.3.2 Missions of the commissions of experts</strong></p>
+<p>The experts have several missions:</p>
+<p>— analysing requests;</p>
+<p>— validating or refusing the addition or the modification of properties, including their deactivation;<br>
+— validating or refusing groups of properties.</p>
+<p><strong>6.3.3 Opinions of the commissions of experts</strong></p>
+<p>Opinions delivered by the commissions of experts shall be supported by arguments and published in the interconnected reference system.</p>
+<p><strong>7 Governance of a network of data dictionaries</strong></p>
+<p>In order to maintain the quality of a network of data dictionaries, a formal governance procedure should be established.</p>
+<p>If the governance of a network of data dictionaries is existing, the governance shall establish authority, responsibility and accountability for the management process of a network of data dictionaries following this document.</p>
+<p>Some examples of governance models are provided in the <u>Annex B</u>.</p>
+<p><strong>32</strong> © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Annex A</strong> (informative)</p>
+<p><strong>Implementation of the process for a manufacturer searching for</strong> <strong>product properties related to fire regulations</strong></p>
+<p>Step 1: The manufacturer is signing into a data dictionary and completing a search form in plain text. Step 2: The tool is retrieving the search results from its own database and all the connected data dictionaries.</p>
+<p>Step 3: The manufacturer consults the results and selects accordingly. He/she can review each attribute of the group of properties (for example the attached reference documents).</p>
+<p>The implementation of this process is described in <u>Figure A.1</u>.</p>
+<p>© ISO 2020 – All rights reserved <strong>33</strong></p>
+</blockquote>
+<hr>
+<hr>
+<p><img src="media/image7090.png" style="width:0.38367in;height:0.382in"></p>
+<p><img src="media/image6863.png" style="width:0.72867in;height:0.52367in"></p>
+<p><img src="media/image7159.png" style="width:0.24939in;height:0.33171in"></p>
+<p><img src="media/image7232.png" style="width:0.41703in;height:1.2196in"></p>
+<p><img src="media/image6863.png" style="width:0.72867in;height:0.522in"></p>
+<p><img src="media/image7358.png" style="width:0.88367in;height:0.522in"></p>
+<p><img src="media/image6970.png" style="width:0.73033in;height:0.517in"></p>
+<p><img src="media/image7569.png" style="width:0.75367in;height:0.522in"></p>
+<blockquote class="blockquote">
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Annex B</strong> (informative)</p>
+<p><strong>Examples of composition of a management structure</strong></p>
+<p><strong>B.1 EXAMPLE 1</strong></p>
+<p>The management structure is made up of representatives of recognised organisations:<br>
+— regulation;</p>
+<p>— standardization;</p>
+<p>— industry;</p>
+<p>— trades.</p>
+<p><strong>B.2 EXAMPLE 2</strong></p>
+<p>See <u>Figure B.1</u>.</p>
+<p>© ISO 2020 – All rights reserved <strong>35</strong></p>
+</blockquote>
+<p><img src="media/image7670.png" style="width:1.61447in;height:0.61885in"></p>
+<blockquote class="blockquote">
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Annex C</strong> (informative)</p>
+<p><strong>Example of base and derived quantities</strong></p>
+<p><u>Table C.1</u> and <u>Table C.2</u> provide examples of base and derived quantities from ISO 80000-1:2009; the column dimension of these tables present examples of values for the attribute PA028. This list is not exhaustive.</p>
+<p><strong>Table C.1 — Base quantities from ISO 80000-1:2009</strong></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 39%">
+<col style="width: 13%">
+<col style="width: 12%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Base quantities</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Dimension</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>SI unit</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>SI symbol</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Length</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>One-dimensional extent of an object</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>metre</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>m</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Mass</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>A measure of resistance to acceleration</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>M</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>kilogram</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>kg</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Time</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>The duration of an event</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>T</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>second</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>s</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Electric current</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Rate of flow of electrical charge per unit time</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>I</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>ampere</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>A</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Thermodynamic</p>
+<p>temperature</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Amount of substance</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Number of particles compared to the number</p>
+</blockquote>
+<p>of atoms in 0,012 kg of 12C</p></td>
+<td><blockquote class="blockquote">
+<p>N</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>mole</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>mol</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Luminous intensity</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Wavelength-weighted power of emitted light</p>
+<p>per unit solid angle</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>J</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>candela</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>cd</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 53%">
+<col style="width: 13%">
+<col style="width: 8%">
+<col style="width: 7%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>m s<sup>−2</sup></p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Plane angle</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Ratio of circular arc length to radius</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>1</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>radian</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>rad</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Solid angle</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Ratio of area on a sphere to its radius squared</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>1</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>steradian</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>sr</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Capacitance</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Stored charge per unit electric potential</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>−2</sup>M<sup>−1</sup>T<sup>4</sup>I<sup>2</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>farad</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>F</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Electric field</p>
+<p>strength</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>A m<sup>−1</sup></p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Electric charge</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>The force per unit electric field strength</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>TI</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>coulomb</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>C</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Electrical conduct-</p>
+<p>ance</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>A m<sup>−2</sup></p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Energy</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Capacity of a body or system to do work</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>2</sup>MT<sup>−2</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>joule</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>J</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Entropy</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Logarithmic measure of the number of availa-</p>
+<p>ble states of a system</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>T<sup>−1</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>hertz</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Hz</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Impedance</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Resistance to an alternating current of a given frequency, including effect on phase</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>2</sup>MT<sup>−3</sup>I<sup>−2</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>ohm</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Ω</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p>© ISO 2020 – All rights reserved <strong>37</strong></p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Table C.2</strong> <em>(continued)</em></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 54%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><blockquote class="blockquote">
+<p><strong>Derived quantities</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Description</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>Dimension</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>SI derived unit</strong></p>
+</blockquote></th>
+<th><blockquote class="blockquote">
+<p><strong>SI symbol</strong></p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Inductance</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Magnetic flux generated per unit current</p>
+<p>through a circuit</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td>Measure for the strength of the magnetic field</td>
+<td><blockquote class="blockquote">
+<p>MT<sup>−2</sup>I<sup>−1</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>tesla</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>T</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Volume density</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Mass per unit volume</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>−3</sup>M</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>kilogram per</p>
+<p>cubic metre</p>
+</blockquote></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Permittivity</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Measure for how the polarization of a materi- al is affected by the application of an external electric field</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>−3</sup>M<sup>−1</sup>T<sup>4</sup>I<sup>2</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>farad per metre</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>F m<sup>−1</sup></p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td><blockquote class="blockquote">
+<p>L<sup>2</sup>MT<sup>−3</sup>I<sup>2</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>volt</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>V</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Pressure</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Force per unit area</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>−1</sup>MT<sup>−2</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>pascal</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Pa</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Power</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Rate of transfer of energy per unit time</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>2</sup>MT<sup>−3</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>watt</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>W</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Electrical resistance</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Electric potential per unit electric current</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>2</sup>MT<sup>−3</sup>I<sup>−2</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>ohm</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Ω</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Electrical resistivity</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Bulk property equivalent of electrical re-</p>
+<p>sistance</p>
+</blockquote></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><blockquote class="blockquote">
+<p>Measure for the ease with a material con- ducts heat</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>LMT<sup>3</sup>θ<sup>−1</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>watt per metre</p>
+<p>per kelvin</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>w m<sup>−1</sup> k<sup>−1</sup></p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Velocity</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Speed and direction of an object</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>LT<sup>−1</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>metre per</p>
+<p>second</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>m s<sup>−1</sup></p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote class="blockquote">
+<p>Angular speed</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>The angle incremented in a plane by a seg- ment connecting an object and a reference point per unit time</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>T<sup>−1</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>radian per</p>
+<p>second</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>rad s<sup>−1</sup></p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote class="blockquote">
+<p>Volume</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>Three-dimensional extent of an object</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>L<sup>3</sup></p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>cubic metre</p>
+</blockquote></td>
+<td><blockquote class="blockquote">
+<p>m<sup>3</sup></p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>38</strong> © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Annex D</strong> (informative)</p>
+<p><strong>Example of composition of a commission of experts</strong></p>
+<p>The criterion of admissibility of an expert into a commission of experts is based on the legitimacy of that person with respect to one or more groups of properties in the following families:</p>
+<p>— regulatory documents: person representing a government organisation;</p>
+<p>— standardizing documents: member of standardization commission, technical committees;</p>
+<p>— certification documents: member of certificating organisations;</p>
+<p>— professional documents: member of professional organisations;</p>
+<p>— classifications: member of organisations managing recognised classifications;</p>
+<p>— interchange standards: member of organisations managing recognised interchange standards.<br>
+More than one expert will be attached to an area of competence.</p>
+<p>© ISO 2020 – All rights reserved <strong>39</strong></p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>Bibliography</strong></p>
+<p>[1] ISO 6707-1, <em>Buildings and civil engineering works — Vocabulary — Part 1: General terms</em></p>
+<p>[2] ISO 10077-1, <em>Thermal performance of windows, doors and shutters — Calculation of thermal</em></p>
+<p><em>transmittance — Part 1: General</em></p>
+<p>[3] ISO/IEC 11578:1996, <em>Information technology — Open Systems Interconnection — Remote</em></p>
+<p><em>Procedure Call (RPC)</em></p>
+<p>[4] ISO 13302:2003, <em>Sensory analysis — Methods for assessing modifications to the flavour of foodstuffs</em></p>
+<p><em>due to packaging</em></p>
+<p>[5] ISO 13584-42:2010, <em>Industrial automation systems and integration — Parts library — Part 42:</em></p>
+<p><em>Description methodology: Methodology for structuring parts families</em></p>
+<p>[6] ISO/IEC 15418, <em>Information technology — Automatic identification and data capture techniques —</em></p>
+<p><em>GS1 Application Identifiers and ASC MH10 Data Identifiers and maintenance</em></p>
+<p>[7] ISO/IEC 15459-6, <em>Information technology — Automatic identification and data capture</em></p>
+<p><em>techniques — Unique identification — Part 6: Groupings</em></p>
+<p>[8] ISO 15836, <em>Information and documentation — The Dublin Core metadata element set</em></p>
+<p>[9] ISO 16739-1, <em>Industry Foundation Classes (IFC) for data sharing in the construction and facility</em></p>
+<p><em>management industries — Part 1: Data schema</em></p>
+<p>[10] ISO/IEC 19510, <em>Information technology — Object Management Group Business Process Model and</em></p>
+<p><em>Notation</em></p>
+<p>[11] ISO 19650-1:2018, <em>Organization and digitization of information about buildings and civil</em></p>
+<p><em>engineering works, including building information modelling (BIM) — Information management</em> <em>using building information modelling — Part 1: Concepts and principles</em></p>
+<p>[12] ISO 22274:2013, <em>Systems to manage terminology, knowledge and content — Concept-related</em></p>
+<p><em>aspects for developing and internationalizing classification systems</em></p>
+<p>[13] EN 771-2, <em>Specification for masonry units — Part 2: Calcium silicate masonry units</em></p>
+<p>[14] RFC 2978, <em>IANA Charset Registration Procedures</em></p>
+<p>[15] IBM Dictionary of Computing 10th. McGraw-Hill, Inc.&nbsp;New York, NY, USA, 1993. ISBN: 0070314888</p>
+<p><strong>40</strong> © ISO 2020 – All rights reserved</p>
+<p><strong>ISO 23386:2020(E)</strong></p>
+<p><strong>ICS 35.240.67</strong> Price based on 40 pages</p>
+<p>© ISO 2020 – All rights reserved</p>
+</blockquote>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,3 @@
+Code,Name,Description,Example,Management rule,Type,List of values
+DA001,Name,"Name of the interconnected data dictionary","bsDD","Mandatory","List (single)","List of interconnected DDs"
+DA002,Data dictionary identifier,"Globally unique identifier","936DA01F-9ABD-4D9D-80C7-02AF85C822A8","Mandatory","Single value","—"

@@ -1,0 +1,157 @@
+Understood – if simultaneous Google-Docs-style editing is not required, the solution can be considerably simpler while still honouring the ISO 23386 governance rules.  
+Below is a lean Django design that supports “many-user / many-group” modelling and the mandatory request workflow, but keeps the stack synchronous (HTTP only, no WebSockets).
+
+────────────────────────────────────────  
+1. FUNCTIONAL GOALS (from ISO 23386)  
+────────────────────────────────────────  
+• Any create / modify / deactivate action on a Property or a Group-of-Properties (GoP) must be routed through a Request that stores RA001-RA008 [ISO 23386 - 2020-03.pdf].  
+• The two status axes (“external” and per-expert “internal”) have to be tracked [ISO 23386 - 2020-03.pdf].  
+• On validation the system updates calculated attributes (status, version/revision, timestamps, replacement links) automatically [ISO 23386 - 2020-03.pdf].  
+• All attributes PA001-PA040 / GA001-GA023 must be persisted; most can live in JSON fields to stay extensible [ISO 23386 - 2020-03.pdf].
+
+────────────────────────────────────────  
+2. TECHNOLOGY CHOICES  
+────────────────────────────────────────  
+• Django 4.x  
+• PostgreSQL 15 (native JSONB, row-level locking)  
+• Django-REST-Framework (DRF) for API, classic Django templates for back-office screens  
+• django-fsm for the two state machines  
+• django-reversion for full object history & diff  
+• celery/redis optional (only for nightly export or e-mail notifications; not needed for core editing)  
+
+No Django-Channels / WebSockets are included.
+
+────────────────────────────────────────  
+3. DATA MODEL (ABRIDGED)  
+────────────────────────────────────────  
+```python
+class DataDictionary(models.Model):
+    guid  = models.UUIDField(primary_key=True, default=uuid4)
+    name  = models.CharField(max_length=120, unique=True)
+
+class Property(models.Model):
+    guid        = models.UUIDField(primary_key=True, default=uuid4)
+    payload     = models.JSONField()               # PA001-PA040
+    status      = models.CharField(max_length=8, choices=[('active','Active'),
+                                                          ('inactive','Inactive')])
+    version     = models.PositiveIntegerField(default=1)
+    revision    = models.PositiveIntegerField(default=0)
+    groups      = models.ManyToManyField('GroupOfProperties', related_name='properties')
+    # timestamps auto-managed by Django signals
+
+class GroupOfProperties(models.Model):
+    guid        = models.UUIDField(primary_key=True, default=uuid4)
+    payload     = models.JSONField()               # GA001-GA023
+    category    = models.CharField(max_length=12,
+                     choices=[('alt','Alternative'),
+                              ('class','Class'),
+                              ('comp','Composed'),
+                              ('domain','Domain'),
+                              ('refdoc','Reference document')])
+    parent      = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+    status      = models.CharField(max_length=8, choices=[('active','Active'),
+                                                          ('inactive','Inactive')])
+    version     = models.PositiveIntegerField(default=1)
+    revision    = models.PositiveIntegerField(default=0)
+
+class Request(models.Model):
+    guid            = models.UUIDField(primary_key=True, default=uuid4)
+    nature          = models.CharField(max_length=12,
+                        choices=[('create','Simple creation'),
+                                 ('modify','Simple modification'),
+                                 ('deactivate','Simple deactivation'),
+                                 ('replace','Replacement'),
+                                 ('fragment','Fragmentation'),
+                                 ('merge','Merging')])            # RA008
+    target_props    = models.ManyToManyField(Property, blank=True)
+    target_groups   = models.ManyToManyField(GroupOfProperties, blank=True)
+    external_status = FSMField(default='pending',
+                        choices=[('pending','Pending assignment'),
+                                 ('analysis','Undergoing analysis'),
+                                 ('info','Complementary information request'),
+                                 ('validated','Validated'),
+                                 ('rejected','Rejected')])        # RA005
+    applicant       = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                        on_delete=models.PROTECT)
+    language_tag    = models.CharField(max_length=15)             # RA004
+    comment         = models.TextField()                          # RA002
+    submitted_at    = models.DateTimeField(auto_now_add=True)     # RA007
+
+class ExpertProfile(models.Model):
+    user                = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                               on_delete=models.CASCADE)
+    competences         = models.ManyToManyField(GroupOfProperties, blank=True)
+
+class ExpertVote(models.Model):
+    request     = models.ForeignKey(Request, on_delete=models.CASCADE,
+                                    related_name='votes')
+    expert      = models.ForeignKey(ExpertProfile, on_delete=models.CASCADE)
+    internal_status = FSMField(default='analysis',
+                        choices=[('analysis','Undergoing analysis'),
+                                 ('info','Information pending'),
+                                 ('incompetent','Not competent'),
+                                 ('validated','Validated'),
+                                 ('rejected','Rejected')])        # RA006
+    comment     = models.TextField(blank=True)
+```
+
+────────────────────────────────────────  
+4. WORKFLOW IMPLEMENTATION  
+────────────────────────────────────────  
+• `Request.external_status` and `ExpertVote.internal_status` are FSM fields.  
+• Signals watch for `post_transition` events:  
+  – When every required ExpertVote reaches “validated”, the Request moves to “validated”.  
+  – Validation triggers a service method that applies the change (creates new objects, bumps version/revision, toggles status, fills “replaced/replacing” GUID lists, timestamps) exactly as described in 5.2 of the standard [ISO 23386 - 2020-03.pdf].  
+• Row-level locking (`select_for_update`) avoids race conditions without real-time sync.  
+
+────────────────────────────────────────  
+5. USER INTERFACES  
+────────────────────────────────────────  
+Applicant UI (plain Django templates or DRF + Vue/React):  
+ 1. Search bar over Properties/GoPs (trigram indexes).  
+ 2. “Create request” wizard: pick objects (or none for creation), select nature, fill comment, preview diff, submit.  
+ 3. List of own requests with colour-coded external status.  
+
+Expert UI (Django admin or custom):  
+ 1. Inbox table filtered by competence.  
+ 2. Detail page ⇢ payload diff viewer (django-reversion_compare).  
+ 3. Form with `internal_status` radio buttons and comment.  
+
+Management-structure UI:  
+ 1. Kanban for `external_status`.  
+ 2. Escalation buttons (assign experts, override deadlines).  
+
+────────────────────────────────────────  
+6. CONCURRENCY / COLLABORATION STRATEGY  
+────────────────────────────────────────  
+Because there is no real-time channel, collaboration happens through:  
+• Object-level locking during edit (optimistic: compare `revision` field on POST).  
+• Full audit trail with django-reversion gives each contributor the ability to roll back or cherry-pick.  
+• Comment threads attached to Request objects (`GenericRelation` to django-contrib-comments) provide asynchronous discussion.  
+
+────────────────────────────────────────  
+7. PERMISSIONS MATRIX (Django guardian / rules)  
+────────────────────────────────────────  
+| Role            | Read | Create Request | Vote | Manage Experts | Super-admin |  
+|-----------------|------|----------------|------|----------------|-------------|  
+| Anonymous       | ✔ active objects     | ✖    | ✖   | ✖ | ✖ |  
+| Authenticated   | ✔ active objects     | ✔ self | ✖ | ✖ | ✖ |  
+| Expert          | ✔ all | ✔ self | ✔ own competences | ✖ | ✖ |  
+| Commission chair| ✔ all | ✔ | ✔ all | ✔ | ✖ |  
+| Admin           | ✔ | ✔ | ✔ | ✔ | ✔ |  
+
+────────────────────────────────────────  
+8. INTEGRATION & EXPORT  
+────────────────────────────────────────  
+• Provide DRF endpoints that serialise Properties / GoPs in ISO 12006-3 compliant JSON (allows other dictionaries to map via PA014 / GA014) [ISO 23386 - 2020-03.pdf].  
+• A daily Celery task can push “validated & active” changes to buildingSMART’s bsDD or similar services (HTTP POST/PUT).  
+
+────────────────────────────────────────  
+9. DEPLOYMENT CHECKLIST  
+────────────────────────────────────────  
+• Docker-compose: Django + Postgres + (optional) Redis + Nginx.  
+• Configure Postgres `btree_gin` & `pg_trgm` extensions for multilingual search.  
+• S3-compatible bucket for heavy media stored via PA023 / GA018.  
+• GitLab CI pipeline: run pytest, black, isort; auto-migrate on deploy.  
+
+This pared-down stack meets the ISO 23386 process requirements while remaining easy to maintain and to scale, and it avoids the complexity of real-time collaboration components.

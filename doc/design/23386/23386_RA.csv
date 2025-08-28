@@ -1,0 +1,9 @@
+Code,Name,Description,Example,Management rule,Type,List of values
+RA001,Globally unique identifier of the property (or properties) concerned,"GUID(s) of target property/group","936DA01F-9ABD-4D9D-80C7-02AF85C822A8","Mandatory","Multiple values","—"
+RA002,Comment,"Detailed expression of the request","—","Mandatory","String","—"
+RA003,Applicant,"Contact info of applicant","—","Mandatory","—","—"
+RA004,Language code,"Language tag of applicant","FR","Mandatory","List","IETF language-TAG + IFC-IFC"
+RA005,External status,"Process stage (creator↔experts)","Pending assignment","Mandatory","List","{Pending assignment | Undergoing analysis | Complementary information request | Validated | Rejected}"
+RA006,Internal status,"Process stage for each expert","Undergoing analysis","Mandatory","List","{Undergoing analysis | Information pending | Not competent | Validated | Rejected}"
+RA007,Date of submission,"Timestamp of request","2014-04-30T10:39:53Z","Mandatory","Date (ISO 8601)","YYYY-MM-DDThh:mm:ssTZD"
+RA008,Nature,"Request type wrt property existence","Simple creation","Mandatory","List","{Simple creation | Simple modification | Simple deactivation | Replacement | Fragmentation | Merging}"
