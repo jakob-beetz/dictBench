@@ -1,0 +1,195 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ property }} - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ property }}</h1>
+            {% if property.definitions.exists %}
+                <p class="text-muted">
+                    {% with def=property.definitions.first %}
+                        {{ def.definition|truncatewords:30 }}
+                    {% endwith %}
+                </p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a href="#" class="btn btn-outline-secondary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="#" class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+                <a href="{% url 'properties:property_list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Property Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    <span class="badge bg-{{ property.status|lower }}">
+                                        {{ property.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Data Type:</th>
+                                <td>{{ property.data_type }}</td>
+                            </tr>
+                            <tr>
+                                <th>Dictionary:</th>
+                                <td>{{ property.dictionary.name }}</td>
+                            </tr>
+                            {% if property.unit_of_measurement %}
+                            <tr>
+                                <th>Unit:</th>
+                                <td>{{ property.unit_of_measurement }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if property.physical_quantity %}
+                            <tr>
+                                <th>Physical Quantity:</th>
+                                <td>{{ property.physical_quantity }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th>Created By:</th>
+                                <td>{{ property.created_by.username }} on {{ property.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Updated:</th>
+                                <td>{{ property.updated_at|date:"M d, Y H:i" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title">Names</h5>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Add
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if property.names.exists %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Language</th>
+                                <th>Name</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name in property.names.all %}
+                            <tr>
+                                <td>{{ name.language }}</td>
+                                <td>{{ name.name }}</td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-muted">No names defined.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title">Definitions</h5>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Add
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if property.definitions.exists %}
+                    <div class="accordion" id="definitionsAccordion">
+                        {% for definition in property.definitions.all %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" 
+                                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" 
+                                        aria-controls="collapse{{ forloop.counter }}">
+                                    {{ definition.language }}
+                                </button>
+                            </h2>
+                            <div id="collapse{{ forloop.counter }}" 
+                                 class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" 
+                                 aria-labelledby="heading{{ forloop.counter }}" 
+                                 data-bs-parent="#definitionsAccordion">
+                                <div class="accordion-body">
+                                    {{ definition.definition|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No definitions available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Groups</h5>
+                </div>
+                <div class="card-body">
+                    {% if property.groups.exists %}
+                    <ul class="list-group">
+                        {% for group in property.groups.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'groups:group_detail' pk=group.guid %}">
+                                {{ group.name }}
+                            </a>
+                            <span class="badge bg-info">{{ group.type }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">This property is not a member of any groups.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if property.extended_attributes %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Extended Attributes</h5>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded">{{ property.extended_attributes|pprint }}</pre>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

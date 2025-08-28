@@ -1,0 +1,120 @@
+/* Custom styles for PropBench */
+
+/* Sticky footer styles */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px; /* Margin bottom by footer height */
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px; /* Set the fixed height of the footer here */
+    line-height: 60px; /* Vertically center the text there */
+}
+
+/* PropBench specific styles */
+.dictionary-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.dictionary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}
+
+/* ISO 23386 status indicators */
+.status-draft {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.status-candidate {
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+}
+
+.status-active {
+    background-color: #e8f5e9;
+    border-left: 4px solid #4caf50;
+}
+
+.status-deprecated {
+    background-color: #ffebee;
+    border-left: 4px solid #f44336;
+}
+
+.status-inactive {
+    background-color: #fafafa;
+    border-left: 4px solid #9e9e9e;
+}
+
+.status-rejected {
+    background-color: #ffebee;
+    border-left: 4px solid #d32f2f;
+}
+
+/* Audit log styling */
+.audit-create {
+    border-left: 4px solid #4caf50;
+}
+
+.audit-update {
+    border-left: 4px solid #2196f3;
+}
+
+.audit-delete {
+    border-left: 4px solid #f44336;
+}
+
+.audit-status-change {
+    border-left: 4px solid #9c27b0;
+}
+
+/* Property groups styling */
+.group-hierarchy-item {
+    margin-left: 20px;
+}
+
+.group-type-badge {
+    font-size: 0.75rem;
+}
+
+/* JSON data display */
+.json-viewer {
+    font-family: monospace;
+    white-space: pre;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
+}
+
+/* HTMX loading indicators */
+.htmx-request .spinner-border {
+    display: inline-block !important;
+}
+
+.spinner-border {
+    display: none;
+}

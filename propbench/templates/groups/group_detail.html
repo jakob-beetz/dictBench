@@ -1,0 +1,153 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ group.name }} - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ group.name }}</h1>
+            <p class="text-muted">{{ group.description|default:"No description" }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a href="#" class="btn btn-outline-secondary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="#" class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+                <a href="{% url 'groups:group_list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Group Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Type:</th>
+                                <td><span class="badge bg-info">{{ group.type }}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Dictionary:</th>
+                                <td>{{ group.dictionary.name }}</td>
+                            </tr>
+                            {% if group.parent_group %}
+                            <tr>
+                                <th>Parent Group:</th>
+                                <td>
+                                    <a href="{% url 'groups:group_detail' pk=group.parent_group.guid %}">
+                                        {{ group.parent_group.name }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th>Created By:</th>
+                                <td>{{ group.created_by.username }} on {{ group.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Updated:</th>
+                                <td>{{ group.updated_at|date:"M d, Y H:i" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if group.child_groups.exists %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Child Groups</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for child in group.child_groups.all %}
+                        <li class="list-group-item">
+                            <a href="{% url 'groups:group_detail' pk=child.guid %}">
+                                {{ child.name }}
+                            </a>
+                            <span class="badge bg-info float-end">{{ child.type }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title">Properties</h5>
+                    <button class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add Properties
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if group.properties.exists %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Data Type</th>
+                                    <th>Required</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for membership in group.propertygroupmembership_set.all|dictsort:"order" %}
+                                <tr>
+                                    <td>
+                                        <a href="#">
+                                            {{ membership.property }}
+                                        </a>
+                                    </td>
+                                    <td>{{ membership.property.data_type }}</td>
+                                    <td>
+                                        {% if membership.is_required %}
+                                        <span class="badge bg-success">Required</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Optional</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button class="btn btn-outline-secondary">
+                                                <i class="bi bi-arrow-up"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary">
+                                                <i class="bi bi-arrow-down"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p>No properties in this group yet. Click "Add Properties" to add some.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

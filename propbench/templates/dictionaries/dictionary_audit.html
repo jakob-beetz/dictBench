@@ -1,0 +1,198 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Audit Log: {{ dictionary.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dictionary_list' %}">Dictionaries</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dictionary_detail' pk=dictionary.guid %}">{{ dictionary.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Audit Log</li>
+            </ol>
+        </nav>
+        <h1 class="mb-2">Audit Log: {{ dictionary.name }}</h1>
+        <p class="text-muted">
+            Complete history of all changes to this dictionary and its contents.
+        </p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'dictionary_detail' pk=dictionary.guid %}" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Back to Dictionary
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="card-title mb-0">Audit Events</h5>
+            </div>
+            <div class="col-md-6">
+                <form method="get" class="d-flex">
+                    <select name="action" class="form-select form-select-sm me-2" 
+                            hx-get="{% url 'dictionary_audit' pk=dictionary.guid %}"
+                            hx-trigger="change"
+                            hx-target="#audit-list"
+                            hx-indicator="#audit-loading">
+                        <option value="">All Actions</option>
+                        <option value="create" {% if request.GET.action == 'create' %}selected{% endif %}>Create</option>
+                        <option value="update" {% if request.GET.action == 'update' %}selected{% endif %}>Update</option>
+                        <option value="delete" {% if request.GET.action == 'delete' %}selected{% endif %}>Delete</option>
+                        <option value="status_change" {% if request.GET.action == 'status_change' %}selected{% endif %}>Status Change</option>
+                    </select>
+                    <select name="entity_type" class="form-select form-select-sm"
+                            hx-get="{% url 'dictionary_audit' pk=dictionary.guid %}"
+                            hx-trigger="change"
+                            hx-target="#audit-list"
+                            hx-indicator="#audit-loading">
+                        <option value="">All Entities</option>
+                        <option value="PropertyDictionary" {% if request.GET.entity_type == 'PropertyDictionary' %}selected{% endif %}>Dictionary</option>
+                        <option value="Property" {% if request.GET.entity_type == 'Property' %}selected{% endif %}>Property</option>
+                        <option value="PropertyGroup" {% if request.GET.entity_type == 'PropertyGroup' %}selected{% endif %}>Group</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div id="audit-loading" class="htmx-indicator d-flex justify-content-center my-3">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    
+    <div id="audit-list">
+        {% if audit_logs %}
+            <div class="list-group list-group-flush">
+                {% for log in audit_logs %}
+                    <div class="list-group-item audit-{{ log.action }} p-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1">
+                                    <span class="badge {% if log.action == 'create' %}bg-success{% elif log.action == 'update' %}bg-primary{% elif log.action == 'delete' %}bg-danger{% elif log.action == 'status_change' %}bg-warning{% else %}bg-secondary{% endif %} me-2">
+                                        {{ log.action|title }}
+                                    </span>
+                                    {{ log.entity_type }}
+                                </h5>
+                                <p class="mb-1">
+                                    <small class="text-muted">
+                                        By <strong>{{ log.user.username }}</strong> on {{ log.timestamp|date:"M d, Y H:i:s" }}
+                                    </small>
+                                </p>
+                                {% if log.reason %}
+                                    <p class="mb-0 mt-2 fst-italic">
+                                        "{{ log.reason }}"
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#changes-{{ log.id }}" 
+                                        aria-expanded="false" aria-controls="changes-{{ log.id }}">
+                                    View Changes
+                                </button>
+                                
+                                {% if log.action != 'delete' and log.entity_type != 'PropertyDictionary' %}
+                                    <a href="#" class="btn btn-sm btn-outline-danger ms-1" 
+                                       hx-post="{% url 'audit_rollback' pk=log.id %}"
+                                       hx-confirm="Are you sure you want to roll back this change? This action will undo this specific change."
+                                       hx-target="#audit-list">
+                                        Rollback
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="collapse mt-3" id="changes-{{ log.id }}">
+                            <div class="row">
+                                {% if log.data_before %}
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">Before</h6>
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <pre class="json-viewer mb-0">{{ log.data_before|default:'{}' }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if log.data_after %}
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">After</h6>
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <pre class="json-viewer mb-0">{{ log.data_after|default:'{}' }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if is_paginated %}
+            <div class="card-footer">
+                <nav aria-label="Audit log pagination">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">&laquo; first</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo; first</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">previous</span>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">next</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">last &raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="card-body">
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle"></i> No audit logs found for this dictionary.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

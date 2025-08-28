@@ -1,59 +1,64 @@
-from rest_framework import viewsets, permissions, status, filters
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import PropertyDictionary
-from .serializers import PropertyDictionarySerializer
+from .forms import PropertyDictionaryForm
 
+@login_required
+def dictionary_list(request):
+    """Display list of dictionaries"""
+    dictionaries = PropertyDictionary.objects.all()
+    return render(request, 'dictionaries/dictionary_list.html', {'dictionaries': dictionaries})
 
-class PropertyDictionaryViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint for property dictionaries.
-    """
-    queryset = PropertyDictionary.objects.all()
-    serializer_class = PropertyDictionarySerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'is_default', 'registration_authority']
-    search_fields = ['name', 'description', 'registration_authority']
-    ordering_fields = ['name', 'status', 'created_at', 'updated_at']
+@login_required
+def dictionary_detail(request, dictionary_id):
+    """Display dictionary details"""
+    dictionary = get_object_or_404(PropertyDictionary, guid=dictionary_id)
+    return render(request, 'dictionaries/dictionary_detail.html', {'dictionary': dictionary})
+
+@login_required
+def dictionary_create(request):
+    """Create a new dictionary"""
+    if request.method == 'POST':
+        form = PropertyDictionaryForm(request.POST, user=request.user)
+        if form.is_valid():
+            dictionary = form.save(commit=False)
+            dictionary.created_by = request.user
+            dictionary.updated_by = request.user
+            dictionary.save()
+            messages.success(request, f"Dictionary '{dictionary.name}' created successfully")
+            return redirect('dictionary_detail', dictionary_id=dictionary.guid)
+    else:
+        form = PropertyDictionaryForm(user=request.user)
     
-    def perform_create(self, serializer):
-        """
-        Set the created_by and updated_by fields on create.
-        """
-        serializer.save(created_by=self.request.user, updated_by=self.request.user)
+    return render(request, 'dictionaries/dictionary_form.html', {'form': form, 'is_new': True})
+
+@login_required
+def dictionary_edit(request, dictionary_id):
+    """Edit an existing dictionary"""
+    dictionary = get_object_or_404(PropertyDictionary, guid=dictionary_id)
     
-    def perform_update(self, serializer):
-        """
-        Set the updated_by field on update.
-        """
-        serializer.save(updated_by=self.request.user)
+    if request.method == 'POST':
+        form = PropertyDictionaryForm(request.POST, instance=dictionary, user=request.user)
+        if form.is_valid():
+            dictionary = form.save()
+            messages.success(request, f"Dictionary '{dictionary.name}' updated successfully")
+            return redirect('dictionary_detail', dictionary_id=dictionary.guid)
+    else:
+        form = PropertyDictionaryForm(instance=dictionary, user=request.user)
     
-    @action(detail=True, methods=['post'])
-    def set_default(self, request, pk=None):
-        """
-        Set the dictionary as the default one.
-        """
-        dictionary = self.get_object()
-        dictionary.is_default = True
-        dictionary.save()
-        
-        return Response({'status': 'Dictionary set as default'}, status=status.HTTP_200_OK)
+    return render(request, 'dictionaries/dictionary_form.html', 
+                 {'form': form, 'dictionary': dictionary, 'is_new': False})
+
+@login_required
+def dictionary_delete(request, dictionary_id):
+    """Delete a dictionary"""
+    dictionary = get_object_or_404(PropertyDictionary, guid=dictionary_id)
     
-    @action(detail=False, methods=['get'])
-    def default(self, request):
-        """
-        Get the default dictionary.
-        """
-        dictionary = PropertyDictionary.objects.filter(is_default=True).first()
-        
-        if dictionary:
-            serializer = self.get_serializer(dictionary)
-            return Response(serializer.data)
-        else:
-            return Response(
-                {'error': 'No default dictionary found'}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
+    if request.method == 'POST':
+        name = dictionary.name
+        dictionary.delete()
+        messages.success(request, f"Dictionary '{name}' deleted successfully")
+        return redirect('dictionary_list')
+    
+    return render(request, 'dictionaries/dictionary_delete.html', {'dictionary': dictionary})

@@ -1,0 +1,37 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if is_new %}Create New Dictionary{% else %}Edit Dictionary{% endif %} - PropBench
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dictionaries:dictionary_list' %}">Dictionaries</a></li>
+                    {% if is_new %}
+                        <li class="breadcrumb-item active">Create New Dictionary</li>
+                    {% else %}
+                        <li class="breadcrumb-item"><a href="{% url 'dictionaries:dictionary_detail' pk=dictionary.guid %}">{{ dictionary.name }}</a></li>
+                        <li class="breadcrumb-item active">Edit</li>
+                    {% endif %}
+                </ol>
+            </nav>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        {% if is_new %}Create New Dictionary{% else %}Edit Dictionary{% endif %}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    {% crispy form %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

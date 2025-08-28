@@ -1,0 +1,71 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ dictionary.name }} - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dictionaries:dictionary_list' %}">Dictionaries</a></li>
+                    <li class="breadcrumb-item active">{{ dictionary.name }}</li>
+                </ol>
+            </nav>
+            
+            <h1>
+                {{ dictionary.name }}
+                {% if dictionary.is_default %}
+                    <span class="badge bg-success">Default</span>
+                {% endif %}
+            </h1>
+            <p class="text-muted">
+                Version {{ dictionary.version }} | 
+                <span class="badge bg-{{ dictionary.status|lower }}">{{ dictionary.status }}</span>
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a href="{% url 'dictionaries:dictionary_edit' pk=dictionary.guid %}" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'dictionaries:dictionary_delete' pk=dictionary.guid %}" class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Dictionary Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3 text-muted">Description</div>
+                        <div class="col-md-9">{{ dictionary.description|default:"No description provided" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3 text-muted">Registration Authority</div>
+                        <div class="col-md-9">{{ dictionary.registration_authority }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3 text-muted">Created By</div>
+                        <div class="col-md-9">{{ dictionary.created_by.username }} on {{ dictionary.created_at|date:"F j, Y, g:i a" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3 text-muted">Last Updated</div>
+                        <div class="col-md-9">{{ dictionary.updated_by.username }} on {{ dictionary.updated_at|date:"F j, Y, g:i a" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property and Groups Sections would go here - to be added later -->
+</div>
+{% endblock %}

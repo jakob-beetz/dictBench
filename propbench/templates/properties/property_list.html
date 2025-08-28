@@ -1,0 +1,65 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Properties - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1>Properties</h1>
+            <p class="text-muted">Manage properties</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'properties:property_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Property
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if properties %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Dictionary</th>
+                        <th>Data Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for property in properties %}
+                        <tr>
+                            <td>
+                                {% if property.names.exists %}
+                                    {{ property.names.first.name }}
+                                {% else %}
+                                    <em>No name provided</em>
+                                {% endif %}
+                            </td>
+                            <td>{{ property.dictionary.name }}</td>
+                            <td>{{ property.data_type }}</td>
+                            <td>
+                                <span class="badge bg-{{ property.status|lower }}">
+                                    {{ property.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'properties:property_detail' pk=property.guid %}" class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="{% url 'properties:property_edit' pk=property.guid %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a href="{% url 'properties:property_delete' pk=property.guid %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info">
+                No properties found. Click "Create New Property" to add one.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

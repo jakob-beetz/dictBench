@@ -1,0 +1,107 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Change Requests - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1>Change Requests</h1>
+            <p class="text-muted">ISO 23386 compliant change management</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'requests:change_request_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> New Change Request
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        {% for status_code, status_name in status_choices %}
+                            <option value="{{ status_code }}" {% if status_code == status_filter %}selected{% endif %}>
+                                {{ status_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        {% for type_code, type_name in type_choices %}
+                            <option value="{{ type_code }}" {% if type_code == type_filter %}selected{% endif %}>
+                                {{ type_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-outline-primary">Filter</button>
+                    <a href="{% url 'requests:change_request_list' %}" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if requests %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Submitted By</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'requests:change_request_detail' pk=req.guid %}">
+                                    {{ req.title }}
+                                </a>
+                            </td>
+                            <td>{{ req.get_request_type_display }}</td>
+                            <td>
+                                <span class="badge bg-{% if req.priority == 'CRITICAL' %}danger{% elif req.priority == 'HIGH' %}warning{% elif req.priority == 'MEDIUM' %}info{% else %}secondary{% endif %}">
+                                    {{ req.priority }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if req.status == 'APPROVED' %}success{% elif req.status == 'REJECTED' %}danger{% elif req.status == 'IMPLEMENTED' %}primary{% else %}secondary{% endif %}">
+                                    {{ req.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ req.submitted_by.username }}</td>
+                            <td>{{ req.submitted_at|date:"M j, Y g:i A" }}</td>
+                            <td>
+                                <a href="{% url 'requests:change_request_detail' pk=req.guid %}" class="btn btn-sm btn-outline-primary">View</a>
+                                {% if req.status == 'SUBMITTED' and perms.requests.change_changerequest %}
+                                    <a href="{% url 'requests:change_request_review' pk=req.guid %}" class="btn btn-sm btn-outline-warning">Review</a>
+                                {% endif %}
+                                {% if req.status == 'APPROVED' and perms.requests.change_changerequest %}
+                                    <a href="{% url 'requests:change_request_implement' pk=req.guid %}" class="btn btn-sm btn-outline-success">Implement</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info">
+                No change requests found. Click "New Change Request" to create one.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

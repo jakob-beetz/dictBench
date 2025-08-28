@@ -1,0 +1,40 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Delete Dictionary - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dictionary_list' %}">Dictionaries</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'dictionary_detail' dictionary_id=dictionary.guid %}">{{ dictionary.name }}</a></li>
+                    <li class="breadcrumb-item active">Delete</li>
+                </ol>
+            </nav>
+            
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="card-title">Delete Dictionary</h2>
+                </div>
+                <div class="card-body">
+                    <p class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Are you sure you want to delete the dictionary <strong>{{ dictionary.name }}</strong>?
+                    </p>
+                    <p>This action cannot be undone. All properties and groups associated with this dictionary will also be deleted.</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-end">
+                            <a href="{% url 'dictionary_detail' dictionary_id=dictionary.guid %}" class="btn btn-secondary me-2">Cancel</a>
+                            <button type="submit" class="btn btn-danger">Delete Dictionary</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

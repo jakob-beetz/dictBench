@@ -1,0 +1,101 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Delete {{ dictionary.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dictionary_list' %}">Dictionaries</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dictionary_detail' pk=dictionary.guid %}">{{ dictionary.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Delete</li>
+            </ol>
+        </nav>
+        
+        <h1 class="mb-4">Delete Dictionary: {{ dictionary.name }}</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">Confirm Deletion</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h4 class="alert-heading">Warning!</h4>
+                    <p>You are about to delete the dictionary "{{ dictionary.name }}".</p>
+                    <p>This action cannot be undone and will also delete:</p>
+                    <ul>
+                        <li><strong>{{ dictionary.properties.count }}</strong> properties in this dictionary</li>
+                        <li><strong>{{ dictionary.groups.count }}</strong> property groups in this dictionary</li>
+                    </ul>
+                    <hr>
+                    <p class="mb-0">All audit logs for this dictionary will be preserved.</p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'dictionary_detail' pk=dictionary.guid %}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Dictionary Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Name</dt>
+                    <dd class="col-sm-7">{{ dictionary.name }}</dd>
+                    
+                    <dt class="col-sm-5">Registration Authority</dt>
+                    <dd class="col-sm-7">{{ dictionary.registration_authority }}</dd>
+                    
+                    <dt class="col-sm-5">Version</dt>
+                    <dd class="col-sm-7">{{ dictionary.version }}</dd>
+                    
+                    <dt class="col-sm-5">Status</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge {% if dictionary.status == 'active' %}bg-success{% elif dictionary.status == 'draft' %}bg-info{% elif dictionary.status == 'deprecated' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ dictionary.status|title }}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-sm-5">Default</dt>
+                    <dd class="col-sm-7">
+                        {% if dictionary.is_default %}
+                            <span class="badge bg-primary">Yes</span>
+                        {% else %}
+                            <span class="badge bg-light text-dark">No</span>
+                        {% endif %}
+                    </dd>
+                    
+                    <dt class="col-sm-5">Created By</dt>
+                    <dd class="col-sm-7">{{ dictionary.created_by.username }}</dd>
+                    
+                    <dt class="col-sm-5">Created At</dt>
+                    <dd class="col-sm-7">{{ dictionary.created_at }}</dd>
+                </dl>
+            </div>
+        </div>
+        
+        {% if dictionary.is_default %}
+        <div class="alert alert-danger mt-3">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Warning:</strong> This is currently set as the default dictionary. 
+            If deleted, another dictionary will be automatically set as default.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Property Dictionaries - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1>Property Dictionaries</h1>
+            <p class="text-muted">Manage property dictionaries</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'dictionaries:dictionary_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Dictionary
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if dictionaries %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Version</th>
+                        <th>Status</th>
+                        <th>Default</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dictionary in dictionaries %}
+                        <tr>
+                            <td>{{ dictionary.name }}</td>
+                            <td>{{ dictionary.version }}</td>
+                            <td>
+                                <span class="badge bg-{{ dictionary.status|lower }}">
+                                    {{ dictionary.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if dictionary.is_default %}
+                                    <span class="badge bg-success">Default</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'dictionaries:dictionary_detail' pk=dictionary.guid %}" class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="{% url 'dictionaries:dictionary_edit' pk=dictionary.guid %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a href="{% url 'dictionaries:dictionary_delete' pk=dictionary.guid %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info">
+                No dictionaries found. Click "Create New Dictionary" to add one.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

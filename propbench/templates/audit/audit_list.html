@@ -1,0 +1,129 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Audit History - PropBench{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1>Audit History</h1>
+            <p class="text-muted">Complete audit trail for ISO 23386 compliance</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <select name="entity_type" class="form-select">
+                        <option value="">All Entity Types</option>
+                        {% for entity_type in entity_types %}
+                            <option value="{{ entity_type }}" {% if entity_type == entity_type_filter %}selected{% endif %}>
+                                {{ entity_type }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="action" class="form-select">
+                        <option value="">All Actions</option>
+                        {% for action in actions %}
+                            <option value="{{ action }}" {% if action == action_filter %}selected{% endif %}>
+                                {{ action }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="user" class="form-control" placeholder="User" value="{{ user_filter }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-outline-primary">Filter</button>
+                    <a href="{% url 'audit:audit_list' %}" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if page_obj %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Entity</th>
+                        <th>Action</th>
+                        <th>User</th>
+                        <th>Details</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for audit in page_obj %}
+                        <tr>
+                            <td>{{ audit.timestamp|date:"M j, Y g:i A" }}</td>
+                            <td>
+                                <strong>{{ audit.entity_type }}</strong><br>
+                                <small class="text-muted">{{ audit.entity_id|slice:":8" }}...</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if audit.action == 'CREATE' %}success{% elif audit.action == 'UPDATE' %}info{% elif audit.action == 'DELETE' %}danger{% else %}secondary{% endif %}">
+                                    {{ audit.action }}
+                                </span>
+                            </td>
+                            <td>{{ audit.user.username|default:"System" }}</td>
+                            <td>
+                                {% if audit.reason %}
+                                    {{ audit.reason|truncatechars:50 }}
+                                {% else %}
+                                    <em class="text-muted">No details</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'audit:audit_detail' pk=audit.guid %}" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Audit pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info">
+                No audit entries found.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
