@@ -1,0 +1,85 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Import CSV - Property Groups | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='groups' %}">Groups</a>
+    &rsaquo; <a href="{% url 'admin:groups_propertygroup_changelist' %}">Property Groups</a>
+    &rsaquo; Import CSV
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>Import Property Groups from CSV</h2>
+    
+    <div class="help">
+        <h3>Instructions:</h3>
+        <ul>
+            <li>CSV file should contain columns: <code>name</code>, <code>description</code>, <code>type</code>, <code>parent_group</code></li>
+            <li>All additional columns will be stored as JSON in extended_attributes and metadata fields</li>
+            <li>ISO 16757 specific fields will be categorized automatically</li>
+            <li>Custom identifiers and calculations will be preserved</li>
+            <li>Import is performed within a transaction for data integrity</li>
+        </ul>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-row">
+            <div>
+                <label for="dictionary_id">Target Dictionary:</label>
+                <select name="dictionary_id" id="dictionary_id" required>
+                    <option value="">Select dictionary...</option>
+                    {% for dictionary in dictionaries %}
+                        <option value="{{ dictionary.id }}">{{ dictionary.name }}</option>
+                    {% empty %}
+                        <option value="" disabled>No dictionaries available - create one first</option>
+                    {% endfor %}
+                </select>
+                {% if not dictionaries %}
+                    <p class="help" style="color: red;">No dictionaries found. Please create a dictionary first or run: <code>python manage.py create_test_dictionaries</code></p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div>
+                <label for="csv_file">CSV File:</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+                <p class="help">Select a CSV file to upload</p>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div>
+                <input type="submit" value="Import" class="default">
+                <a href="{% url 'admin:groups_propertygroup_changelist' %}" class="button">Cancel</a>
+            </div>
+        </div>
+    </form>
+    
+    <div class="help">
+        <h3>Field Mapping:</h3>
+        <table>
+            <tr><th>Core Fields</th><th>Description</th></tr>
+            <tr><td>name</td><td>Property group name (required)</td></tr>
+            <tr><td>description</td><td>Group description</td></tr>
+            <tr><td>type</td><td>Group type (class, domain, functional, etc.)</td></tr>
+            <tr><td>parent_group</td><td>Parent group name (if hierarchical)</td></tr>
+        </table>
+        
+        <h4>Extended Attributes:</h4>
+        <ul>
+            <li>Fields containing 'iso', '16757', 'standard', 'class' → stored in extended_attributes</li>
+            <li>Fields containing 'id', 'code', 'ref', 'guid' → stored as identifiers in metadata</li>
+            <li>Fields containing 'calc', 'formula', 'method' → stored as calculations in metadata</li>
+            <li>All other fields → stored in metadata</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

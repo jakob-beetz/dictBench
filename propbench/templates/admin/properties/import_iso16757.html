@@ -1,0 +1,154 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Import ISO 16757 - Properties | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='properties' %}">Properties</a>
+    &rsaquo; <a href="{% url 'admin:properties_property_changelist' %}">Properties</a>
+    &rsaquo; Import ISO 16757
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>Import ISO 16757 Properties</h2>
+    
+    <div class="help">
+        <h3>ISO 16757 Import Information:</h3>
+        <p>Import properties from ISO 16757 compliant CSV files with full PA code support</p>
+        
+        <h4>Expected Fields:</h4>
+        <div class="help-section">
+            <h5>Core Fields (Required):</h5>
+            <ul>
+                <li><code>data_type</code> or <code>DataType</code> - Property data type</li>
+                <li><code>unit</code> or <code>Unit</code> - Unit of measurement</li>
+            </ul>
+            
+            <h5>PA Code Fields (Optional):</h5>
+            <ul>
+                <li><code>name</code>, <code>Name</code> - Property name</li>
+                <li><code>definition</code>, <code>Description</code> - Property definition</li>
+                <li><code>status</code> - Property status</li>
+                <li><code>version_number</code>, <code>revision_number</code> - Versioning</li>
+                <li><code>classification_system</code>, <code>classification_reference</code> - Classification</li>
+                <li><code>physical_quantity</code> - Physical quantity reference</li>
+                <li><code>country_of_origin</code>, <code>language</code> - Localization</li>
+            </ul>
+            
+            <h5>ISO 16757 Specific Fields:</h5>
+            <ul>
+                <li><code>iso_class_id</code>, <code>standard_reference</code> - ISO classification</li>
+                <li><code>property_definition</code>, <code>class_definition</code> - Extended definitions</li>
+                <li>Any field containing 'iso', '16757', 'standard', or 'class'</li>
+            </ul>
+        </div>
+        
+        <div class="module">
+            <p><strong>Mapping Information:</strong> All fields are automatically categorized and stored according to PA code compliance and ISO 16757 standards.</p>
+        </div>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-row">
+            <div>
+                <label for="dictionary_id">Target Dictionary:</label>
+                <select name="dictionary_id" id="dictionary_id" required>
+                    <option value="">Select dictionary...</option>
+                    {% for dictionary in dictionaries %}
+                        <option value="{{ dictionary.id }}">{{ dictionary.name }} 
+                            {% if dictionary.is_default %}(Default){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+                <p class="help">All imported properties will be assigned to this dictionary.</p>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div>
+                <label for="csv_file">ISO 16757 CSV File:</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+                <p class="help">Upload a CSV file with ISO 16757 compliant property data from your Heat Pumps dataset.</p>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div>
+                <input type="submit" value="Import ISO 16757 Data" class="default">
+                <a href="{% url 'admin:properties_property_changelist' %}" class="button">Cancel</a>
+            </div>
+        </div>
+    </form>
+    
+    <div class="help">
+        <h3>Import Process:</h3>
+        <ol>
+            <li>CSV data is validated and parsed</li>
+            <li>PA001-PA025 compliant fields are mapped to Property model</li>
+            <li>ISO 16757 specific attributes are stored in <code>extended_attributes</code></li>
+            <li>Custom identifiers and metadata are preserved in <code>metadata</code></li>
+            <li>PropertyName and PropertyDefinition records are automatically created</li>
+            <li>Import is performed within a database transaction</li>
+            <li>User tracking is applied to all imported/updated records</li>
+            <li>Duplicate properties (same dictionary + data_type + unit) are updated, not duplicated</li>
+        </ol>
+        
+        <h3>Data Categorization:</h3>
+        <table>
+            <tr><th>Field Pattern</th><th>Storage Location</th><th>Examples</th></tr>
+            <tr>
+                <td>PA Code Fields</td>
+                <td>Direct model fields + metadata.pa_code_data</td>
+                <td>data_type, unit, status, version_number</td>
+            </tr>
+            <tr>
+                <td>ISO/Standard fields</td>
+                <td>extended_attributes</td>
+                <td>iso_class_id, standard_reference, class_definition</td>
+            </tr>
+            <tr>
+                <td>Identifier fields</td>
+                <td>metadata.identifiers</td>
+                <td>id_internal, code_legacy, ref_external, guid</td>
+            </tr>
+            <tr>
+                <td>Calculation fields</td>
+                <td>metadata.calculations</td>
+                <td>calc_method, formula_base, method_standard</td>
+            </tr>
+            <tr>
+                <td>Other fields</td>
+                <td>metadata.custom_attributes</td>
+                <td>custom_field, additional_info, notes</td>
+            </tr>
+        </table>
+        
+        <h3>Example CSV Structure:</h3>
+        <pre>
+DataType,Unit,Name,Definition,status,iso_class_id,internal_id
+Real,kW,Heating Capacity,Maximum heating output,active,HP001,THC_001
+Integer,rpm,Fan Speed,Rotational speed of fan,active,HP002,FAN_001
+String,,Model Number,Product model identifier,active,HP003,MDL_001
+        </pre>
+        
+        <h3>Transaction & Rollback:</h3>
+        <p>This import uses Django's atomic transaction system. If any error occurs during import, 
+           all changes are automatically rolled back. With django-reversion enabled, you can also 
+           view detailed change history and perform granular rollbacks.</p>
+        
+        <h3>Performance Notes:</h3>
+        <ul>
+            <li>Large files (>1000 rows) are processed in chunks</li>
+            <li>Existing properties are updated efficiently using database constraints</li>
+            <li>Related PropertyName and PropertyDefinition records are created automatically</li>
+            <li>All import metadata is preserved for audit trails</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Import CSV - Properties | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='properties' %}">Properties</a>
+    &rsaquo; <a href="{% url 'admin:properties_property_changelist' %}">Properties</a>
+    &rsaquo; Import CSV
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>Import Properties from CSV</h2>
+    
+    <div class="help">
+        <h3>Instructions:</h3>
+        <ul>
+            <li>CSV file should follow ISO 23386 PA code structure</li>
+            <li>Required columns: <code>data_type</code>, <code>unit_of_measurement</code></li>
+            <li>Optional columns: <code>name</code>, <code>definition</code>, <code>status</code>, etc.</li>
+            <li>All PA001-PA025 fields are supported</li>
+            <li>Additional columns will be stored as JSON in extended_attributes and metadata</li>
+            <li>Import is performed within a transaction for data integrity</li>
+        </ul>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-row">
+            <div>
+                <label for="dictionary_id">Target Dictionary:</label>
+                <select name="dictionary_id" id="dictionary_id" required>
+                    <option value="">Select dictionary...</option>
+                    {% for dictionary in dictionaries %}
+                        <option value="{{ dictionary.id }}">{{ dictionary.name }}</option>
+                    {% empty %}
+                        <option value="" disabled>No dictionaries available - create one first</option>
+                    {% endfor %}
+                </select>
+                {% if not dictionaries %}
+                    <p class="help" style="color: red;">No dictionaries found. Please create a dictionary first or run: <code>python manage.py create_test_dictionaries</code></p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div>
+                <label for="csv_file">CSV File:</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+                <p class="help">Select a CSV file to upload</p>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div>
+                <input type="submit" value="Import" class="default">
+                <a href="{% url 'admin:properties_property_changelist' %}" class="button">Cancel</a>
+            </div>
+        </div>
+    </form>
+    
+    <div class="help">
+        <h3>PA Code Field Mapping (ISO 23386):</h3>
+        <table>
+            <tr><th>PA Code</th><th>Field Name</th><th>Description</th></tr>
+            <tr><td>PA001</td><td>dictionary</td><td>Property dictionary assignment</td></tr>
+            <tr><td>PA002</td><td>version_number</td><td>Property version</td></tr>
+            <tr><td>PA003</td><td>revision_number</td><td>Property revision</td></tr>
+            <tr><td>PA004</td><td>data_type</td><td>Data type (string, integer, real, etc.)</td></tr>
+            <tr><td>PA005</td><td>unit_of_measurement</td><td>Physical unit</td></tr>
+            <tr><td>PA007</td><td>value_domain</td><td>Allowed value range</td></tr>
+            <tr><td>PA008</td><td>physical_quantity</td><td>Physical quantity reference</td></tr>
+            <tr><td>PA011</td><td>classification_system</td><td>Classification system used</td></tr>
+            <tr><td>PA012</td><td>classification_reference</td><td>Classification reference</td></tr>
+            <tr><td>PA016</td><td>status</td><td>Property status (active, deprecated, etc.)</td></tr>
+            <tr><td>PA017</td><td>registration_authority</td><td>Registration authority</td></tr>
+            <tr><td>PA018</td><td>registration_date</td><td>Registration date (YYYY-MM-DD)</td></tr>
+            <tr><td>PA021</td><td>country_of_origin</td><td>Country of origin</td></tr>
+            <tr><td>PA022</td><td>countries_of_use</td><td>Countries of use</td></tr>
+            <tr><td>PA023</td><td>creators_language</td><td>Creator's language</td></tr>
+        </table>
+        
+        <h4>Extended Data Storage:</h4>
+        <ul>
+            <li><strong>ISO 16757 fields</strong> → stored in <code>extended_attributes</code> JSON field</li>
+            <li><strong>Identifier fields</strong> (id_, code_, ref_, guid) → stored in <code>metadata.identifiers</code></li>
+            <li><strong>Calculation fields</strong> (calc_, formula_, method_) → stored in <code>metadata.calculations</code></li>
+            <li><strong>PA code data</strong> → stored in <code>metadata.pa_code_data</code> for reference</li>
+            <li><strong>Other fields</strong> → stored in <code>metadata.custom_attributes</code></li>
+        </ul>
+        
+        <h4>Multi-language Support:</h4>
+        <p>Property names and definitions will be automatically created from <code>name</code> and <code>definition</code> columns.</p>
+    </div>
+</div>
+{% endblock %}

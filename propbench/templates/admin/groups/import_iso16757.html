@@ -1,0 +1,116 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Import ISO 16757 - Property Groups | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='groups' %}">Groups</a>
+    &rsaquo; <a href="{% url 'admin:groups_propertygroup_changelist' %}">Property Groups</a>
+    &rsaquo; Import ISO 16757
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>Import ISO 16757 Property Groups</h2>
+    
+    <div class="help">
+        <h3>ISO 16757 Import Information:</h3>
+        <p>Import property groups from ISO 16757 compliant CSV files</p>
+        
+        <h4>Expected Fields:</h4>
+        <ul>
+            <li><code>name</code></li>
+            <li><code>description</code></li>
+            <li><code>type</code></li>
+            <li><code>parent_group</code></li>
+            <li><code>class_id</code></li>
+            <li><code>reference_id</code></li>
+            <li><code>standard_reference</code></li>
+        </ul>
+        
+        <div class="module">
+            <p><strong>Mapping Information:</strong> All non-core fields will be stored as JSON in extended_attributes and metadata fields</p>
+        </div>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-row">
+            <div>
+                <label for="dictionary_id">Target Dictionary:</label>
+                <select name="dictionary_id" id="dictionary_id" required>
+                    <option value="">Select dictionary...</option>
+                    {% for dictionary in dictionaries %}
+                        <option value="{{ dictionary.id }}">{{ dictionary.name }} 
+                            {% if dictionary.is_default %}(Default){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+                <p class="help">All imported groups will be assigned to this dictionary.</p>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div>
+                <label for="csv_file">ISO 16757 CSV File:</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+                <p class="help">Upload a CSV file with ISO 16757 compliant property group data.</p>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div>
+                <input type="submit" value="Import ISO 16757 Data" class="default">
+                <a href="{% url 'admin:groups_propertygroup_changelist' %}" class="button">Cancel</a>
+            </div>
+        </div>
+    </form>
+    
+    <div class="help">
+        <h3>Import Process:</h3>
+        <ol>
+            <li>CSV data is validated and parsed</li>
+            <li>Core fields are mapped to PropertyGroup model</li>
+            <li>ISO 16757 specific attributes are stored in <code>extended_attributes</code></li>
+            <li>Custom identifiers and metadata are stored in <code>metadata</code></li>
+            <li>Import is performed within a database transaction</li>
+            <li>User tracking is applied to all imported/updated records</li>
+            <li>Duplicate names within the same dictionary are updated, not duplicated</li>
+        </ol>
+        
+        <h3>Data Categorization:</h3>
+        <table>
+            <tr><th>Field Pattern</th><th>Storage Location</th><th>Examples</th></tr>
+            <tr>
+                <td>ISO/Standard fields</td>
+                <td>extended_attributes</td>
+                <td>iso_class_id, standard_reference, class_definition</td>
+            </tr>
+            <tr>
+                <td>Identifier fields</td>
+                <td>metadata (as identifiers)</td>
+                <td>id_internal, code_legacy, ref_external, guid</td>
+            </tr>
+            <tr>
+                <td>Calculation fields</td>
+                <td>metadata (as calculations)</td>
+                <td>calc_method, formula_base, method_standard</td>
+            </tr>
+            <tr>
+                <td>Other fields</td>
+                <td>metadata</td>
+                <td>custom_field, additional_info, notes</td>
+            </tr>
+        </table>
+        
+        <h3>Rollback Information:</h3>
+        <p>This import uses Django's transaction system. If any error occurs during import, 
+           all changes are automatically rolled back. For advanced rollback capabilities, 
+           install <code>django-reversion</code> to track individual changes.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    
+    <!-- Import buttons -->
+    <li>
+        <a href="{% url 'admin:groups_propertygroup_import_csv' %}" class="btn btn-success">
+            <i class="fas fa-upload"></i> Import CSV
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'admin:groups_propertygroup_import_iso16757' %}" class="btn btn-info">
+            <i class="fas fa-file-import"></i> Import ISO 16757
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'admin:groups_propertygroup_export_csv' %}" class="btn btn-secondary">
+            <i class="fas fa-download"></i> Export CSV
+        </a>
+    </li>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .object-tools li {
+            margin-left: 10px;
+        }
+        .object-tools .btn {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .btn-success { background-color: #28a745; }
+        .btn-info { background-color: #17a2b8; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn:hover {
+            opacity: 0.8;
+        }
+    </style>
+{% endblock %}

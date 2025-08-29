@@ -1,26 +1,22 @@
 """
-Django settings for propbench project - Simple version for initial setup.
+Production Django settings for PropBench Docker deployment
 """
-
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-propbench-dev-key-change-in-production'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+# Security settings
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-in-production')
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
 
 # Application definition
-
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -38,7 +34,6 @@ INSTALLED_APPS = [
     'django_htmx',
     'crispy_forms',
     'crispy_bootstrap5',
-    # 'import_export',
     'reversion',   
     
     # PropBench apps
@@ -53,7 +48,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',  # Ensure this is first after security
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,19 +80,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'propbench.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database configuration
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL:
+    # Parse DATABASE_URL for production
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL)
     }
-}
+else:
+    # Fallback to SQLite for development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -113,33 +117,59 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] if os.path.exists(os.path.join(BASE_DIR, 'static')) else []
 
+# WhiteNoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
+
+# Security settings for production
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# SSL settings (uncomment for HTTPS)
+# SECURE_SSL_REDIRECT = not DEBUG
+# SESSION_COOKIE_SECURE = not DEBUG
+# CSRF_COOKIE_SECURE = not DEBUG
+
+# Session configuration
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_COOKIE_AGE = 86400  # 24 hours
+SESSION_SAVE_EVERY_REQUEST = False
+SESSION_COOKIE_NAME = 'propbench_sessionid'
+
+# Cache configuration
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/1')
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 # Crispy Forms settings
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -149,12 +179,19 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ] if not DEBUG else [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
 }
 
 # Authentication settings
@@ -166,28 +203,17 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # For development only, set to False in production
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if os.getenv('CORS_ALLOWED_ORIGINS') else []
 CORS_ALLOW_CREDENTIALS = True
 
-# Session settings - use signed cookies to avoid DB transaction issues
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
-SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_AGE = 86400  # 24 hours in seconds
-SESSION_COOKIE_NAME = 'propbench_sessionid'
-SESSION_SAVE_EVERY_REQUEST = False
-SESSION_COOKIE_SAMESITE = 'Lax'
-
-# Temporarily disable audit signals to avoid transaction conflicts
-DISABLE_AUDIT_SIGNALS = True
-
-# Cache settings to support cached_db session backend
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'propbench-cache',
-    }
-}
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@propbench.com')
 
 # Logging configuration
 LOGGING = {
@@ -195,112 +221,69 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
             'style': '{',
         },
     },
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/propbench.log'),
+            'filename': '/app/logs/propbench.log',
             'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
     },
     'root': {
-        'handlers': ['file'],
+        'handlers': ['file', 'console'],
         'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
 
-# Jazzmin settings
+# Jazzmin settings (same as your existing configuration)
 JAZZMIN_SETTINGS = {
-    # title of the window (Will default to current_admin_site.site_title if absent or None)
     "site_title": "PropBench Admin",
-
-    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_header": "PropBench",
-
-    # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_brand": "PropBench",
-
-    # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": None,
-
-    # Logo to use for your site, must be present in static files, used for login form logo
     "login_logo": None,
-
-    # Logo to use for login form in dark themes
     "login_logo_dark": None,
-
-    # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",
-
-    # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
     "site_icon": None,
-
-    # Welcome text on the login screen
     "welcome_sign": "Welcome to PropBench Property Management System",
-
-    # Copyright on the footer
     "copyright": "PropBench Property Management",
-
-    # List of model admins to search from the search bar, search bar omitted if excluded
     "search_model": ["accounts.User", "dictionaries.PropertyDictionary", "groups.PropertyGroup", "properties.Property"],
-
-    # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
     "user_avatar": None,
-
-    ############
-    # Top Menu #
-    ############
-
-    # Links to put along the top menu
     "topmenu_links": [
-
-        # Url that gets reversed (Permissions can be added)
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
-
-        # external url that opens in a new window (Permissions can be added)
         {"name": "Documentation", "url": "https://github.com/propbench/propbench", "new_window": True},
-
-        # model admin to link to (Permissions checked against model)
         {"model": "accounts.User"},
-
-        # App with dropdown menu to all its models pages (Permissions checked against models)
         {"app": "dictionaries"},
     ],
-
-    #############
-    # User Menu #
-    #############
-
-    # Additional links to include in the user menu on the top right ("app" url type is not allowed)
     "usermenu_links": [
         {"name": "Support", "url": "https://github.com/propbench/propbench/issues", "new_window": True},
         {"model": "accounts.user"}
     ],
-
-    #############
-    # Side Menu #
-    #############
-
-    # Whether to display the side menu
     "show_sidebar": True,
-
-    # Whether to aut expand the menu
     "navigation_expanded": True,
-
-    # Hide these apps when generating side menu e.g (auth)
     "hide_apps": [],
-
-    # Hide these models when generating side menu (e.g auth.user)
     "hide_models": [],
-
-    # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
     "order_with_respect_to": ["accounts", "dictionaries", "groups", "properties", "audit", "data_import_export"],
-
-    # Custom links to append to app groups, keyed on app name
     "custom_links": {
         "groups": [{
             "name": "Import Groups CSV", 
@@ -325,8 +308,6 @@ JAZZMIN_SETTINGS = {
             "permissions": ["properties.add_property"]
         }]
     },
-
-    # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.5.0,5.6.0,5.6.1,5.6.3,5.7.0,5.7.1,5.7.2,5.8.0,5.8.1,5.8.2,5.9.0,5.10.0,5.10.1,5.10.2,5.11.0,5.11.1,5.11.2,5.12.0,5.12.1,5.13.0,5.13.1,5.14.0,5.15.0,5.15.1,5.15.2,5.15.3,5.15.4&s=solid
     "icons": {
         "accounts": "fas fa-users-cog",
         "accounts.user": "fas fa-user",
@@ -345,40 +326,15 @@ JAZZMIN_SETTINGS = {
         "data_import_export": "fas fa-exchange-alt",
         "reversion": "fas fa-undo",
     },
-    # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
-
-    #################
-    # Related Modal #
-    #################
-    # Use modals instead of popups
     "related_modal_active": False,
-
-    #############
-    # UI Tweaks #
-    #############
-    # Relative paths to custom CSS/JS scripts (must be present in static files)
     "custom_css": None,
     "custom_js": None,
-    # Whether to link font from fonts.googleapis.com (use custom_css to supply font otherwise)
     "use_google_fonts_cdn": True,
-    # Whether to show the UI customizer on the sidebar
     "show_ui_builder": True,
-
-    ###############
-    # Change view #
-    ###############
-    # Render out the change view as a single form, or in tabs, current options are
-    # - single
-    # - horizontal_tabs (default)
-    # - vertical_tabs
-    # - collapsible
-    # - carousel
     "changeform_format": "horizontal_tabs",
-    # override change forms on a per modeladmin basis
     "changeform_format_overrides": {"accounts.user": "collapsible", "dictionaries.propertydictionary": "vertical_tabs"},
-    # Add a language dropdown into the admin
     "language_chooser": False,
 }
 
