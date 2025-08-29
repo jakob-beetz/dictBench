@@ -85,7 +85,6 @@ class GroupName(models.Model):
     language = models.CharField(max_length=10)  # ISO 639 language code
     
     class Meta:
-        unique_together = ['group', 'language']
         verbose_name = "Group Name"
         verbose_name_plural = "Group Names"
     
@@ -103,7 +102,6 @@ class GroupDefinition(models.Model):
     language = models.CharField(max_length=10)  # ISO 639 language code
     
     class Meta:
-        unique_together = ['group', 'language']
         verbose_name = "Group Definition"
         verbose_name_plural = "Group Definitions"
     

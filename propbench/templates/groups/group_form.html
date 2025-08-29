@@ -1,0 +1,655 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_new %}Create Property Group{% else %}Edit {{ group.names.first.name|default:"Property Group" }}{% endif %} - PropBench{% endblock %}
+
+{% block extra_css %}
+<style>
+    .formset-row {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #ffffff;
+        position: relative;
+    }
+    .formset-row.marked-for-deletion {
+        opacity: 0.6;
+        background-color: #f8d7da;
+        border-color: #dc3545;
+    }
+    .formset-row.marked-for-deletion input,
+    .formset-row.marked-for-deletion textarea,
+    .formset-row.marked-for-deletion select {
+        background-color: #f5c6cb;
+        color: #721c24;
+    }
+    .delete-row {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    .remove-form-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 5px;
+    }
+    .formset-row:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .form-check-label {
+        font-size: 0.9rem;
+        color: #dc3545;
+    }
+    .language-badge {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        margin-right: 8px;
+    }
+    .text-danger.small {
+        font-weight: 500;
+    }
+    .field-section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .section-title {
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    .help-section {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        position: sticky;
+        top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Form validation errors -->
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <!-- Formset errors -->
+        {% if name_formset.non_form_errors %}
+            <div class="alert alert-danger">
+                <strong>Name errors:</strong> {{ name_formset.non_form_errors }}
+            </div>
+        {% endif %}
+        
+        {% if definition_formset.non_form_errors %}
+            <div class="alert alert-danger">
+                <strong>Definition errors:</strong> {{ definition_formset.non_form_errors }}
+            </div>
+        {% endif %}
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-9">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'groups:group_list' %}">Property Groups</a></li>
+                        {% if not is_new %}
+                            <li class="breadcrumb-item"><a href="{% url 'groups:group_detail' pk=group.guid %}">{{ group.names.first.name|default:"Property Group" }}</a></li>
+                            <li class="breadcrumb-item active">Edit</li>
+                        {% else %}
+                            <li class="breadcrumb-item active">Create</li>
+                        {% endif %}
+                    </ol>
+                </nav>
+                
+                <h1>
+                    <i class="bi bi-collection"></i>
+                    {% if is_new %}Create Property Group{% else %}Edit Property Group{% endif %}
+                </h1>
+                <p class="text-muted">
+                    Property groups organize related properties according to ISO 23386 standards. 
+                    Groups can be hierarchical and support multi-language names and definitions.
+                </p>
+            </div>
+            <div class="col-md-3 text-end">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-save"></i> Save Group
+                    </button>
+                    <a href="{% if not is_new %}{% url 'groups:group_detail' pk=group.guid %}{% else %}{% url 'groups:group_list' %}{% endif %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Main Form Content -->
+            <div class="col-md-9">
+                <!-- Names & Descriptions -->
+                <div class="field-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-translate"></i> Names & Descriptions
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">Group Names (Multi-language)</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ name_formset.management_form }}
+                                    {% if name_formset.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ name_formset.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <div id="name-formset">
+                                        {% for form in name_formset %}
+                                            <div class="formset-row" data-form-index="{{ forloop.counter0 }}">
+                                                {{ form.id }}
+                                                {% if form.DELETE %}
+                                                    <div class="delete-row">
+                                                        {{ form.DELETE }}
+                                                        <label for="{{ form.DELETE.id_for_label }}" class="form-check-label">Delete</label>
+                                                    </div>
+                                                {% endif %}
+                                                <button type="button" class="remove-form-btn" title="Remove this name">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                                
+                                                <div class="mb-3">
+                                                    {{ form.name.label_tag }}
+                                                    {{ form.name }}
+                                                    {% if form.name.errors %}
+                                                        <div class="text-danger small">{{ form.name.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="mb-3">
+                                                    {{ form.language.label_tag }}
+                                                    {{ form.language }}
+                                                    {% if form.language.errors %}
+                                                        <div class="text-danger small">{{ form.language.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button type="button" id="add-name" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-plus"></i> Add Name
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">Group Definitions (Multi-language)</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ definition_formset.management_form }}
+                                    {% if definition_formset.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ definition_formset.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <div id="definition-formset">
+                                        {% for form in definition_formset %}
+                                            <div class="formset-row" data-form-index="{{ forloop.counter0 }}">
+                                                {{ form.id }}
+                                                {% if form.DELETE %}
+                                                    <div class="delete-row">
+                                                        {{ form.DELETE }}
+                                                        <label for="{{ form.DELETE.id_for_label }}" class="form-check-label">Delete</label>
+                                                    </div>
+                                                {% endif %}
+                                                <button type="button" class="remove-form-btn" title="Remove this definition">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                                
+                                                <div class="mb-3">
+                                                    {{ form.definition.label_tag }}
+                                                    {{ form.definition }}
+                                                    {% if form.definition.errors %}
+                                                        <div class="text-danger small">{{ form.definition.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="mb-3">
+                                                    {{ form.language.label_tag }}
+                                                    {{ form.language }}
+                                                    {% if form.language.errors %}
+                                                        <div class="text-danger small">{{ form.language.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button type="button" id="add-definition" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-plus"></i> Add Definition
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Core Information -->
+                <div class="field-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-info-circle"></i> Core Information
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.dictionary.label_tag }}
+                                {{ form.dictionary }}
+                                {% if form.dictionary.help_text %}
+                                    <small class="form-text text-muted">{{ form.dictionary.help_text }}</small>
+                                {% endif %}
+                                {% if form.dictionary.errors %}
+                                    <div class="text-danger small">{{ form.dictionary.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.name.label_tag }}
+                                {{ form.name }}
+                                {% if form.name.help_text %}
+                                    <small class="form-text text-muted">{{ form.name.help_text }}</small>
+                                {% endif %}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.type.label_tag }}
+                                {{ form.type }}
+                                {% if form.type.help_text %}
+                                    <small class="form-text text-muted">{{ form.type.help_text }}</small>
+                                {% endif %}
+                                {% if form.type.errors %}
+                                    <div class="text-danger small">{{ form.type.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.description.label_tag }}
+                                {{ form.description }}
+                                {% if form.description.help_text %}
+                                    <small class="form-text text-muted">{{ form.description.help_text }}</small>
+                                {% endif %}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small">{{ form.description.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hierarchical Structure -->
+                <div class="field-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-diagram-3"></i> Hierarchical Structure
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                {{ form.parent_group.label_tag }}
+                                {{ form.parent_group }}
+                                {% if form.parent_group.help_text %}
+                                    <small class="form-text text-muted">{{ form.parent_group.help_text }}</small>
+                                {% endif %}
+                                {% if form.parent_group.errors %}
+                                    <div class="text-danger small">{{ form.parent_group.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentation & Metadata -->
+                <div class="field-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-file-text"></i> Documentation & Metadata
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.extended_attributes.label_tag }}
+                                {{ form.extended_attributes }}
+                                {% if form.extended_attributes.help_text %}
+                                    <small class="form-text text-muted">{{ form.extended_attributes.help_text }}</small>
+                                {% endif %}
+                                {% if form.extended_attributes.errors %}
+                                    <div class="text-danger small">{{ form.extended_attributes.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.metadata.label_tag }}
+                                {{ form.metadata }}
+                                {% if form.metadata.help_text %}
+                                    <small class="form-text text-muted">{{ form.metadata.help_text }}</small>
+                                {% endif %}
+                                {% if form.metadata.errors %}
+                                    <div class="text-danger small">{{ form.metadata.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Information -->
+                {% if not is_new %}
+                <div class="field-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-clock"></i> System Information
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Created At</label>
+                                <input type="text" class="form-control" value="{{ group.created_at|date:'Y-m-d H:i:s' }}" readonly>
+                                <small class="form-text text-muted">Timestamp when this group was first created (auto-generated)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Updated At</label>
+                                <input type="text" class="form-control" value="{{ group.updated_at|date:'Y-m-d H:i:s' }}" readonly>
+                                <small class="form-text text-muted">Timestamp when this group was last modified (auto-generated)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Help Section -->
+            <div class="col-md-3">
+                <div class="help-section">
+                    <h6><i class="bi bi-question-circle"></i> Property Group Guide</h6>
+                    
+                    <div class="mb-3">
+                        <strong>Required Fields <span class="text-danger">*</span></strong>
+                        <ul class="small mb-0">
+                            <li>Dictionary assignment</li>
+                            <li>Unique group name</li>
+                            <li>Group type classification</li>
+                            <li>At least one multi-language name</li>
+                            <li>At least one multi-language definition</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Group Types (ISO 23386)</strong>
+                        <ul class="small mb-0">
+                            <li><strong>Class</strong> - Classification grouping</li>
+                            <li><strong>Domain</strong> - Domain-specific properties</li>
+                            <li><strong>Functional</strong> - Function-based grouping</li>
+                            <li><strong>Collection</strong> - Property collections</li>
+                            <li><strong>Template</strong> - Template groups</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Hierarchical Structure</strong>
+                        <ul class="small mb-0">
+                            <li>Groups can have parent groups</li>
+                            <li>Creates tree-like organization</li>
+                            <li>Circular references prevented</li>
+                            <li>Property inheritance supported</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Extended Attributes</strong>
+                        <ul class="small mb-0">
+                            <li>JSON format for GA codes</li>
+                            <li>Custom group attributes</li>
+                            <li>Authority information</li>
+                            <li>Standards references</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Multi-language Support</strong>
+                        <ul class="small mb-0">
+                            <li>Add names in different languages</li>
+                            <li>Add definitions in different languages</li>
+                            <li>Multiple entries per language allowed</li>
+                            <li>Common: EN, DE, FR, ES, IT</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <strong>Language Codes</strong>
+                        <div class="small">
+                            {% for code, name in language_choices|slice:":6" %}
+                                <span class="badge bg-light text-dark me-1">{{ code|upper }}</span>
+                            {% endfor %}
+                            <br><em>+ {{ language_choices|length|add:"-6" }} more available</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize Select2 for all dropdowns
+$(document).ready(function() {
+    // Standard single select
+    $('.select2').select2({
+        allowClear: true
+    });
+    
+    // Language dropdowns in formsets
+    $('.form-select').select2({
+        minimumResultsForSearch: 10
+    });
+});
+
+// Formset management JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Language choices for new forms
+    const languageChoices = [
+        {% for code, name in language_choices %}
+        ['{{ code }}', '{{ name }}'],
+        {% endfor %}
+    ];
+    
+    // Handle adding new name forms
+    document.getElementById('add-name').addEventListener('click', function() {
+        addFormsetForm('names', 'name-formset', languageChoices, 'name');
+    });
+    
+    // Handle adding new definition forms
+    document.getElementById('add-definition').addEventListener('click', function() {
+        addFormsetForm('definitions', 'definition-formset', languageChoices, 'definition');
+    });
+    
+    // Handle delete checkboxes for existing forms
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox' && e.target.name.includes('DELETE')) {
+            const row = e.target.closest('.formset-row');
+            if (e.target.checked) {
+                row.classList.add('marked-for-deletion');
+            } else {
+                row.classList.remove('marked-for-deletion');
+            }
+        }
+    });
+    
+    // Handle remove buttons for new forms
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-form-btn') || e.target.closest('.remove-form-btn')) {
+            const row = e.target.closest('.formset-row');
+            const deleteCheckbox = row.querySelector('input[type="checkbox"][name*="DELETE"]');
+            
+            if (deleteCheckbox) {
+                // Existing form - mark for deletion
+                deleteCheckbox.checked = true;
+                row.classList.add('marked-for-deletion');
+            } else {
+                // New form - remove entirely
+                row.remove();
+                updateFormsetIndexes();
+            }
+        }
+    });
+    
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        console.log('Form submit event triggered');
+        
+        const nameRows = document.querySelectorAll('#name-formset .formset-row:not(.marked-for-deletion)');
+        const definitionRows = document.querySelectorAll('#definition-formset .formset-row:not(.marked-for-deletion)');
+        
+        console.log('Name rows found:', nameRows.length);
+        console.log('Definition rows found:', definitionRows.length);
+        
+        if (nameRows.length === 0) {
+            e.preventDefault();
+            alert('At least one group name is required.');
+            return false;
+        }
+        
+        if (definitionRows.length === 0) {
+            e.preventDefault();
+            alert('At least one group definition is required.');
+            return false;
+        }
+        
+        console.log('Form validation passed, submitting...');
+    });
+    
+    // Debug save button clicks
+    document.querySelector('button[type="submit"]').addEventListener('click', function(e) {
+        console.log('Save button clicked');
+    });
+    
+    // Generic function to add formset forms
+    function addFormsetForm(prefix, containerId, languageChoices, fieldType) {
+        const container = document.getElementById(containerId);
+        const totalForms = container.parentElement.querySelector(`input[name="${prefix}-TOTAL_FORMS"]`);
+        const formNum = parseInt(totalForms.value);
+        
+        let newFormHtml;
+        if (fieldType === 'name') {
+            newFormHtml = `
+                <div class="formset-row" data-form-index="${formNum}">
+                    <button type="button" class="remove-form-btn" title="Remove this name">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                    
+                    <div class="mb-3">
+                        <label for="id_${prefix}-${formNum}-name" class="form-label">Name:</label>
+                        <input type="text" name="${prefix}-${formNum}-name" class="form-control" placeholder="Property group name" maxlength="255" id="id_${prefix}-${formNum}-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_${prefix}-${formNum}-language" class="form-label">Language:</label>
+                        <select name="${prefix}-${formNum}-language" class="form-select" id="id_${prefix}-${formNum}-language" required>
+                            ${languageChoices.map(([code, name]) => `<option value="${code}">${name}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `;
+        } else {
+            newFormHtml = `
+                <div class="formset-row" data-form-index="${formNum}">
+                    <button type="button" class="remove-form-btn" title="Remove this definition">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                    
+                    <div class="mb-3">
+                        <label for="id_${prefix}-${formNum}-definition" class="form-label">Definition:</label>
+                        <textarea name="${prefix}-${formNum}-definition" class="form-control" rows="3" placeholder="Property group definition and purpose" id="id_${prefix}-${formNum}-definition" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_${prefix}-${formNum}-language" class="form-label">Language:</label>
+                        <select name="${prefix}-${formNum}-language" class="form-select" id="id_${prefix}-${formNum}-language" required>
+                            ${languageChoices.map(([code, name]) => `<option value="${code}">${name}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
+        
+        container.insertAdjacentHTML('beforeend', newFormHtml);
+        totalForms.value = formNum + 1;
+        
+        // Initialize Select2 for new language dropdown
+        $(`#id_${prefix}-${formNum}-language`).select2({
+            minimumResultsForSearch: 10
+        });
+    }
+    
+    function updateFormsetIndexes() {
+        // Update form indexes after removing forms
+        ['names', 'definitions'].forEach(prefix => {
+            const container = document.getElementById(`${prefix === 'names' ? 'name' : 'definition'}-formset`);
+            const forms = container.querySelectorAll('.formset-row');
+            const totalForms = container.parentElement.querySelector(`input[name="${prefix}-TOTAL_FORMS"]`);
+            
+            forms.forEach((form, index) => {
+                form.setAttribute('data-form-index', index);
+                
+                // Update form field names and IDs
+                form.querySelectorAll('input, select, textarea').forEach(field => {
+                    if (field.name && field.name.includes(`${prefix}-`)) {
+                        const fieldName = field.name.split('-').pop();
+                        field.name = `${prefix}-${index}-${fieldName}`;
+                        field.id = `id_${prefix}-${index}-${fieldName}`;
+                        
+                        // Update label for attribute
+                        const label = form.querySelector(`label[for="${field.id}"]`);
+                        if (label) {
+                            label.setAttribute('for', field.id);
+                        }
+                    }
+                });
+            });
+            
+            totalForms.value = forms.length;
+        });
+    }
+});
+</script>
+{% endblock %}

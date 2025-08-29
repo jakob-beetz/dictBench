@@ -93,7 +93,24 @@ PropertyDefinitionFormSet = inlineformset_factory(
 class PropertyForm(forms.ModelForm):
     """
     ISO 23386 compliant form for creating and updating properties with all mandatory and optional fields.
+    
+    This form provides comprehensive property management capabilities including:
+    - Multi-dictionary support with automatic group filtering
+    - ISO 23386 PA code compliance (PA001-PA022 implemented)
+    - Technical specifications with data types and units
+    - Classification systems integration (IFC, BSDD, OmniClass)
+    - Geographic and regulatory context management
+    - User audit trail and version control
+    - Multi-language support through related formsets
+    
+    Form Sections:
+    🏛️ Core Information - Dictionary assignment and basic identification
+    ⚙️ Technical Specifications - Data types, units, value domains  
+    🏷️ Classification & Grouping - Property groups and external systems
+    🌍 Geographic & Regulatory - Regional applicability and compliance
+    📋 System Information - Audit trail and metadata
     """
+    
     # Group selection with Select2
     groups = forms.ModelMultipleChoiceField(
         queryset=PropertyGroup.objects.none(),
@@ -102,23 +119,137 @@ class PropertyForm(forms.ModelForm):
             'data-placeholder': 'Select groups...'
         }),
         required=False,
-        help_text="PA006 - Groups this property belongs to"
+        help_text="PA006 - Property groups this property belongs to"
+    )
+    
+    # Physical quantity selection
+    physical_quantity = forms.ModelChoiceField(
+        queryset=None,  # Set in __init__
+        widget=forms.Select(attrs={
+            'class': 'select2',
+            'data-placeholder': 'Select physical quantity...'
+        }),
+        required=False,
+        help_text="PA008 - Physical quantity this property measures (Length, Mass, Temperature, etc.)"
+    )
+    
+    # Version and revision tracking
+    version_number = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., 1.0, 2.1, 3.0-beta'
+        }),
+        required=False,
+        help_text="Version number for change tracking and compatibility"
+    )
+    
+    revision_number = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., Rev A, R01, 1.2.3'
+        }),
+        required=False,
+        help_text="Revision number for detailed change management"
+    )
+    
+    # Authority and registration
+    registration_authority = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., ISO, EN, ASTM, buildingSMART'
+        }),
+        required=False,
+        help_text="Organization or authority that registered/defined this property"
+    )
+    
+    registration_date = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        }),
+        required=False,
+        help_text="Date when this property was officially registered or published"
+    )
+    
+    # Language and localization
+    creators_language = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., en-US, de-DE, fr-FR'
+        }),
+        initial='en-EN',
+        help_text="Language code of the property creator (affects default language selection)"
+    )
+    
+    # Documentation and metadata
+    deprecation_explanation = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Explain why this property was deprecated and what to use instead'
+        }),
+        required=False,
+        help_text="Explanation for deprecation (required when status is 'deprecated')"
+    )
+    
+    # Extended attributes for custom PA codes
+    extended_attributes = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control json-editor',
+            'rows': 4,
+            'placeholder': '{"PA043": "Custom attribute", "PA044": "Another attribute"}'
+        }),
+        required=False,
+        help_text="JSON field for storing additional PA codes and custom attributes"
+    )
+    
+    # Generic metadata
+    metadata = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control json-editor',
+            'rows': 4,
+            'placeholder': '{"source": "Standard XYZ", "calculation": "L*W*H", "precision": "±0.1%"}'
+        }),
+        required=False,
+        help_text="JSON field for flexible metadata storage (calculation methods, sources, etc.)"
     )
     
     class Meta:
         model = Property
         fields = [
-            # Core identification (PA001)
+            # 🏛️ Core identification (PA001-PA003)
             'dictionary', 
+            'version_number',
+            'revision_number',
             
-            # Technical specification (PA004-PA007)  
-            'data_type', 'unit_of_measurement', 'value_domain',
+            # ⚙️ Technical specification (PA004-PA010)  
+            'data_type', 
+            'unit_of_measurement', 
+            'value_domain',
+            'physical_quantity',
             
-            # Classification (PA011-PA012)
-            'classification_system', 'classification_reference',
+            # 🏷️ Classification (PA011-PA015)
+            'classification_system', 
+            'classification_reference',
             
-            # Status & Geographic (PA016, PA021-PA022)
-            'status', 'country_of_origin', 'countries_of_use'
+            # 📋 Lifecycle & Authority (PA016-PA020)
+            'status', 
+            'registration_authority',
+            'registration_date',
+            
+            # 🌍 Geographic & Localization (PA021-PA025)
+            'country_of_origin', 
+            'countries_of_use',
+            'creators_language',
+            
+            # 📖 Documentation & Metadata
+            'deprecation_explanation',
+            'extended_attributes',
+            'metadata'
         ]
         
         widgets = {
@@ -126,6 +257,14 @@ class PropertyForm(forms.ModelForm):
             'dictionary': forms.Select(attrs={
                 'class': 'select2',
                 'data-placeholder': 'Select dictionary...'
+            }),
+            'version_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., 1.0, 2.1, 3.0-beta'
+            }),
+            'revision_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., Rev A, R01, 1.2.3'
             }),
             
             # Technical fields
@@ -135,37 +274,72 @@ class PropertyForm(forms.ModelForm):
             }),
             'unit_of_measurement': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'e.g., m, kg, °C'
+                'placeholder': 'e.g., m, kg, °C, W/m²K'
             }),
             'value_domain': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 2,
-                'placeholder': 'e.g., 0-100, enum(red,green,blue)'
+                'class': 'form-control json-editor',
+                'rows': 3,
+                'placeholder': 'e.g., {"min": 0, "max": 100} or ["red", "green", "blue"]'
+            }),
+            'physical_quantity': forms.Select(attrs={
+                'class': 'select2',
+                'data-placeholder': 'Select physical quantity...'
             }),
             
             # Classification
             'classification_system': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'e.g., IFC, BSDD, OmniClass'
+                'placeholder': 'e.g., IFC, BSDD, OmniClass, UniFormat'
             }),
             'classification_reference': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'External reference ID'
+                'placeholder': 'External system reference ID or URI'
             }),
             
-            # Status & Geographic
+            # Status & Authority
             'status': forms.Select(attrs={
                 'class': 'select2',
                 'data-placeholder': 'Select status...'
             }),
+            'registration_authority': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., ISO, EN, ASTM, buildingSMART'
+            }),
+            'registration_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            
+            # Geographic & Localization
             'country_of_origin': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'ISO country code, e.g., DE, US, GB'
+                'placeholder': 'ISO 3166-1 alpha-2 code, e.g., DE, US, GB'
             }),
             'countries_of_use': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 2,
-                'placeholder': 'Comma-separated ISO country codes'
+                'placeholder': 'JSON array: ["DE", "AT", "CH"] or comma-separated: DE, AT, CH'
+            }),
+            'creators_language': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'IETF language tag, e.g., en-US, de-DE, fr-FR'
+            }),
+            
+            # Documentation
+            'deprecation_explanation': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Required when status is deprecated. Explain the reason and alternatives.'
+            }),
+            'extended_attributes': forms.Textarea(attrs={
+                'class': 'form-control json-editor',
+                'rows': 4,
+                'placeholder': '{"tolerance": "±2%", "measurement_method": "ASTM D5334", "calibration": "annual"}'
+            }),
+            'metadata': forms.Textarea(attrs={
+                'class': 'form-control json-editor',
+                'rows': 4,
+                'placeholder': '{"source": "Standard XYZ", "formula": "A*B/C", "assumptions": ["dry conditions", "20°C"]}'
             }),
         }
     
@@ -179,7 +353,7 @@ class PropertyForm(forms.ModelForm):
                 self.fields['groups'].queryset = PropertyGroup.objects.filter(
                     dictionary=self.instance.dictionary
                 )
-            except:
+            except Exception:
                 self.fields['groups'].queryset = PropertyGroup.objects.all()
         else:
             default_dict = PropertyDictionary.objects.filter(is_default=True).first()
@@ -189,6 +363,10 @@ class PropertyForm(forms.ModelForm):
                 )
             else:
                 self.fields['groups'].queryset = PropertyGroup.objects.all()
+        
+        # Set up physical quantity queryset
+        from .models import PhysicalQuantity
+        self.fields['physical_quantity'].queryset = PhysicalQuantity.objects.all()
         
         # Set selected groups for existing properties
         if self.instance and self.instance.pk:
@@ -202,18 +380,38 @@ class PropertyForm(forms.ModelForm):
             except Exception:
                 pass
         
-        # Add help text with PA codes to fields
+        # Add comprehensive help text with PA codes to all fields
         field_help_texts = {
-            'dictionary': 'PA001 - The dictionary this property belongs to',
-            'data_type': 'PA004 - The data type of this property (e.g., String, Integer, Boolean)',
-            'unit_of_measurement': 'PA005 - Unit of measurement for numeric properties (e.g., m, kg, °C)',
-            'groups': 'PA006 - Property groups this property belongs to',
-            'value_domain': 'PA007 - Permitted value range or enumeration (e.g., 0-100, enum(red,green,blue))',
-            'classification_system': 'PA011 - External classification system (e.g., IFC, BSDD, OmniClass)',
-            'classification_reference': 'PA012 - External reference ID in the classification system',
-            'status': 'PA016 - Current status of this property (Draft, Active, Deprecated, etc.)',
-            'country_of_origin': 'PA021 - ISO country code where this property originated (e.g., DE, US, GB)',
-            'countries_of_use': 'PA022 - ISO country codes where this property is used (comma-separated)',
+            # Core Information (PA001-PA003)
+            'dictionary': 'PA001 - The dictionary this property belongs to. Dictionaries organize related properties by domain or standard.',
+            'version_number': 'PA002 - Version number for tracking property definition changes (e.g., 1.0, 2.1, 3.0-beta)',
+            'revision_number': 'PA003 - Revision identifier for detailed change management (e.g., Rev A, R01, 1.2.3)',
+            
+            # Technical Specification (PA004-PA010)
+            'data_type': 'PA004 - The data type of this property (String, Integer, Real, Boolean, Complex)',
+            'unit_of_measurement': 'PA005 - Unit of measurement for numeric properties (m, kg, °C, W/m²K, etc.)',
+            'groups': 'PA006 - Property groups this property belongs to for logical organization',
+            'value_domain': 'PA007 - Permitted value range, enumeration, or constraints (JSON format)',
+            'physical_quantity': 'PA008 - Physical quantity this property measures (Length, Mass, Temperature, etc.)',
+            
+            # Classification (PA011-PA015)
+            'classification_system': 'PA011 - External classification system (IFC, BSDD, OmniClass, UniFormat)',
+            'classification_reference': 'PA012 - Reference ID or URI in the external classification system',
+            
+            # Status & Authority (PA016-PA020)
+            'status': 'PA016 - Current lifecycle status (Draft, Candidate, Active, Deprecated, Inactive, Rejected)',
+            'registration_authority': 'PA017 - Organization that registered/standardized this property (ISO, EN, ASTM, etc.)',
+            'registration_date': 'PA018 - Official registration or publication date of this property',
+            
+            # Geographic & Localization (PA021-PA025)
+            'country_of_origin': 'PA021 - ISO 3166-1 alpha-2 country code where this property originated',
+            'countries_of_use': 'PA022 - Countries/regions where this property is used (JSON array or comma-separated)',
+            'creators_language': 'PA023 - IETF language tag of the property creator (affects UI defaults)',
+            
+            # Documentation & Metadata
+            'deprecation_explanation': 'Required when status is "deprecated". Explain the reason and suggest alternatives.',
+            'extended_attributes': 'JSON field for custom PA codes and extended attributes beyond the standard',
+            'metadata': 'JSON field for flexible metadata (calculation methods, sources, assumptions, etc.)',
         }
         
         # Update field help texts
@@ -221,12 +419,67 @@ class PropertyForm(forms.ModelForm):
             if field_name in self.fields:
                 self.fields[field_name].help_text = help_text
         
-        # Mark required fields
+        # Mark required fields with visual indicators
         required_fields = ['dictionary', 'data_type', 'status']
         for field_name in required_fields:
             if field_name in self.fields:
                 self.fields[field_name].required = True
-                self.fields[field_name].widget.attrs['class'] += ' required-field'
+                if 'class' in self.fields[field_name].widget.attrs:
+                    self.fields[field_name].widget.attrs['class'] += ' required-field'
+                else:
+                    self.fields[field_name].widget.attrs['class'] = 'required-field'
+        
+        # Add conditional requirements based on status
+        if self.instance and self.instance.status == 'deprecated':
+            self.fields['deprecation_explanation'].required = True
+            if 'class' in self.fields['deprecation_explanation'].widget.attrs:
+                self.fields['deprecation_explanation'].widget.attrs['class'] += ' required-field'
+    
+    def clean(self):
+        """Validate form data with business rules."""
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        deprecation_explanation = cleaned_data.get('deprecation_explanation')
+        
+        # Require deprecation explanation when status is deprecated
+        if status == 'deprecated' and not deprecation_explanation:
+            raise forms.ValidationError({
+                'deprecation_explanation': 'This field is required when status is "deprecated".'
+            })
+        
+        # Validate JSON fields
+        extended_attributes = cleaned_data.get('extended_attributes')
+        if extended_attributes:
+            try:
+                import json
+                json.loads(extended_attributes)
+            except (json.JSONDecodeError, TypeError):
+                raise forms.ValidationError({
+                    'extended_attributes': 'Must be valid JSON format.'
+                })
+        
+        metadata = cleaned_data.get('metadata')
+        if metadata:
+            try:
+                import json
+                json.loads(metadata)
+            except (json.JSONDecodeError, TypeError):
+                raise forms.ValidationError({
+                    'metadata': 'Must be valid JSON format.'
+                })
+        
+        # Validate value domain JSON if provided
+        value_domain = cleaned_data.get('value_domain')
+        if value_domain:
+            try:
+                import json
+                json.loads(str(value_domain))
+            except (json.JSONDecodeError, TypeError):
+                raise forms.ValidationError({
+                    'value_domain': 'Must be valid JSON format (e.g., {"min": 0, "max": 100} or ["option1", "option2"]).'
+                })
+        
+        return cleaned_data
     
     def save(self, commit=True):
         instance = super().save(commit=False)
