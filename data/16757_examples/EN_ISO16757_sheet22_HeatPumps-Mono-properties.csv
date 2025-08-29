@@ -1,0 +1,357 @@
+Part;Property ID;IsSpecialisedOf;Property type;Creators language;Names in language de-DE;Definitions in language de-DE;Descriptions in language de-DE;Examples in language de-DE;Names in language EN;"Definitions in language EN
+(Ralf 1)";Descriptions in language EN;"Examples in language EN
+(Ralf 2)";Symbols of the property in a given property group;Visual representation;Country of use;Subdivision of use;Country of origin;Status;Date of creation;Date of activation;Date of last change;Date of revision;Date of version;Date of deactivation;Version number;Revision number;Replaces;Replaced by;Deprecation explanation;Reference to standard or document;Reference to VDI 3805 record no;QuantityID;UnitNo;Method of measurement;Data Type;List of Possible Values;abstract_property with superset of values;Class assignment;Parameters of the dependent property;Type of enumeration;Classification system;Identifier ETIM;ETIM Mapping Quality;Definition ETIM;Identifier IFC 2_3;IFC 2_3 Mapping Quality;Definition IFC 2_3;Identifier IFC 4x;IFC 4x Mapping Quality;Definition IFC 4x;Identifier CIBSE;CISBE Mapping Quality;Definition CIBSE;Identifier prodBIM;prodBIM Mapping Quality;Definition prodBIM;Identifier ECLASS;ECLASS Mapping Quality;Definition ECLASS;Identifier UniversalType;UniversalType Mapping Quality;Definition UniversalType;P002 Class assignment;P003 Class assignment;P004 Class assignment;P005 Class assignment;P006 Class assignment;P007 Class assignment;P008 Class assignment;P009 Class assignment;P010 Class assignment;P011 Class assignment;P012 Class assignment;P013 Class assignment;P014 Class assignment;P015 Class assignment;P016 Class assignment;P017 Class assignment;P018 Class assignment;P019 Class assignment;P020 Class assignment;P021 Class assignment;P022 Class assignment;P023 Class assignment;P024 Class assignment;P025 Class assignment;P026 Class assignment;P027 Class assignment;P028 Class assignment;P029 Class assignment;P030 Class assignment;P031 Class assignment;P032 Class assignment;P033 Class assignment;P034 Class assignment;P035 Class assignment;P036 Class assignment;P037 Class assignment;P038 Class assignment;P039 Class assignment;P040 Class assignment;P041 Class assignment;P042 Class assignment;P043 Class assignment;P044 Class assignment;P045 Class assignment;P046 Class assignment;P047 Class assignment;P048 Class assignment;P049 Class assignment
+;PA001.1;;;PA015;PA016.DE;PA017.DE;PA018.DE;PA019.DE;PA016.EN;;PA018.EN;;PA022;PA023;PA024;PA025;PA026;PA002;PA003;PA004;PA005;PA006;PA007;PA008;PA009;PA010;PA011;PA012;PA013;PA021.2;PA021.3;PA027.DE;PA027.DE;PA029;PA030;PA039;PA107;PA021.1;PA032;;;PA014.ETIM;PA014.ETIM;PA014.ETIM;PA014.IFC 2.3;PA014.IFC 2.3;PA014.IFC 2.3;PA014.IFC 4.4;PA014.IFC 4.4;PA014.IFC 4.4;PA014.CIBSE;PA014.CIBSE;PA014.CIBSE;PA014.prodBIM;PA014.prodBIM;PA014.prodBIM;PA014.ECLASS;PA014.ECLASS;PA014.ECLASS;PA014.UT;PA014.UT;PA014.UT;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1;PA021.1
+;Internal;;;Mandatory;Mandatory;Mandatory;Optional;Optional;Mandatory ;;Optional;;Optional;Optional;Mandatory;Optional;Optional;Calculated, admini-strative;Calculated, admini-strative;Calculated, admini-strative;Calculated, admini-strative;Mandatory, admini-strative;Mandatory, admini-strative;Calculated, admini-strative;Mandatory, admini-strative;Mandatory, admini-strative;Calculated, admini-strative;Calculated, admini-strative;Optional, Mandatory if the property has been replaced by others;Optional;Optional;Mandatory;Mandatory;Optional;Mandatory, enum + datatype in case of list of values;Mandatory;optional;Mandatory;optional, Mandatory if dynamic property or dependent property;;;Optional;optional;optional;Optional;Optional;Optional;Optional;Optional;Optional;Optional;;Optional;Optional;Optional;Optional;Optional;Optional;Optional;Optional;Optional;Optional;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory
+;ID;;"1 = Static Property [P]
+2 = System/external [S]
+3 = Dynamic Property [D]
+4 = Dependent Property [T]
+5 = Static von Außen [X]";code;Deutsch;Deutsch;Deutsch;Deutsch;English;;English;;English;English;Code;English;Code;English;Date;Date;Date;Date;Date;Date;int;int;PA001.1;PA001.1;English;RA001.1;ID;;;English;English;y/n;ref to property;GA001.1;PA001.1;"1 = single
+2 = multi";"1 = EN ISO 16757
+2 = VDI3805
+3 = CISBIE
+4 = prodBIM
+5 = eClass
+6 = ETIM
+7 = UniversalTypes
+8 = IFC
+9 = CAFM
+10 = HKI";EFxxx;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;Irdi;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;Irdi;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;Irdi;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;Irdi;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;Irdi;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;Irdi;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1;GA001.1
+;single value;;;single value;single value??;single value;single value;list of value;single value??;;single value;;single value;list of value;list of value;list of value;single value;single value;single value;single value;single value;single value;single value;single value;single value;single value;list of  value;list of value;single value;list of value;list of value;code;list of value;single value;single value;single value;single value;list of value;list of value;;list of value;list of value;single value;list of value;list of value;single value;list of value;list of value;single value;list of value;list of value;single value;list of value;list of value;single value;list of value;list of value;single value;list of value;list of value;single value;list of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value;List of value
+;Produktelementdaten;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0002;;1;de-DE;Produktserie;Bezeichnung einer gleichartig erzeugten oder für einen bestimmten Zweck zusamnmengestellte Produktlinie.;;Goodheat No. One, Multifunktionsbrenner MB;Product series;;;;;;DE;;DE;;;;;;;;;;;;;;8-110-4, 36-110-4;without;;;string;;;C008.0001,C022.0001,C036.0001,C043.0001;;;;;904d10a4-dabe-4ebe-a3d7-829809363445;Product range;;;;;;;;904d10a4-dabe-4ebe-a3d7-829809363445;Product range;;;;;;;;;;;;;;;;prod008Burner;;;;;;;;;;;;;;prod022MonoblocHeatPump;;;;;;;;;;;;;;prod036InstantaniousWaterHeater;;;;;;;prod043PressureMaintainingDevice;;;;;;
+8,22,36,43;P001.0003;;1;de-DE;Produktname;Bezeichnung des Brenners;;z.B. WM-GL10/4-A ZM-R, MB 500;Product name;;;;;;DE;;DE;;;;;;;;;;;;;;8-700-4, 36-700-4;without;;;string;;;C008.0001,C022.0001,C036.0001,C043.0001;;;;;08657381-7d09-469b-a51b-62d128b0f600;Product model number;;;;;;;;08657381-7d09-469b-a51b-62d128b0f600;Product model number;;;;;;;;;;;;;;;;prod008Burner;;;;;;;;;;;;;;prod022MonoblocHeatPump;;;;;;;;;;;;;;prod036InstantaniousWaterHeater;;;;;;;prod043PressureMaintainingDevice;;;;;;
+22,36,43;A002.1002;;1;de-DE;Funktion;;;"0 = unbesetzt
+1 = Heizen
+2 = Kühlen
+3 = Klimatisieren
+4 = Belüftung
+5 = Entfeuchtung
+6 = Luftreinigung
+7 = Trinkwassererspeicherung
+8 = Trinkwassererwärmung
+9999 = sonstiges";Function;;;;;;DE;;DE;;;;;;;;;;;;;;36-200-2;without;;;string enum;;A001.0010,0,1,2,4,5,6,8,9999;;;;;EF002155;über gesetzliche Vorgabe 3rd Part certification;Tank Construction Material;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatPump;;;;;;;;;;;;;;prod036InstantaniousWaterHeater;;;;;;;prod043PressureMaintainingDevice;;;;;;
+22,36,43;A001.1000;;1;de-DE;Einsatzbereich;;;"0 = unbesetzt
+1 = Werkstätten
+2 = Produktionshallen
+3 = Lagerhallen
+4 = Ausstellungs- und Verkaufsräume
+5 = Sporthallen
+6 = Schulen
+7 = Einkaufszentren
+8 = Logistikzentren
+9 = Flugzeughangars
+10 = Gewerbliche Küchen (Großküchen) 
+11 = Küchen (Haushalt)
+9999 = sonstiges";Field of application;;;;;;DE;;DE;;;;;;;;;;;;;;36-200-2;without;;;string enum;;A001.0010,0,1,2,4,5,6,8,9999;;;;;EF002155;über gesetzliche Vorgabe 3rd Part certification;Tank Construction Material;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatPump;;;;;;;;;;;;;;prod036InstantaniousWaterHeater;;;;;;;prod043PressureMaintainingDevice;;;;;;
+22;P022.0001;;1;de-DE;Typ der Wärmepumpe;;;"1 = Sole–Wasser Wärmepumpe
+2 = Wasser–Wasser Wärmepumpe
+3 = Luft–Wasser Wärmepumpe
+4 = Direktverdampfung
+999 = sonsige";Type;;;;;;DE;;DE;;;;;;;;;;;;;;weg;without;;;string enum;1, 2, 3;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0003;;1;de-DE;Wärmequelle;;;"1 = Außenluft
+2 = Raumluft/Abluft
+3 = Erdwärme
+4 = Grundwasser/Wasser
+5 = Abwasser/Abwärme/Prozesswärme
+6 = Kellerluft
+99 = sontiges";Heat source;Heat Source;;Origin of the temperature of an object that produces or radiates heat;;;DE;;DE;;;;;;;;;;;;;;22-200-2;without;;;string enum;1, 2, 3;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;D008.1001;3;2;de-DE;aufstellungsabhängiger Geräteschallleistungspegel;;;"1 = innen
+2 = aussen";;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;;P001.0195;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0012;;1;de-DE;Leistungsregelung der Wärmepumpe (Kompressor);;;"1 = 1-stufig (on/off)
+2 = 2-stufig
+3 = 3-stufig
+4 = 4-stufig
+5 = modulierend";Heat pump output control;;;;;;DE;;DE;;;;;;;;;;;;;;22-460-2;without;;;string enum;1, 2;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0020;;1;de-DE;Heizleistung;;Heizleistung für: Luft–Wasser bei A2/W35, Sole–Wasser bei B0/W35, Wasser–Wasser bei W10/W35, direkt bei E4/W35;;heating output;HeatingCapacity A2/W35;heating output for: air/water at A2/W35, brine/water at B0/W35, water/water at W10/W35, direct at E4/W35;"heat given off by the unit to the heat transfer medium per unit of time, corrected from any fan or pump heat where applicable
+[Source: EN 14511-1]";PH;;DE;;DE;;;;;;;;;;;;;EN 14511-1;22-700-5;Q2600 (Leistung);6;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0021;;1;de-DE;Leistungszahl;;Heizleistung für: Luft–Wasser bei A2/W35, Sole–Wasser bei B0/W35, Wasser–Wasser bei W10/W35, direkt bei E4/W35;;coefficient of performance;;heating output for: air/water at A2/W35, brine/water at B0/W35, water/water at W10/W35, direct at E4/W35;;;;DE;;DE;;;;;;;;;;;;;;22-700-6;Q8002 (Faktor);1;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0022;;1;de-DE;elektrische Aufnahmeleistung Wärmepumpe;;Heizleistung für: Luft–Wasser bei A2/W35, Sole–Wasser bei B0/W35, Wasser–Wasser bei W10/W35, direkt bei E4/W35;;input power heat pump;Effective Power Input;heating output for: air/water at A2/W35, brine/water at B0/W35, water/water at W10/W35, direct at E4/W35;"average electrical power input of the unit within the defined interval of time, obtained from:
+— power input for operation of the compressor and any power input for defrosting;
+— power input for all control and safety devices of the unit;
+— proportional power input of the conveying devices (e.g. fans, pumps) for ensuring the transport of
+the heat transfer media inside the unit";;PE;DE;;DE;;;;;;;;;;;;;EN 14511-1;22-700-7;Q2600 (Leistung);6;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0023;;1;de-DE;Jahresarbeitszahl;;;;Seasonal Coefficient of Performance;Seasonal Coefficient of Performance;;overall coefficient of performance of the unit, representative for the whole designated heating season;;SCOP;;;;;;;;;;;;;;;;EN 14825;;;;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P001.0301;;1;de-DE;Schutzklasse;;;"0 = kein besonderer Schutz
+1 = Schutzleiter, geerdet
+2 = schutzisoliert
+3 = Schutz durch Kleinspannung";Protection class;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0027;;1;de-DE;Max elektr. Leistungsaufnahme ;;(ohne elektr. Zusatzheizung);;maximum supply temperature;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0033;;1;de-DE;Verdichteranzahl;;;;Number of compressors;;;;;;DE;;DE;;;;;;;;;;;;;;22-700-22;Q8003 (Anzahl);1;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0037;;1;de-DE;Betriebsweise der Wärmepumpe;Mehrfachauswahl der Enumeration ??;;"1 = monovalent
+2 = monoenergetisch
+3 = bivalent-alternativ
+4 = bivalent-parallel
+5 = bivalent-teilparallel";Operating mode;OperatingMode;;Kind of use of the heat pump;;;DE;;DE;;;;;;;;;;;;;EN 14511-1;;;3;;string enum;;A001.0011, 1, 3, 4, 5, 6;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0031;;1;de-DE;Heizwassertemperaturspreizung;Vielleicht in Klasse Heizkreis ??;;;heating-water temperature spread;Temperature Spread of the heating Liquid;without backup heat (e. g., heating rod);Temeprature difference between the inlet and outlet of the media inside the water loop of the heat pump;ΔT;;DE;;DE;;;;;;;;;;;;;;22-700-17;Q5000 (Temperatur);1;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0031;;1;de-DE;Wasserinhalt;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;22-700-17;Q1030 (Rauminhalt);10;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0512;;1;de-DE;Minimaler Betriebsüberdruck;Der minimale Druck, der für ein Bauteil oder Gerät auf Grund der verwendeten Werkstoffe und den Berechnungsregeln bei der festgelegten Arbeitstemperatur zulässig ist.;Überdruck ist die Bezeichnung für Druck, der relativ zum Atmosphärendruck bzw. Luftdruck gemessen wird. Wert = 0 ist drucklos.;;Minimum allowable operating pressure;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2200 (Druck);6;;float;;;C022.0001;;;;EF020449;;Maximum Heating Operating Pressure;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0513;;1;de-DE;Maximaler Betriebsüberdruck;Der Druck, der für ein Bauteil oder Gerät auf Grund der verwendeten Werkstoffe und den Berechnungsregeln bei der festgelegten Arbeitstemperatur zulässig ist.;Überdruck ist die Bezeichnung für Druck, der relativ zum Atmosphärendruck bzw. Luftdruck gemessen wird. Wert = 0 ist drucklos.;;Maximum allowable operating pressure;;;;;;DE;;DE;;;;;;;;;;;;;;36-700-13;Q2200 (Druck);6;;float;;;C022.0001;;;;EF020449;;Maximum Heating Operating Pressure;;;;;;;EF020449;;Maximum Heating Operating Pressure;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Gehäuse der Monoblock-Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0154;;1;de-DE;Aufstellungsort;;;"1 = Aussen
+2 = Innen";;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22,36,43;P001.0101;;1;de-DE;Werkstoff des Gehäuses;;;"0 = unbesetzt
+3 = nicht rostender Stahl
+6 = Stahl
+12 = Aluminium 
+200 = Kunststoff
+9999 = sonstiges";Material of the housing;Material;;Material of the housing;;;DE;;DE;;;;;;;;;;;;;;36-200-2;without;;;string enum;;A001.0001,0,3,6,12,200,9999;;;;;EF002155;über gesetzliche Vorgabe 3rd Part certification;Tank Construction Material;;;;;;;EF002155;über gesetzliche Vorgabe 3rd Part certification;Tank Construction Material;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatPump;;;;;;;;;;;;;;prod036InstantaniousWaterHeater;;;;;;;prod043PressureMaintainingDevice;;;;;;
+22,36,43;P001.0201;;1;en-EN;Oberfläche des Gehäuses;;;"0 = unbesetzt
+1 = unbehandelt
+5 = pulverbeschichtet
+6 = feuerverzinkt 
+7 = galvanisch/elektrolytisch verzinkt
+9 = Plastic-coated
+12 = pulverbeschichtet und lackiert
+13 = galvanisch/elektrolytisch verzinkt und pulverbeschichtet
+16 = lackiert
+17 = poliert
+18 = gebürstet
+19 = geätzt
+20 = gestrahlt
+99 = sonstiges";Surface of the housing;Surface;;Surface of the housing;;;EN;;EN;;;;;;;;;;;;;;;without;;;string enum;1, 2, 3;A001.0002,0,1,17,99;prod22MonoblocHeatPump,prod36InstantaniousWaterHeater,prod43PressureMaintainingDevice;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;Farbe;;;;Color;Colour;;Colour of the housing;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0300;;1;de-DE;Schutzart;noch Aufstellungsabhängig machen;z.B. IP55, IP68;IP54;Protection class;;e.g. IP55, IP68;IP54;;;DE;;DE;;;;;;;;;;;;;;;;;;string;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Heizkreis der Monoblock-Wärmepumpe (ohne Zusatzheizung);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0509;;1;de-DE;Material im Heizkreis;;;"0 = unbesetzt
+3 = nicht rostender Stahl
+6 = Stahl
+12 = Aluminium 
+14 = Kupfer
+9999 = sonstiges";Material heating circuit;;;;;;DE;;DE;;;;;;;;;;;;;;;;2;;string enum;;A001.0001,0,3,6,12,14,9999;B022.0001,B003.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0510;;1;de-DE;minimaler Volumenstrom;;minimal notwendiger Volumenstrom;;volume flow rate, heating side ;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;B022.0001,B003.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0511;;1;de-DE;maximaler Volumenstrom;;maximal zulässiger Volumenstrom;;volume flow rate, heating side ;Liquid Flow Rate;;volume of fluid passing a cross-section during defined time;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;B022.0001,B003.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0514;;1;de-DE;minimale Vorlauftemperatur;;;;minimum supply temperature;;;;;;DE;;DE;;;;;;;;;;;;;;22-700-16;Q5000 (Temperatur);2;;float;;;B022.0001,B003.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0515;;1;de-DE;maximale Vorlauftemperatur;;;;maximum supply temperature;;;;;;DE;;DE;;;;;;;;;;;;;;22-700-16;Q5000 (Temperatur);2;;float;;;B022.0001,B003.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Kältemittelkreis der Monoblock-Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0100;;1;de-DE;Beschreibung;;;;Dispription;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0610;;1;de-DE;eingesetztes Kältemittel;;z. B. R-407c, R-290, R-404a, R-134a, R-410a usw. (Schreibweise nach DIN 8960 Absatz 6) R-zzzbb (wobei): R = Refrigant, Z = Ziffernfolge (Rückschluss auf die Summenformel), bb = Variation der Strukturformel;;Refrigerant used;Refrigerant;;a chemical substance that can be used to make or keep things cold;;;DE;;DE;;;;;;;;;;;;;;20-710.17-4;;;;string;;;B022.0002;;;;EF000446;;;;;;;;;EF000446;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0611;;1;de-DE;Füllmenge des Kältemittels;;;;refrigerant capacity ;Quantity Refrigerant;;Amount of refrigerant inside the refrigerant loop of the heat pump;;;DE;;DE;;;;;;;;;;;;;;;Q2000 (Masse);1;;float;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0613;;1;de-DE;CO2-Äquivalent des Kältemittels;;;;refrigerant capacity ;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2000 (Masse);14;;float;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0612;;1;de-DE;Treibhauspotential – GWP;;;;global warming potential – GWP;Global Warming Potential of the Refrigerant;;an index describing the radiative characteristics of well-mixed greenhouse gases, that represents the combined effects of the differing times these gases remain in the atmosphere and their relative effectiveness in adsorbing outgoing infrared radiation. This index approximates the time integrated warming effect of a given greenhouse gas in today’s atmosphere, relative to CO2;;;DE;;DE;;;;;;;;;;;;;;;Q8002 (Faktor);1;;float;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0620;;1;de-DE;??? Treibhauspotential 100 (GWP100);nach Verordnung (EG) Nr. 842/2006;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8002 (Faktor);1;;float;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0614;;1;de-DE;Bauart des Kältekreis;;;"1 = hermetisch geschlossen
+2 = nicht hermetisch geschlossen";design of refrigerant circuit;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0615;;1;de-DE;Sicherheitsklasse nach DIN EN 378-1;;A1, A2, A3, B1, B2, B3, wobei: A = geringere Giftigkeit, B = größere Giftigkeit, 1 = keine Flammenausbreitung, 2 = geringere Brennbarkeit, 3 = größere Brennbarkeit;;safety class according to DIN EN 378-1;Safety Class;;Classification of the refrigerant according to EN 378-1;;;DE;;DE;;;;;;;;;;;;;;;;;;string;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0616;;1;de-DE;Hinweistext zum Kältemittel;;z. B. Enthält fluorierte Treibhausgase;;additional information on refrigerant;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22+46:101;A001.0617;;1;de-DE;Verdichtertyp;;;"1 = Hubkolbenverdichter
+2 = Rollkolbenverdichter
+3 = Schraubenverdichter
+4 = Scrollverdichter
+5 = Swingverdichter
+99 = sonstiges";Type of compressor;Compressor;;;;;DE;;DE;;;;;;;;;;;;;;22-700-40;;;;string enum;;;B022.0002;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;A001.0108;;1;de-DE;Maximaler Betriebsüberdruck;Der Druck, der für ein Bauteil oder Gerät auf Grund der verwendeten Werkstoffe und den Berechnungsregeln bei der festgelegten Arbeitstemperatur zulässig ist.;Überdruck ist die Bezeichnung für Druck, der relativ zum Atmosphärendruck bzw. Luftdruck gemessen wird. Wert = 0 ist drucklos.;;Maximum allowable operating pressure;;;;;;DE;;DE;;;;;;;;;;;;;;36-700-13;Q2200 (Druck);6;;float;;;B022.0002;;;;EF020449;;Maximum Heating Operating Pressure;;;;;;;EF020449;;Maximum Heating Operating Pressure;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Wärmequellenkreis (Sole bei B0/W35);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0100;;1;de-DE;Beschreibung;;;;Dispription;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0609;;1;de-DE;Quellentemperaturspreizung;;;;;;;;ΔT;;DE;;DE;;;;;;;;;;;;;;;Q5000 (Temperatur);1;;float;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0510;;1;de-DE;minimaler Volumenstrom;;minimal notwendiger Volumenstrom;;maximum volume flow rate ;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0511;;1;de-DE;maximaler Volumenstrom;;maximal zulässiger Volumenstrom;;minimum volume flow rate ;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0512;;1;de-DE;Nennvolumenstrom;;;;nominal volume flow rate ;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0513;;4;de-DE;Wärmequellenpumpe integriert;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;boolean;;;B022.0003, B022.0004;A001.0920,A001.0921;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Liste dependent Properties;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0920;;1;de-DE;maximale elektrische Leistungsaufnahme;"oder ??? bei 250 mbar
+externem Druckverlust  ??";Produktkennwert für DIN V 4701-10;;;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0921;;1;de-DE;maximale Restförderhöhe;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2200 (Druck);6;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Sole-Wasser-Wärmepumpe kühlen;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P22.0007;;1;de-DE;Art der Kühlfunktion;;;"0=keine Kühlfunktion möglich
+1=integrierte aktive Kühlfunktion
+2=integrierte passive Kühlfunktion
+3=integrierte aktive und passive Kühlfunktion
+4=passive integriert und aktive Kühlfunktion optional durch externe Zusatzmodule möglich
+5=optional, durch externe Zusatzmodule möglich";;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;B022.0011,B022.0012;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocBrineWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0111;;1;de-DE;Automatische Umschaltung von passiv auf aktiv Kühlen;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;boolean;;;B022.0011,B022.0012;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocBrineWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0112;;1;de-DE;Kühlfunktion;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;B022.0011;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocBrineWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0113;;1;de-DE;Kühlleistung bei B15 W23;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;B022.0011;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocBrineWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0114;;1;de-DE;Kühlleistungszahl bei B15 W23;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8002 (Faktor);2;;float;;;B022.0011;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocBrineWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0115;;1;de-DE;minimale Vorlauftemperatur;;beim Kühlen;;minimum supply temperature;;;;;;DE;;DE;;;;;;;;;;;;;;;Q5000 (Temperatur);2;;float;;;B022.0011,B022.0012,B022.0013;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocBrineWaterHeatpumpCooling,blocWaterWaterHeatpumpCooling,blocAirWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Wärmequellenkreislauf (Wasser bei W10/W35);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0100;;1;de-DE;Beschreibung;;;;Dispription;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0609;;1;de-DE;Quellentemperaturspreizung;;;;;;;;ΔT;;DE;;DE;;;;;;;;;;;;;;;Q5000 (Temperatur);1;;float;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0510;;1;de-DE;minimaler Volumenstrom;;minimal notwendiger Volumenstrom;;maximum volume flow rate ;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0511;;1;de-DE;maximaler Volumenstrom;;maximal zulässiger Volumenstrom;;minimum volume flow rate ;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0512;;1;de-DE;Nennvolumenstrom;;;;nominal volume flow rate ;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;B022.0003, B022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+0;A001.0513;;4;de-DE;Wärmequellenpumpe integriert;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;boolean;;;B022.0003, B022.0004;A001.0920,A001.0921;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Wasser-Wasser-Wärmepumpe kühlen;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0142;;1;de-DE;Kühlleistung bei W15 W23;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;B022.0012;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocWaterWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0143;;1;de-DE;Kühlleistungszahl bei W15 W23;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8002 (Faktor);1;;float;;;B022.0012;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocWaterWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Luftkreislauf;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0150;;1;de-DE;Abtauart;;;"1 = Kreislaufumkehr
+2 = Heißgasbypass
+3 = Sonstige";defrosting type;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.05-6;;;;string enum;;;B022.0005;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0151;;1;de-DE;Anzahl Lüfter;;;;fan power consumption;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8003 (Anzahl);1;;float;;;B022.0005;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0152;;1;de-DE;Max. Leistungsaufnahme Lüfter;;aller Lüfter;;fan power consumption;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.05-6;Q2600 (Leistung);6;;float;;;B022.0005;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;offener Lufteintritt / -austritt (Gitter);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0153;;1;de-DE;Silentmodus;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;boolean;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0154;;1;de-DE;Aufstellungsort;;;"1 = Aussen
+2 = Innen
+3 = Innen, eck";;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0155;;1;de-DE;Schallleistungspegel Lufteintritt;;;;sound power level air inlet;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0156;;1;de-DE;Schallleistungspegel Luftaustritt;;;;sound power level air oulet;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0157;;1;de-DE;Schallleistungspegel Lufteintritt max;;;;sound power level air inlet max;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0158;;1;de-DE;Schallleistungspegel Luftaustritt max;;;;sound power level air oulet max;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0160;;1;de-DE;Max. Volumenstrom;;;;;Air Flow Rate;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Kanaleinbau;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0155;;1;de-DE;Silentmodus;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;boolean;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0156;;1;de-DE;Schallleistungspegel Lufteintritt;;;;sound power level air inlet;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0157;;1;de-DE;Schallleistungspegel Luftaustritt;;;;sound power level air oulet;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0158;;1;de-DE;Schallleistungspegel Lufteintritt max;;;;sound power level air inlet max;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0159;;1;de-DE;Schallleistungspegel Luftaustritt max;;;;sound power level air oulet max;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0160;;1;de-DE;Max. verfügbare externe Pressung;;;;Max. external pressure available;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2200 (Druck);1;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0159;;1;de-DE;Max. Volumenstrom;;;;;Air Flow Rate;;;;;DE;;DE;;;;;;;;;;;;;;;Q1400 (Volumenstrom);3;;float;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Luft-Wasser-Wärmepumpe kühlen;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0150;;1;de-DE;Abtauart;;;"1 = Kreislaufumkehr
+2 = Heißgasbypass
+3 = Sonstige";defrosting type;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.05-6;;;;string enum;;;C022.0004;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022AirWaterHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0160;;1;de-DE;Kühlleistung bei A35 W18;;;;cooling output at A35 W18;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;B022.0013;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocAirWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0161;;1;de-DE;Kühlleistungszahl bei A35 W18;;;;energy efficiency ratio at A35 W18;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8002 (Faktor);1;;float;;;B022.0013;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocAirWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0162;;1;de-DE;Kühlleistung bei A35 W7;;;;cooling output at A35 W7;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;B022.0013;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocAirWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0163;;1;de-DE;Kühlleistungszahl bei A35 W7;;;;energy efficiency ratio at A35 W7;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8002 (Faktor);1;;float;;;B022.0013;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocAirWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0115;;1;de-DE;minimale Vorlauftemperatur;;beim Kühlen;;minimum supply temperature;;;;;;DE;;DE;;;;;;;;;;;;;;;Q5000 (Temperatur);2;;float;;;B022.0011,B022.0012,B022.0013;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocBrineWaterHeatpumpCooling,blocWaterWaterHeatpumpCooling,blocAirWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Direktverdampfer;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0170;;1;de-DE;Bauart Verdampfer;;;;Vaporiser type;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;C022.0005;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022DirectEvaporationHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0171;;1;de-DE;Werkstoff Verdampfer;;;;Vaporiser material;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;C022.0005;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022DirectEvaporationHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0172;;1;de-DE;Anzahl Kreise;;;;Number of circles;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8003 (Anzahl);1;;float;;;C022.0005;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022DirectEvaporationHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0173;;1;de-DE;Max. Gesamtlänge;;;;Max. Total length;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);1;;float;;;C022.0005;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022DirectEvaporationHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Einsatzgrenzen der Wärmequelle;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0180;;1;de-DE;Betriebmodus der Wärmepumpe;;;"1 = Heizen
+2 = Kühlen
+3 = Trinkwassererwärmung";Operation mode of the heat pump;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;B022.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0181;;1;de-DE;Minimale Einsatztemperatur;;;;Minimum operating temperature;Lower Limit;;Minimum temperature of the heat source so that the heat pump is functioning;;;DE;;DE;;;;;;;;;;;;;;;Q5000 (Temperatur);2;;float;;;B022.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0182;;1;de-DE;Maximale Einsatztemperatur;;;;Maximum operating temperature;Higher Limit;;Maximum temperature of the heat source so that the heat pump is functioning;;;DE;;DE;;;;;;;;;;;;;;;Q5000 (Temperatur);2;;float;;;B022.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Aufstellungsort;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0010;;1;de-DE;Aufstellungsort der Wärmepumpe;;;"1 = innen
+2 = aussen
+3 = innen und aussen
+4 = innen mit Aussenansaugung
+5 = innen eck mit Aussenansaugung";Installation location of the heat pump;;;;;;DE;;DE;;;;;;;;;;;;;;22-450-2;without;;;string enum;1, 2;A001.0015, 1,2,3;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P001.0300;;1;de-DE;Schutzart;;z.B. IP55, IP68;IP54;Protection class;;e.g. IP55, IP68;;;;DE;;DE;;;;;;;;;;;;;;;;;;string;;;prod08Burner,prod22MonoblocHeatPump,prod36InstantaniousWaterHeater;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P001.0195;;1;de-DE;Schallleistungspegel;;;;sound power level;A-weighted SoundPowerLevel ;;overall A-weighted sound power level. The sound power level, is calculated with Formula according to EN 12102-1;Lwi;;DE;;DE;;;;;;;;;;;;;;;Q8100 (Schallleistungspegel);2;;float;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P001.0196;;1;de-DE;Silentmodus;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;2;;;;;C022.0001;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod022MonoblocHeatpump;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Leistungsdaten I;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0200;;1;de-DE;Art der Leistung;;;"1 = Heizleistung
+2 = Kühlleistung";type of output;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.09-3;;;;string enum;;;B022.0015;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0201;;1;de-DE;Vorlauftemperatur der Wärmepumpe;;;;heat pump supply temperature ;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.09-4;Q5000 (Temperatur);2;;float;;;B022.0015;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0202;;1;de-DE;maximale Wärmequellentemperatur;;;;maximum heat source temperature;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.09-5;Q5000 (Temperatur);2;;float;;;B022.0015;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0203;;1;de-DE;minimale Wärmequellentemperatur;;;;minimum heat source temperature;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.09-6;Q5000 (Temperatur);2;;float;;;B022.0015;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0204;;1;de-DE;Stufe;;;;stage;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.09-7;Q8004 (Einstellgröße);1;;float;;;B022.0015;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0205;;1;de-DE;Last;;;;load;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.09-8;Q8000 (Verhältniszahl);2;;float;;;B022.0015;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Leistungsdaten II;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0210;;1;de-DE;Wärmequellentemperatur;;;;heat source temperature;;;;;;DE;;DE;;;;;;;;;;;;;;22-710.91-3;Q5000 (Temperatur);2;;float;;;B022.0016;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0211;;1;de-DE;Leistung;;Heiz- bzw. Kühlleistung;;output;RatedCapacity A2/W35;;"cooling or heating capacity of the vapour compression cycle of the unit at standard rating conditions
+[Source: EN 14511-1]";Prated;;DE;;DE;;;;;;;;;;;;;;22-710.91-4;Q2600 (Leistung);6;;float;;;B022.0016;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0212;;1;de-DE;elektrische Leistungsaufnahme;;;;electric power consumption;RatedPowerInput A2/W35;;"cooling or heating effective power input of the vapour compression cycle of the unit at standard rating conditions
+[Source: EN 14511-1]";PCOP;;DE;;DE;;;;;;;;;;;;;;22-710.91-5;Q2600 (Leistung);6;;float;;;B022.0016;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0213;;1;de-DE;COP/ERR;;;;COP/ERR;Coefficient of Performance;;"ratio of the heating capacity to the effective power input of the unit
+[Source: EN 14511-1 /3.6]";COP;;DE;;DE;;;;;;;;;;;;;;22-710.91-6;Q8002 (Faktor);1;;float;;;B022.0016;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Elektrische Zusatzheizung;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0300;;1;de-DE;Schaltung;;;"1 = stufenlos
+2 = 1-stufig
+3 = 2-stufig
+4 = 3-stufig
+5 = n-stufig";Switching;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;B022.0032;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0301;;1;de-DE;Max. elektrische Anschlussleistung;;;;Max. electrical connection power;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;B022.0032;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0302;;1;de-DE;Min. elektrische Anschlussleistung;;;;Min. electrical connection power;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;B022.0032;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0303;;1;de-DE;maximale Vorlauftemperatur;;Mit elektrische Zusatzheizung;;maximum supply temperature;;;;;;DE;;DE;;;;;;;;;;;;;;;Q5000 (Temperatur);2;;float;;;B022.0032;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Stufen der elektrische Zusatzheizung;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0310;;1;de-DE;Stufe;;;;stage;;;;;;DE;;DE;;;;;;;;;;;;;;;Q8004 (Einstellgröße);;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0311;;1;de-DE;elektrische Anschlussleistung;;;;Electrical connection power;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Elektrische Anschluss;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0001;;1;de-DE;Nenn-/Betriebsspannung;Ausgewiesenes normales bzw. im Betrieb eingestelltes spezifisches Arbeitsvermögen einer elektrischen Ladung;;230 ;Nominal/operating voltage;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950;VDI 3805-1    Record type 950;Q4200 (elektrische Spannung);1;;float;≥0;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0002;;1;de-DE;Art des elektrischen Anschlusses;Code für Phase, Neutral- und Schutzleiter und Spannung;;1/N/PE 230V, 2/N/PE400V, 3/N/PE 400V,  24V, 12V, 5V;Type of electrical port;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950;VDI 3805-1    Record type 950;without;;;string;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0003;;1;de-DE;Art der Nenn-/Betriebs-spannung;Angabe ob Gleichstrom und/oder Wechselstrom oder elektronisch geregelte Spannung;;;Type of nominal/operating voltage;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950;VDI 3805-1    Record type 950;without;;;string enum;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0004;;1;de-DE;Anlaufschaltung;Anlaufschaltung bei Dreiphasenanschluss oder Drehstrom (Anlassverfahren);;"1=Direktes Anlassen
+2=Stern-Dreieck-Anlauf
+3=Teilwicklungsanlauf
+4=Anlassen mittels Ständeranlasser
+5=Anlassen mittels Anlasstrafo
+6=Anlassen mittels elektronischer Anlassverfahren
+7=Anlassen mit Anwurfmotor
+8=Sanftanlauf-Verfahren";Startup circuit;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950;VDI 3805-1    Record type 950;without;;;string enum;"→Tabelle T5 ""Three phase starter""";;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0005;;1;de-DE;Frequenz, minimal ;Minimale Häufigkeit periodisch auftretender Wiederholungen von Spannungschwingungen ;;50;Frequency, minimum;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950;VDI 3805-1    Record type 950;Q3100 (Frequenz);1;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0006;;1;de-DE;Frequenz, maximal ;Maximale Häufigkeit periodisch auftretender Wiederholungen von Spannungschwingungen ;;50;Frequency, maximum;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950;VDI 3805-1    Record type 950;Q3100 (Frequenz);1;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0007;;1;de-DE;Wirkfaktor cos φ;Verhältnis des Betrags der Wirkleistung P zur Scheinleistung  S in der Wechselstromtechnik;;0.8;Active factor cos φ;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950;VDI 3805-1    Record type 950;without;;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0008;;1;de-DE;Bemessungsstrom ;Für eine festgelegte Betriebsbedingung einem elektrischen Betriebsmittel zugeordnete elektrische Stromstärke;;6;Rated current;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950;VDI 3805-1    Record type 950;Q4000 (elektrische Stromstärke);1;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0009;;1;de-DE;Bemessungsleistung;produzierte Stromsumme in kWh/Jahr ÷ Anzahl Jahresstunden;;1324;Rated power;;;;;;EU;;EU;;;;;;;;;;;;;VDI 3805-1    Record type 950.01 und 950.02;VDI 3805-1    Record type 950.01 und 950.02;Q2600 (Leistung);1;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0010;;1;de-DE;Maximaler Einschaltstrom;Maximale Stromstärke bei einem Einschaltvorgang;;8;Maximum inrush current;Maximum Starting Current;;;;;EU;;EU;;;;;;;;;;;;;;;Q4000 (elektrische Stromstärke);1;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0011;;1;de-DE;Maximaler Vorsicherungsstrom;Ausgelegte Stromstärke einer Vorsicherung;;16;Maximum pre-fuse current ;;;;;;EU;;EU;;;;;;;;;;;;;;;Q4000 (elektrische Stromstärke);1;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0012;;1;de-DE;Leitungsschutzschalter/ Auslöse-Charakteristik/ Maximale Vorsicherungs-Charakteristik;nach DIN EN 60898-1/ DIN VDE 0641-1/ IEC 60898-1/ IEC 60269-1;;"1=B
+2=C
+3=D
+4=E
+5=U
+6=FF (superfast)
+7=F (flink)
+8=M (mittelträge)
+9=T (träge)
+10=TT (superträge)
+11=gG
+12=gR
+13=gS
+14=gPV
+15=gM
+16=aR
+17=aM
+18=dD
+19=gN
+20=gTr
+21=gB
+22=gTF
+23=TF
+99=Sonstige";Circuit breaker/ Tripping characteristic/ Maximum pre-fuse characteristic;;;;;;EU;;EU;;;;;;;;;;;;;;;without;;;string enum;"→Tabelle T6 ""Circuit breaker""";;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0014;;1;de-DE;minimale Bemessungsspannung (untere Funktionsgrenze);Minimale für eine festgelegte Betriebsbedingung einem elektrischen Betriebsmittel zugeordnete elektrische Spannung;;;minimum rated voltage (lower functional limit);;;;;;EU;;EU;;;;;;;;;;;;;;;Q4200 (elektrische Spannung);1;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36;P9950.0015;;1;de-DE;maximale Bemessungsspannung (obere Funktionsgrenze);Maximale für eine festgelegte Betriebsbedingung einem elektrischen Betriebsmittel zugeordnete elektrische Spannung;;;maximum rated voltage (upper functional limit);;;;;;EU;;EU;;;;;;;;;;;;;;;Q4200 (elektrische Spannung);1;;float;;;T001.0014;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Heizungsumwälzpumpe;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.0090;;1;de-DE;elektrische Leistungsaufnahme Heizkreis-pumpe;;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2600 (Leistung);6;;float;;;blocHeatingCirculationPump;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Ausdehnungsgefäß;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22,43;P001.0400;;1;de-DE;werkseitiger Vordruck;;;;factory-set precharge pressure;;;;;;DE;;DE;;;;;;;;;;;;;;43-710.01-3;Q2200 (Druck);5;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod043MembraneExpansionVessels;;;;;;
+22,43;P001.0401;;1;de-DE;Beschreibung;;;;description;;;;;;DE;;DE;;;;;;;;;;;;;;43-710.01-4;;;;string;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod043MembraneExpansionVessels;;;;;;
+22,43;P001.0402;;1;de-DE;Nenninhalt;;;;nominal capacity;;;;;;DE;;DE;;;;;;;;;;;;;;43-700-5;Q1002 (Rauminhalt);9;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;prod043PressureMaintainingDevice;;;;;;
+;Räume;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0220;;1;de-DE;Art des Raums;;;"1 = Störraum
+2 = Produktraum
+3 = Bedienraum
+4 = Einbringraum
+5 = Montageraum";Type;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0221;;1;de-DE;Form des Raums;;;"1 = rechteckig
+2 = rund
+3 = Sonderform";Shape;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;A001.2000,1,2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0222;;1;de-DE;Freiraum oben;;;;Access Clearance Top;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0223;;1;de-DE;Freiraum unten;;;;Access Clearance Bottom;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0224;;1;de-DE;Freiraum links;;;;Access Clearance Left;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0225;;1;de-DE;Freiraum rechts;;;;Access Clearance Right;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0226;;1;de-DE;Freiraum vorne;;;;Access Clearance Front;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0227;;1;de-DE;Freiraum hinten;;;;Access Clearance Rear;;;;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Gewichte und Maße;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0228;;1;de-DE;Bruttogewicht (Gesamt);;;;Gross Weight;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2000 (Masse);1;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0229;;1;de-DE;Transport Gewicht;;;;Shipping Weight;;;;;;DE;;DE;;;;;;;;;;;;;;;Q2000 (Masse);1;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+8,22,36,43;P001.0230;;1;de-DE;Gewicht (trocken);;;;Dry Weight;Mass;;Net-mass of the housing (without packaging or other things);;;DE;;DE;;;;;;;;;;;;;;;Q2000 (Masse);1;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P001.0231;;1;de-DE;Breite;;x-Achse;;Width;Width;;Width of the housing;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P001.0232;;1;de-DE;Tiefe;;-y-Achse;;Depth;Length;;Length of the housing;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P001.0233;;1;de-DE;Höhe;;z-Achse;;Height;Height;;Height of the housing;;;DE;;DE;;;;;;;;;;;;;;;Q1010 (Länge);7;;float;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Ausrichtung/Konstruktion Monoblock-Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.2001;;4;de-DE;Nullpunkt der Wärmepumpe;Dadurch sind die Achsen der Gerätemaße wie folgt definiert: Breite entspricht der x-Achse, Tiefe entspricht der y-Achse, Höhe entspricht der z-Achse;;;;;;;P022_Orientation.png;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;A001.2001,1;blocOrientation;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocOrientation;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.2002;;4;de-DE;Lage der x-Achse der Wärmepumpe;Breite entspricht der x-Achse;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;A001.2002,0;blocOrientation;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocOrientation;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.2003;;4;de-DE;Lage der y-Achse der Wärmepumpe;Tiefe entspricht der -y-Achse;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;A001.2003,3,4;blocOrientation;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocOrientation;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;P022.2004;;4;de-DE;Lage der z-Achse der Wärmepumpe;Höhe entspricht der z-Achse;;;;;;;;;DE;;DE;;;;;;;;;;;;;;;;;;string enum;;A001.2004,1;blocOrientation;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;blocOrientation;;;;;;;;;;;;;;;;;;;;;;;;;;;

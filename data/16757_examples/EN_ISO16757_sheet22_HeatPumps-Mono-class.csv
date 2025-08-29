@@ -1,0 +1,83 @@
+Part;VDI-ID;IsSpecialisedOf;Category;Creators language;Names of the classes;Names in language de-DE;Definitions in language de-DE;Descriptions in language de-DE;Names in language EN;Definitions in language EN;Descriptions in language EN;Visual representation;Country of use;Subdivision of use;Country of origin;Status;Date of creation;Date of activation;Date of last change;Date of revision;Date of version;Date of deactivation;Version number;Revision number;Replaces;Replaced by;Deprecation explanation;Reference to standard or  document;Reference to VDI 3805;Parent Class;Has Blocks;Has Parts;Classification system;Identifier ETIM;ETIM Mapping Quality;Definition ETIM;Identifier IFC 2_3;IFC 2_3 Mapping Quality;Definition IFC 2_3;Identifier IFC 4x;IFC 4x Mapping Quality;Definition IFC 4x;Identifier CISBE;CISBE Mapping Quality;Definition CISBE;Identifier Omniclass;Omniclass Mapping Quality;Definition Omniclass;Identifier DIN 276;Identifier CAFM ;CAFM Mapping Quality;Definition CAFM;Identifier ECLASS;ECLASS Mapping Quality;Definition ECLASS;Identifier VDI 2552;VDI 2552 Mapping Quality;Definition VDI 2552;Identifier prodBIM;prodBIM Mapping Quality;Definition prodBIM
+;GA001.1;;GA022;GA015;;GA016.DE;GA017.DE;;GA016.EN;GA017.EN;;GA018;GA019;GA020;GA021;GA002;GA003;GA004;GA005;GA006;GA007;GA008;GA009;GA010;GA011;GA012;GA013;GA101.2;GA101.3;GA023;GA102;GA102;;GA014.ETIM;GA014.ETIM;GA014.ECLASS;GA014.IFC;GA014.IFC;GA014.IFC;GA014.IFC;GA014.IFC;GA014.IFC;;;;;;;;;;;GA014.ECLASS;GA014.ECLASS;GA014.ECLASS;GA014.VDI2552;GA014.VDI2552;GA014.VDI2552;GA014.VDI2552;GA014.VDI2552;GA014.VDI2552
+;Internal;;Mandatory ;Mandatory;Mandatory ;Mandatory;Mandatory;;Mandatory ;Mandatory;;Optional;Mandatory;Optional;Optional;Calculated, admini-strative;Calculated, admini-strative;Calculated, admini-strative;Calculated, admini-strative;Mandatory, admini-strative;Mandatory, admini-strative;Calculated, admini-strative;Mandatory, admini-strative;Mandatory, admini-strative;Calculated, admini-strative;Calculated, admini-strative;Optional, Mandatory if the property has been replaced by others;Optional;Optional;Mandatory, no parent: NULL ;Optional;Optional;;optional;optional;optional;optional;optional;optional;optional;optional;optional;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;Mandatory;optional;optional;optional;Optional;Optional;Optional;Optional;Optional;Optional
+;;;"1=Productclass
+2=Block
+3=Opening
+4=Port
+5=externalClass
+6=Template
+7=Metadaten (Katalogdaten)";;;Deutsch;Deutsch;;English;English;;English;;English;;English;;;;;;;;;;;English;ID;ID;GA001.1;GA001.1;GA001.1;"1 = EN ISO 16757
+2 = VDI3805
+3 = CISBIE
+4 = prodBIM
+5 = eClass
+6 = ETIM
+7 = UniversalTypes
+8 = IFC
+9 = CAFM
+10 = HKI";ECxxx;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;English;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";English;English;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";English;Deutsch;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Deutsch;Deutsch;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Deutsch;Deutsch;Deutsch;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Deutsch;Irdi;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";Irdi;;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";;;"Ecxxx
+1 = genau
+2 = ungefähr
+3 = dem Sinn nach";
+list of value;single value;;single value;single value;single value;single value;single value;single value;single value;single value;single value;list of value;list of value;list of value;list of value;single value;single value;single value;single value;single value;single value;single value;single value;single value;list of  value;list of value;single value;List of values;List of values;single value;List of values;List of values;List of values;single value;single value;List of values;single value;single value;List of values;single value;single value;List of values;single value;single value;List of values;single value;single value;List of values;single value;single value;single value;List of values;single value;single value;List of values;single value;single value;List of values;single value;single value;List of values
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;C022.0001;;1;DE-de;prod022MonoblocHeatpump;Monoblock-Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;prod000;blocApplicationLimitHeatSource, blocPerformanceData-I, blocEU-RegulationNo517-2014, blocClimateZoneDependentErPdata, part043DiaphragmExpansionVessel, blocHeatingCirculationPump, blocElectricalAuxiliaryHeating, blocDomesticHotWaterTank, blocStorageTank, blocCoolingTower;;;;;;;;;;;;;;;;;;421.13;3d39fdc8-1bce-43a3-9f61-a3ae6d75c26a;1;42d1d0d4-4747-4e9a-91af-6f537238e293;;;;;;;;;
+22;C022.0002;;1;DE-de;prod022BrineWaterHeatpump;Sole-Wasser Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;prod022CompactHeatpumps;blocBrineWaterHeatpumpCooling, blocHeatSourcePump;;;;;;;;;;;;;;;;;;421.13;3a374c01-2563-4eaf-9215-1d1308ac56d4;1;42d1d0d4-4747-4e9a-91af-6f537238e293;;;;;;;;;
+22;C022.0003;;1;DE-de;prod022WaterWaterHeatpump;Wasser-Wasser Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;prod022CompactHeatpumps;blocWaterWaterHeatpumpCooling, blocHeatSourcePump;;;;;;;;;;;;;;;;;;421.13;3a374c01-2563-4eaf-9215-1d1308ac56d4;1;42d1d0d4-4747-4e9a-91af-6f537238e293;;;;;;;;;
+22;C022.0004;;1;DE-de;prod022AirWaterHeatpump;Luft-Wasser Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;prod022CompactHeatpumps;blocAirWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;421.13;3a374c01-2563-4eaf-9215-1d1308ac56d4;1;42d1d0d4-4747-4e9a-91af-6f537238e293;;;;;;;;;
+22;C022.0005;;1;DE-de;prod022DirectEvaporationHeatpump;Direktverdampfer Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;prod022CompactHeatpumps;blocBrineWaterHeatpumpCooling;;;;;;;;;;;;;;;;;;421.13;3a374c01-2563-4eaf-9215-1d1308ac56d4;1;42d1d0d4-4747-4e9a-91af-6f537238e293;;;;;;;;;
+22;C022.0005;;1;DE-de;prod022Orientaion;Produktdaten Ausrichtung/Konstruktion Monoblock-Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0001;B000.0001;2;DE-de;blocHeatingCircuitMonoblocHeatPump;Heizkreis der Monoblock-Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0002;B000.0002;2;DE-de;blocRefrigerantCircuitMonoblocHeatPump;Kältemittelkreis der Monoblock-Wärmepumpe;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0003;B000.0003;2;DE-de;blocBrineCircuitMonoblocHeatPump;Solekreislauf der Monoblock-Wärmepumpe (bei B0/W35);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0004;B000.0004;2;DE-de;blocWaterCircuitMonoblocHeatPump;Wasserkreislauf der Monoblock-Wärmepumpe (bei W10/W35);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0005;B000.0005;2;DE-de;blocAirCircuitMonoblocHeatPump;Luftkreislauf der Monoblock-Wärmepumpe (bei A2/W35);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0010;B022.0010;2;DE-de;blocAirOpenCircuitMonoblocHeatPump;Luftkreislauf der Monoblock-Wärmepumpe (bei A2/W35) bei offenenr Luftansaugung;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0011;B022.0011;2;DE-de;blocAirDuctCircuitMonoblocHeatPump;Luftkreislauf der Monoblock-Wärmepumpe (bei A2/W35) bei offenenr Luftansaugung;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0011;;2;DE-de;blocBrineWaterHeatpumpCooling;Sole-Wasser Wärmepumpe kühlen;sinnvoll?? Oder in Sole-WP;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0012;;2;DE-de;blocWaterWaterHeatpumpCooling;Wasser-Wasser Wärmepumpe kühlen;sinnvoll?? Oder in Wasser-WP;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0013;;2;DE-de;blocAirWaterHeatpumpCooling;Luft-Wasser Wärmepumpe kühlen;sinnvoll?? Oder in Luft-WP;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0014;;2;DE-de;blocLimitOperatingTemperature;Einsatzgrenzen der Wärmequelle;;;;heat source limit ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0015;;2;DE-de;blocPerformanceData-I;Leistungsdaten I;;;;Performance data I;;;;;;;;;;;;;;;;;;;;;blocPerformanceData-II;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0016;;2;DE-de;blocPerformanceData-II;Leistungsdaten II;;;;Performance data II;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0017;;2;DE-de;blocEU-RegulationNo517-2014;EU-F-GAS-Verordnung 517/2014;;;;EU Regulation No 517/2014 on fluorinated greenhouse gases;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0018;;2;DE-de;blocClimateZoneDependentErPdata;Klimaabhängige ErP-Daten;;;;Climate-zone-dependent ErP data;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0018;;2;DE-de;blocLoadProfileDependentErPdata;Lastprofil-abhängige ErP-Daten;;;;Load-profile-dependent ErP data;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0030;;2;DE-de;blocHeatSourcePump;Wärmequellenpumpe ;ggf. auch als eine Produktklasse aus Part04;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0031;;2;DE-de;blocHeatingCirculationPump;Heizungsumwälzpumpe;ggf. auch als eine Produktklasse aus Part04;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0032;;2;DE-de;blocElectricalAuxiliaryHeating;Elektrische Zusatzheizung;ggf. auch als eine Produktklasse aus Part200;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;C043.0002;;2;DE-de;Part043DiaphragmExpansionVessel;Membranausdehnungsgefäß;Part43;;;;;;;;;;;;;;;;;;;;;;;prod022CompactHeatpumps;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0034;;2;DE-de;blocDomesticHotWaterTank;interne Trinkwasserspeicher;ggf. auch als eine Produktklasse aus Part20;;;;;;;;;;;;;;;;;;;;;;;;blocLoadProfileDependentErPdata;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0035;;2;DE-de;blocStorageTank;interner Pufferspeicher;ggf. auch als eine Produktklasse aus Part20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;B022.0036;;2;DE-de;blocCoolingTower;externer Kühlturm;ggf. auch als eine Produktklasse aus Partxxx;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+22;T001.0014;;4;DE-de;portElectricalConnectionData;Elektrische Anschlussdaten;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
