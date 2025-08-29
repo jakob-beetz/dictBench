@@ -64,8 +64,8 @@ PropBench is a Django-based collaborative editor system for managing properties 
 
 ## License
 
-[Insert license information here]
+MIT 
 
 ## Contributors
 
-[Your Name/Organization]
+RWTH Aachen University - Chair of Design Comptuation
