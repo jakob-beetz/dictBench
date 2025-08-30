@@ -375,12 +375,22 @@ JAZZMIN_SETTINGS = {
     # - vertical_tabs
     # - collapsible
     # - carousel
-    "changeform_format": "horizontal_tabs",
+    "changeform_format": "single",
     # override change forms on a per modeladmin basis
-    "changeform_format_overrides": {"accounts.user": "collapsible", "dictionaries.propertydictionary": "vertical_tabs"},
+    # "changeform_format_overrides": {"accounts.user": "collapsible", "dictionaries.propertydictionary": "vertical_tabs"},
     # Add a language dropdown into the admin
     "language_chooser": False,
 }
+
+# Jazzmin compact CSS: point Jazzmin to our compact stylesheet
+try:
+    JAZZMIN_SETTINGS
+except NameError:
+    JAZZMIN_SETTINGS = {}
+
+# use compact admin CSS for denser forms and lists
+JAZZMIN_SETTINGS['custom_css'] = 'admin/css/jazzmin_compact.css'
+
 
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,

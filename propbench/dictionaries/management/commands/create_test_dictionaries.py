@@ -6,93 +6,92 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    help = 'Create default test dictionary for import testing'
-    
+    help = 'Create test dictionaries for import testing'
+
     def add_arguments(self, parser):
         parser.add_argument(
             '--user',
             type=str,
-            help='Username to assign as creator (defaults to first superuser or creates admin)',
-            default=None
+            help='Username to assign as creator (default: admin)',
+            default='admin'
         )
-    
+
     def handle(self, *args, **options):
-        # Get or create a user for the dictionaries
-        username = options.get('user')
+        username = options['user']
         
-        if username:
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                self.stdout.write(
-                    self.style.ERROR(f'User "{username}" not found')
-                )
-                return
-        else:
-            # Try to get first superuser
-            user = User.objects.filter(is_superuser=True).first()
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            # Create the user if it doesn't exist
+            user = User.objects.create_superuser(
+                username=username,
+                email=f'{username}@test.com',
+                password='admin123'
+            )
+            self.stdout.write(
+                self.style.SUCCESS(f'✓ Created superuser: {username}')
+            )
+
+        # Create test dictionaries
+        dictionaries_data = [
+            {
+                'name': 'Heat Pumps ISO 16757',
+                'description': 'ISO 16757 Heat Pump Properties Dictionary for testing import functionality'
+            },
+            {
+                'name': 'General Properties',
+                'description': 'General property dictionary for basic property data'
+            },
+            {
+                'name': 'Building Components',
+                'description': 'Dictionary for building component properties and specifications'
+            }
+        ]
+
+        created_count = 0
+        existing_count = 0
+
+        for dict_data in dictionaries_data:
+            dictionary, created = PropertyDictionary.objects.get_or_create(
+                name=dict_data['name'],
+                defaults={
+                    'description': dict_data['description'],
+                    'created_by': user,
+                    'updated_by': user
+                }
+            )
             
-            if not user:
-                # Create a default admin user
-                user = User.objects.create_superuser(
-                    username='admin',
-                    email='admin@example.com',
-                    password='admin123',
-                    first_name='Admin',
-                    last_name='User'
-                )
+            if created:
+                created_count += 1
                 self.stdout.write(
-                    self.style.SUCCESS(f'✓ Created default admin user: {user.username} (password: admin123)')
+                    self.style.SUCCESS(f'✓ Created dictionary: {dictionary.name}')
                 )
-        
-        # Create test dictionary
-        dictionary, created = PropertyDictionary.objects.get_or_create(
-            name='Test Dictionary',
-            defaults={
-                'description': 'Default test dictionary for CSV imports',
-                'is_default': True,
-                'created_by': user,
-                'updated_by': user,
-            }
+            else:
+                existing_count += 1
+                self.stdout.write(
+                    self.style.WARNING(f'• Dictionary already exists: {dictionary.name}')
+                )
+
+        self.stdout.write('\n' + '='*60)
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'Dictionary creation completed!\n'
+                f'  • Created: {created_count}\n'
+                f'  • Already existed: {existing_count}\n'
+                f'  • Total available: {PropertyDictionary.objects.count()}'
+            )
         )
         
-        if created:
-            self.stdout.write(
-                self.style.SUCCESS(f'✓ Created default dictionary: {dictionary.name}')
+        # List all available dictionaries
+        self.stdout.write('\n📚 Available Dictionaries:')
+        for dictionary in PropertyDictionary.objects.all():
+            self.stdout.write(f'  • ID {dictionary.id}: {dictionary.name}')
+            
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'\n🚀 Ready for import testing!\n'
+                f'   • Go to: /admin/properties/property/\n'
+                f'   • Click "Import ISO 16757"\n'
+                f'   • Select a dictionary and upload CSV file'
             )
-        else:
-            self.stdout.write(
-                self.style.WARNING(f'✓ Dictionary already exists: {dictionary.name}')
-            )
-        
-        # Also create Heat Pumps dictionary for the ISO 16757 data
-        hp_dictionary, hp_created = PropertyDictionary.objects.get_or_create(
-            name='Heat Pumps',
-            defaults={
-                'description': 'ISO 16757 Heat Pump Properties Dictionary',
-                'is_default': False,
-                'created_by': user,
-                'updated_by': user,
-            }
         )
-        
-        if hp_created:
-            self.stdout.write(
-                self.style.SUCCESS(f'✓ Created Heat Pumps dictionary: {hp_dictionary.name}')
-            )
-        else:
-            self.stdout.write(
-                self.style.WARNING(f'✓ Heat Pumps dictionary already exists: {hp_dictionary.name}')
-            )
-        
-        total_dicts = PropertyDictionary.objects.count()
-        self.stdout.write(f'Total dictionaries: {total_dicts}')
-        self.stdout.write(f'Using user: {user.username} (ID: {user.id})')
-        
-        if not options.get('user') and user.username == 'admin':
-            self.stdout.write(
-                self.style.WARNING(
-                    'Note: Created default admin user with password "admin123". '
-                    'Please change this password in production!'
-                )
-            )

@@ -1,1 +1,1 @@
-# Placeholder file to create the management directory
+# This file makes Python treat the directory as a package

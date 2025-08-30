@@ -1,0 +1,1318 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Property Grid Manager | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <!-- CSRF Token for AJAX requests -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <!-- Tabulator CSS -->
+    <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fuse.js for fuzzy search -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <!-- Tabulator JS -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='properties' %}">Properties</a>
+    &rsaquo; Property Grid Manager
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Debug Information -->
+<div class="debug-info" style="background: #f0f0f0; padding: 10px; margin-bottom: 20px; border-radius: 5px;">
+    <h4>🔍 Debug Information</h4>
+    <p><strong>Properties:</strong> {{ debug_info.property_count|default:"Loading..." }}</p>
+    <p><strong>Dictionaries:</strong> {{ debug_info.dictionary_count|default:"Loading..." }}</p>
+    <p><strong>Current URL:</strong> {{ request.get_full_path }}</p>
+    <p><strong>User:</strong> {{ user.username }} ({{ user.is_staff|yesno:"Staff,Not Staff" }})</p>
+</div>
+
+<div class="property-grid-container">
+    <!-- Header Controls -->
+    <div class="grid-header">
+        <h1><i class="fas fa-table"></i> Property Grid Manager</h1>
+        <div class="grid-controls">
+            <div class="search-controls">
+                <input type="text" id="global-search" placeholder="🔍 Global fuzzy search..." class="search-input">
+                <select id="search-field" class="field-selector">
+                    <option value="">All fields</option>
+                    <option value="names">Property Names</option>
+                    <option value="data_type">Data Type</option>
+                    <option value="unit_of_measurement">Unit</option>
+                    <option value="status">Status</option>
+                    <option value="dictionary">Dictionary</option>
+                </select>
+                <button id="clear-search" class="btn-clear">Clear</button>
+            </div>
+            
+            <div class="action-controls">
+                <button id="add-property" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Property
+                </button>
+                <button id="bulk-edit" class="btn btn-secondary" disabled>
+                    <i class="fas fa-edit"></i> Bulk Edit (<span id="selected-count">0</span>)
+                </button>
+                <button id="export-data" class="btn btn-success">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button id="version-history" class="btn btn-info" disabled>
+                    <i class="fas fa-history"></i> Version History
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid Container -->
+    <div id="property-table" class="tabulator-container"></div>
+
+    <!-- Footer Stats -->
+    <div class="grid-footer">
+        <div class="stats">
+            <span id="total-properties">Total: 0</span>
+            <span id="filtered-properties">Filtered: 0</span>
+            <span id="selected-properties">Selected: 0</span>
+        </div>
+        <div class="version-info">
+            <span id="last-modified">Last modified: Never</span>
+            <button id="undo-last" class="btn btn-sm" disabled>
+                <i class="fas fa-undo"></i> Undo
+            </button>
+            <button id="redo-last" class="btn btn-sm" disabled>
+                <i class="fas fa-redo"></i> Redo
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Property Edit Modal -->
+<div id="property-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">Edit Property</h3>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="property-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="property-names">Property Names</label>
+                        <div id="property-names-container">
+                            <!-- Dynamic property names -->
+                        </div>
+                        <button type="button" id="add-name" class="btn-sm">+ Add Name</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data-type">Data Type</label>
+                        <select id="data-type" name="data_type" required>
+                            <option value="string">String</option>
+                            <option value="real">Real Number</option>
+                            <option value="integer">Integer</option>
+                            <option value="boolean">Boolean</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unit-measurement">Unit of Measurement</label>
+                        <input type="text" id="unit-measurement" name="unit_of_measurement" 
+                               class="fuzzy-search-field" data-source="units">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                            <option value="deprecated">Deprecated</option>
+                            <option value="withdrawn">Withdrawn</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dictionary">Dictionary</label>
+                        <select id="dictionary" name="dictionary" required>
+                            <!-- Populated from backend -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="physical-quantity">Physical Quantity</label>
+                        <input type="text" id="physical-quantity" name="physical_quantity"
+                               class="fuzzy-search-field" data-source="quantities">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="value-domain">Value Domain</label>
+                        <textarea id="value-domain" name="value_domain" 
+                                  placeholder="e.g., 0-100, {red, green, blue}, >0"></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="classification">Classification Reference</label>
+                        <input type="text" id="classification" name="classification_reference"
+                               class="fuzzy-search-field" data-source="classifications">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button id="save-property" class="btn btn-primary">Save Changes</button>
+            <button id="cancel-edit" class="btn btn-secondary">Cancel</button>
+            <div class="version-controls">
+                <button id="create-version" class="btn btn-info">Create Version</button>
+                <select id="version-selector" disabled>
+                    <option>Current</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Edit Modal -->
+<div id="bulk-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Bulk Edit Properties (<span id="bulk-count">0</span> selected)</h3>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="bulk-actions">
+                <div class="action-group">
+                    <h4>Status Changes</h4>
+                    <button class="bulk-btn" data-action="activate">Activate All</button>
+                    <button class="bulk-btn" data-action="deprecate">Deprecate All</button>
+                    <button class="bulk-btn" data-action="draft">Mark as Draft</button>
+                </div>
+                
+                <div class="action-group">
+                    <h4>Dictionary Changes</h4>
+                    <select id="bulk-dictionary">
+                        <option value="">Choose dictionary...</option>
+                    </select>
+                    <button class="bulk-btn" data-action="move-dictionary">Move to Dictionary</button>
+                </div>
+
+                <div class="action-group">
+                    <h4>Classification</h4>
+                    <input type="text" id="bulk-classification" placeholder="Classification reference...">
+                    <button class="bulk-btn" data-action="set-classification">Set Classification</button>
+                </div>
+
+                <div class="action-group danger">
+                    <h4>Danger Zone</h4>
+                    <button class="bulk-btn danger" data-action="delete">Delete Selected</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="apply-bulk" class="btn btn-primary" disabled>Apply Changes</button>
+            <button id="cancel-bulk" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Version History Modal -->
+<div id="version-history-modal" class="modal">
+    <div class="modal-content large">
+        <div class="modal-header">
+            <h3>Version History</h3>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="version-timeline"></div>
+        </div>
+        <div class="modal-footer">
+            <button id="restore-version" class="btn btn-warning" disabled>Restore Selected Version</button>
+            <button id="close-history" class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Grid Container Styles */
+.property-grid-container {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.grid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.grid-header h1 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.grid-controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.search-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-input {
+    width: 300px;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.field-selector {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.action-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-primary { background: #007bff; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-success { background: #28a745; color: white; }
+.btn-info { background: #17a2b8; color: white; }
+.btn-warning { background: #ffc107; color: #212529; }
+.btn-clear { background: #dc3545; color: white; padding: 8px 12px; }
+
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Tabulator Container */
+.tabulator-container {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    min-height: 500px;
+}
+
+/* Custom Tabulator Styles */
+.tabulator .tabulator-header {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.tabulator .tabulator-header .tabulator-col {
+    background: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+}
+
+.tabulator .tabulator-header .tabulator-col-title {
+    font-weight: 600;
+    color: #495057;
+}
+
+.tabulator .tabulator-row.tabulator-selected {
+    background: #e3f2fd !important;
+}
+
+.tabulator .tabulator-row:hover {
+    background: #f5f5f5;
+}
+
+/* Grid Footer */
+.grid-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.stats span {
+    margin-right: 20px;
+}
+
+.version-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-content.large {
+    max-width: 1200px;
+}
+
+.modal-header {
+    background: #f8f9fa;
+    padding: 10px 12px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #495057;
+}
+
+.close {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.modal-body {
+    padding: 8px 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Compact form overrides to reduce whitespace and make forms denser */
+.modal-content .modal-body,
+.modal-content .modal-footer {
+    padding: 8px 12px;
+}
+
+.modal-header {
+    padding: 10px 12px;
+}
+
+.form-grid {
+    gap: 8px;
+    grid-template-columns: 1fr 1fr;
+}
+
+.form-group {
+    margin-bottom: 6px;
+}
+
+.form-group label {
+    font-size: 0.92rem;
+    margin-bottom: 4px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 6px 8px;
+    font-size: 13px;
+}
+
+#property-names-container {
+    padding: 6px;
+    max-height: 160px;
+}
+
+.name-entry {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+    align-items: center;
+}
+
+.inline-related .form-row,
+.fieldset .form-row {
+    padding: 6px 0;
+    margin-bottom: 6px;
+}
+
+.bulk-actions .action-group {
+    padding: 10px;
+}
+
+.modal-content {
+    max-height: 85vh;
+}
+
+/* Reduce spacing in modal footer controls */
+.modal-footer .version-controls,
+.modal-footer .btn {
+    margin: 0 6px;
+}
+
+/* Slightly smaller font for helper text */
+.form-group small, .text-muted {
+    font-size: 12px;
+}
+
+/* Version Timeline */
+#version-timeline {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.version-entry {
+    display: flex;
+    padding: 15px;
+    border-left: 4px solid #007bff;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.version-entry:hover {
+    background: #e9ecef;
+}
+
+.version-entry.selected {
+    background: #d4edda;
+    border-left-color: #28a745;
+}
+
+.version-info-left {
+    flex: 1;
+}
+
+.version-info-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.version-date {
+    font-weight: 600;
+    color: #495057;
+}
+
+.version-user {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.version-changes {
+    color: #28a745;
+    font-size: 14px;
+}
+
+.version-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.version-actions button {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* Status Indicators */
+.status-active { color: #28a745; }
+.status-draft { color: #ffc107; }
+.status-deprecated { color: #fd7e14; }
+.status-withdrawn { color: #dc3545; }
+
+/* Data Type Indicators */
+.type-string { color: #17a2b8; }
+.type-real { color: #28a745; }
+.type-integer { color: #007bff; }
+.type-boolean { color: #6f42c1; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .grid-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .grid-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .search-controls {
+        flex-wrap: wrap;
+    }
+    
+    .search-input {
+        width: 100%;
+    }
+    
+    .action-controls {
+        flex-wrap: wrap;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* Alert styles for notifications */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Jazzmin / Django admin: compact layout overrides to reduce whitespace */
+/* Targets Jazzmin classes and default admin change form structure */
+body.jazzmin, .jazzmin-theme, .jazzmin-theme .content, #content, #content-main {
+    font-size: 14px;
+}
+
+/* Compact headers, cards and fieldsets */
+.changeform, .change-form, .card, .module, fieldset.module {
+    margin-bottom: 6px !important;
+    padding: 6px !important;
+}
+
+/* Reduce spacing in form rows and inline groups */
+.form-row, .inline-related .form-row, .inline-group, .tabular.inline-related td, .tabular.inline-related th {
+    padding: 4px 6px !important;
+    margin-bottom: 4px !important;
+}
+
+.field-box, .form-row .field-box, .inline-related .field-box {
+    padding: 4px 6px !important;
+}
+
+/* Labels and help text smaller and tighter */
+label, .fieldset h2, .grp-module h3, .module h2 {
+    font-size: 0.92rem !important;
+    margin-bottom: 4px !important;
+}
+
+.form-row input, .form-row select, .form-row textarea, .fieldBox input, .fieldBox select, .fieldBox textarea {
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+}
+
+/* Inline form headers and add buttons tighter */
+.inline-related h3, .inline-related .add-row, .inline-related .add-inline {
+    margin: 6px 0 !important;
+    font-size: 0.95rem !important;
+}
+
+/* Sidebar & breadcrumbs compact */
+.side-nav, .jazzmin-sidebar, .breadcrumbs, .breadcrumbs li {
+    margin-bottom: 6px !important;
+    padding: 4px 6px !important;
+}
+
+/* Submit row and top save buttons closer */
+.submit-row, .object-tools {
+    margin-top: 6px !important;
+    padding: 4px 0 !important;
+}
+
+/* Make inline tables denser */
+.inline-related table, .tabular.inline-related table {
+    border-collapse: collapse !important;
+}
+.inline-related table td, .inline-related table th {
+    padding: 4px 6px !important;
+}
+
+/* Reduce modal paddings in our UI as well */
+.modal-content, .modal-content .modal-body, .modal-content .modal-footer {
+    padding: 8px 10px !important;
+}
+
+/* Keep responsive adjustments */
+@media (max-width: 768px) {
+    .change-form, .module, .inline-related {
+        padding: 6px !important;
+    }
+}
+</style>
+
+<script>
+// API endpoints (use Django reverse so template resolves correct URLs)
+const GRID_DATA_URL = "{% url 'properties:property_grid_data' %}";
+const DICTS_API_URL = "{% url 'properties:api_dictionaries' %}";
+
+// Global variables
+let propertyTable;
+let fuzzySearcher;
+let undoStack = [];
+let redoStack = [];
+let currentEditingProperty = null;
+let bulkSelectedRows = [];
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Property Grid Manager starting...');
+    console.log('Current URL:', window.location.href);
+    
+    // Create a namespace to avoid variable conflicts
+    window.PropertyGrid = {
+        table: null,
+        fuzzySearcher: null,
+        undoStack: [],
+        redoStack: [],
+        currentEditingProperty: null,
+        bulkSelectedRows: []
+    };
+    
+    // Define getCsrfToken function here
+    window.getCsrfToken = function() {
+        // Try multiple methods to get CSRF token
+        let token = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (token) return token.value;
+        
+        token = document.querySelector('meta[name="csrf-token"]');
+        if (token) return token.getAttribute('content');
+        
+        // Try getting from cookie
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') return value;
+        }
+        
+        console.warn('CSRF token not found!');
+        return '';
+    };
+    
+    console.log('CSRF Token available:', !!getCsrfToken());
+    
+    // Define utility functions
+    window.escapeHtml = function(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    };
+    
+    initializePropertyGrid();
+    initializeEventListeners();
+    initializeFuzzySearch();
+    loadInitialData();
+});
+
+// Add missing function definitions
+function showLoading(show) {
+    const container = document.querySelector('.property-grid-container');
+    if (show) {
+        container.classList.add('loading');
+    } else {
+        container.classList.remove('loading');
+    }
+}
+
+function showError(message) {
+    console.error('Error:', message);
+    showNotification(message, 'error');
+}
+
+function showSuccess(message) {
+    console.log('Success:', message);
+    showNotification(message, 'success');
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease;
+    `;
+    
+    if (type === 'success') {
+        notification.style.background = '#28a745';
+    } else if (type === 'error') {
+        notification.style.background = '#dc3545';
+    }
+    
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+function populateDictionaryDropdowns(dictionaries) {
+    console.log('Populating dictionaries:', dictionaries);
+    const dictSelect = document.getElementById('dictionary');
+    const bulkDictSelect = document.getElementById('bulk-dictionary');
+    if (!dictSelect || !bulkDictSelect) return;
+
+    // Reset options
+    dictSelect.innerHTML = '<option value="">Select dictionary...</option>';
+    bulkDictSelect.innerHTML = '<option value="">Choose dictionary...</option>';
+
+    dictionaries.forEach(d => {
+        const value = d.guid || d.pk || d.id || '';
+        const label = d.name || d.title || String(value);
+
+        const opt = document.createElement('option');
+        opt.value = String(value);
+        opt.textContent = label;
+        dictSelect.appendChild(opt);
+
+        const opt2 = opt.cloneNode(true);
+        bulkDictSelect.appendChild(opt2);
+    });
+
+    // If a default dictionary exists, select it
+    const defaultDict = dictionaries.find(d => d.is_default || d.default === true);
+    if (defaultDict) {
+        const defVal = defaultDict.guid || defaultDict.pk || defaultDict.id || '';
+        if (defVal) dictSelect.value = String(defVal);
+    }
+}
+
+function updateLastModified() {
+    const now = new Date();
+    const lastModElement = document.getElementById('last-modified');
+    if (lastModElement) {
+        lastModElement.textContent = `Last modified: ${now.toLocaleString()}`;
+    }
+}
+
+function initializeFuzzySearch() {
+    console.log('Fuzzy search initialized');
+    // Initialize with empty Fuse instance
+    if (window.Fuse) {
+        const fuseOptions = {
+            threshold: 0.4,
+            keys: ['names', 'unit_of_measurement', 'data_type', 'status']
+        };
+        PropertyGrid.fuzzySearcher = new Fuse([], fuseOptions);
+    }
+}
+
+function updateSelectionUI() {
+    console.log('Selection UI updated');
+    // This will be implemented when needed
+}
+
+// Duplicate let declarations removed to prevent redeclaration SyntaxError
+// Property grid globals are managed on window.PropertyGrid namespace
+
+// Placeholder functions for event handlers
+function initializeEventListeners() {
+    console.log('Event listeners initialized');
+    // Basic event listeners will be added as needed
+}
+
+// Initialize the main property grid
+function initializePropertyGrid() {
+    console.log('Initializing property grid...');
+
+    // Check if Tabulator is available
+    if (typeof Tabulator === 'undefined') {
+        console.error('Tabulator library not loaded');
+        document.getElementById('property-table').innerHTML = '<div class="alert alert-danger">Tabulator library failed to load</div>';
+        return;
+    }
+
+    try {
+        PropertyGrid.table = new Tabulator("#property-table", {
+            height: "500px",
+            ajaxURL: GRID_DATA_URL,
+            ajaxConfig: { credentials: 'same-origin', headers: { 'Accept': 'application/json' } },
+            ajaxFiltering: true,
+            ajaxSorting: true,
+            ajaxProgressiveLoad: false,
+            layout: "fitColumns",
+            responsiveLayout: "collapse",
+            placeholder: "No properties found. Click 'Add Property' to create your first property.",
+
+            // Use ajaxRequestFunc to control how filters/sort/search are sent to server
+            ajaxRequestFunc: async function(url, config, params) {
+                // Gather filters and sorters from the table
+                const table = PropertyGrid.table;
+                const filters = table.getFilters(); // [{field,type,value},...]
+                const sorters = table.getSorters(); // [{field,dir}]
+                const globalSearch = (document.getElementById('global-search') || {}).value || '';
+
+                const payload = {
+                    filters: filters,
+                    sorters: sorters,
+                    search: globalSearch,
+                };
+
+                const finalUrl = url + '?' + new URLSearchParams({ payload: JSON.stringify(payload) });
+
+                const response = await fetch(finalUrl, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } });
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                }
+                const data = await response.json();
+                return data;
+            },
+
+            // Normalize server response to an array of row data
+            ajaxResponse: function(url, params, response) {
+                // server should return { properties: [...] } or an array
+                if (response === null || response === undefined) return [];
+                if (Array.isArray(response)) return response;
+                if (response.properties && Array.isArray(response.properties)) return response.properties;
+                // Fallback: try common keys
+                if (response.data && Array.isArray(response.data)) return response.data;
+                return [];
+            },
+
+            columns: [
+                {
+                    title: "Property Name",
+                    field: "names",
+                    headerFilter: "input",
+                    headerFilterPlaceholder: "Search name...",
+                    headerFilterFunc: function(headerValue, rowValue, rowData, filterParams){
+                        if (!headerValue) return true;
+                        const names = rowValue || [];
+                        const combined = names.map(n => n.name).join(' ');
+                        return fuzzyFilter(headerValue, combined, rowData, filterParams);
+                    },
+                    formatter: function(cell) {
+                        const names = cell.getValue() || [];
+                        if (names.length === 0) return '<em class="text-muted">No name</em>';
+                        const primary = names.find(n => n.language === 'en') || names[0];
+                        return `<strong>${escapeHtml(primary.name)}</strong>`;
+                    },
+                    width: 250
+                },
+                {
+                    title: "Data Type",
+                    field: "data_type",
+                    headerFilter: "select",
+                    headerFilterParams: { "": "All", "string": "String", "real":"Real", "integer":"Integer", "boolean":"Boolean" },
+                    formatter: function(cell) {
+                        const type = cell.getValue();
+                        return type ? type.charAt(0).toUpperCase() + type.slice(1) : '';
+                    },
+                    width: 120
+                },
+                {
+                    title: "Unit",
+                    field: "unit_of_measurement",
+                    headerFilter: "input",
+                    headerFilterPlaceholder: "Filter unit...",
+                    formatter: function(cell) {
+                        const unit = cell.getValue();
+                        return unit ? `<code>${escapeHtml(unit)}</code>` : '<em class="text-muted">No unit</em>';
+                    },
+                    width: 100
+                },
+                {
+                    title: "Status",
+                    field: "status",
+                    headerFilter: "select",
+                    headerFilterParams: { "": "All", "active": "Active", "draft": "Draft", "deprecated": "Deprecated", "withdrawn": "Withdrawn" },
+                    formatter: function(cell) {
+                        const status = cell.getValue();
+                        return status ? status.charAt(0).toUpperCase() + status.slice(1) : '';
+                    },
+                    width: 100
+                },
+                {
+                    title: "Dictionary",
+                    field: "dictionary_guid",
+                    headerFilter: "select",
+                    headerFilterParams: {}, // populated by populateDictionaryDropdowns()
+                    formatter: function(cell) {
+                        const guidOrName = cell.getValue();
+                        const nameFallback = cell.getRow().getData().dictionary_name;
+                        return guidOrName ? escapeHtml(nameFallback || guidOrName) : (nameFallback ? escapeHtml(nameFallback) : '<em class="text-muted">None</em>');
+                    },
+                    width: 150
+                }
+            ],
+
+            dataLoaded: function(data) {
+                console.log('Data loaded into table via ajax:', data.length);
+                const totalElement = document.getElementById('total-properties');
+                const filteredElement = document.getElementById('filtered-properties');
+                if (totalElement) totalElement.textContent = `Total: ${data.length}`;
+                if (filteredElement) filteredElement.textContent = `Filtered: ${data.length}`;
+            }
+        });
+
+        console.log('Property grid initialized successfully (ajax mode)');
+
+    } catch (error) {
+        console.error('Error initializing property grid:', error);
+        document.getElementById('property-table').innerHTML = 
+            `<div class="alert alert-danger">Error initializing grid: ${error.message}</div>`;
+    }
+}
+
+// Initialize event listeners
+function initializeEventListeners() {
+    // Global search
+    document.getElementById('global-search').addEventListener('input', function(e) {
+        performGlobalSearch(e.target.value);
+    });
+    
+    // Clear search
+    document.getElementById('clear-search').addEventListener('click', function() {
+        document.getElementById('global-search').value = '';
+        document.getElementById('search-field').value = '';
+        propertyTable.clearFilter();
+    });
+    
+    // Search field selector
+    document.getElementById('search-field').addEventListener('change', function(e) {
+        const searchTerm = document.getElementById('global-search').value;
+        if (searchTerm) {
+            performGlobalSearch(searchTerm);
+        }
+    });
+    
+    // Action buttons
+    document.getElementById('add-property').addEventListener('click', function() {
+        addNewProperty();
+    });
+    
+    document.getElementById('bulk-edit').addEventListener('click', function() {
+        openBulkEditModal();
+    });
+    
+    document.getElementById('export-data').addEventListener('click', function() {
+        exportData();
+    });
+    
+    document.getElementById('version-history').addEventListener('click', function() {
+        if (bulkSelectedRows.length === 1) {
+            showVersionHistory(bulkSelectedRows[0].getData());
+        }
+    });
+    
+    // Undo/Redo
+    document.getElementById('undo-last').addEventListener('click', function() {
+        performUndo();
+    });
+    
+    document.getElementById('redo-last').addEventListener('click', function() {
+        performRedo();
+    });
+    
+    // Modal event listeners
+    initializeModalListeners();
+}
+
+// Initialize modal event listeners
+function initializeModalListeners() {
+    // Close modal buttons
+    document.querySelectorAll('.modal .close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+            closeModal(this.closest('.modal'));
+        });
+    });
+    
+    // Close modals when clicking outside
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal(modal);
+            }
+        });
+    });
+    
+    // Property form submission
+    document.getElementById('save-property').addEventListener('click', function() {
+        savePropertyForm();
+    });
+    
+    document.getElementById('cancel-edit').addEventListener('click', function() {
+        closeModal(document.getElementById('property-modal'));
+    });
+    
+    // Add property name
+    document.getElementById('add-name').addEventListener('click', function() {
+        addPropertyNameField();
+    });
+    
+    // Bulk edit actions
+    document.querySelectorAll('.bulk-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.getAttribute('data-action');
+            prepareBulkAction(action);
+        });
+    });
+    
+    document.getElementById('apply-bulk').addEventListener('click', function() {
+        applyBulkChanges();
+    });
+    
+    document.getElementById('cancel-bulk').addEventListener('click', function() {
+        closeModal(document.getElementById('bulk-modal'));
+    });
+}
+
+// Initialize fuzzy search
+function initializeFuzzySearch() {
+    // This will be used for header filters and global search
+    const fuseOptions = {
+        threshold: 0.4,
+        keys: [
+            { name: 'names', weight: 0.3 },
+            { name: 'unit_of_measurement', weight: 0.2 },
+            { name: 'data_type', weight: 0.1 },
+            { name: 'status', weight: 0.1 },
+            { name: 'dictionary_name', weight: 0.2 },
+            { name: 'physical_quantity_name', weight: 0.1 }
+        ]
+    };
+    
+    fuzzySearcher = new Fuse([], fuseOptions);
+}
+
+// Fuzzy filter function for Tabulator
+function fuzzyFilter(headerValue, rowValue, rowData, filterParams) {
+    if (!headerValue) return true;
+    
+    const searchValue = String(rowValue || '').toLowerCase();
+    const filterValue = headerValue.toLowerCase();
+    
+    // Simple fuzzy matching - check if characters appear in order
+    let searchIndex = 0;
+    for (let i = 0; i < filterValue.length && searchIndex < searchValue.length; i++) {
+        if (filterValue[i] === searchValue[searchIndex]) {
+            searchIndex++;
+        }
+    }
+    
+    return searchIndex === filterValue.length;
+}
+
+// Load initial data
+async function loadInitialData() {
+    try {
+        showLoading(true);
+        console.log('Loading initial lookup data...');
+
+        // Load dictionaries for dropdowns - keep as before
+        const dictionariesResponse = await fetch(DICTS_API_URL, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } });
+        const dictText = await dictionariesResponse.text();
+        let dictionariesData = [];
+        try {
+            dictionariesData = dictText ? JSON.parse(dictText) : [];
+        } catch (e) {
+            console.warn('Failed to parse dictionaries response, proceeding with empty list', e);
+            dictionariesData = [];
+        }
+
+        // Populate dictionary dropdowns (UI + headerFilter params)
+        populateDictionaryDropdowns(dictionariesData);
+
+        // Trigger Tabulator to load data via ajaxRequestFunc
+        if (PropertyGrid.table) {
+            await PropertyGrid.table.setData();
+        }
+
+        // Update fuzzy searcher after data load: setCollection after data is available
+        const tableData = PropertyGrid.table ? await PropertyGrid.table.getData() : [];
+        if (PropertyGrid.fuzzySearcher && tableData.length > 0) {
+            PropertyGrid.fuzzySearcher.setCollection(tableData);
+        }
+
+        updateLastModified();
+        showLoading(false);
+        showSuccess(`Loaded ${tableData.length} properties`);
+    } else {
+        // Called directly with data object
+        propertyData = rowIndexOrData;
+    }
+    
+    currentEditingProperty = propertyData;
+    populatePropertyForm(propertyData);
+    openModal(document.getElementById('property-modal'));
+    document.getElementById('modal-title').textContent = `Edit Property: ${getPropertyDisplayName(propertyData)}`;
+}
+
+function duplicateProperty(rowIndex) {
+    const propertyData = propertyTable.getRowFromPosition(rowIndex).getData();
+    const duplicateData = { ...propertyData };
+    
+    // Clear ID and GUID and modify name to avoid collisions
+    delete duplicateData.id;
+    delete duplicateData.guid;
+    if (duplicateData.names && duplicateData.names.length > 0) {
+        duplicateData.names = duplicateData.names.map(name => ({
+            ...name,
+            name: name.name + ' (Copy)'
+        }));
+    }
+    
+    currentEditingProperty = null;
+    populatePropertyForm(duplicateData);
+    openModal(document.getElementById('property-modal'));
+    document.getElementById('modal-title').textContent = 'Duplicate Property';
+}
+
+async function deleteProperty(rowIndex) {
+    const propertyData = propertyTable.getRowFromPosition(rowIndex).getData();
+    const propertyName = getPropertyDisplayName(propertyData);
+    const identifier = propertyData.guid || propertyData.id; // prefer guid
+    
+    if (!confirm(`Are you sure you want to delete "${propertyName}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/properties/${identifier}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            propertyTable.deleteRow(rowIndex);
+            showSuccess(`Property "${propertyName}" deleted successfully`);
+            
+            // Add to undo stack
+            addToUndoStack({
+                type: 'delete',
+                data: propertyData,
+                rowIndex: rowIndex,
+                timestamp: new Date()
+            });
+        } else {
+            throw new Error('Delete failed');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        showError('Failed to delete property');
+    }
+}
+</script>
+{% endblock %

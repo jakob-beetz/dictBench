@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static %}
+{% load i18n admin_urls static admin_modify %}
 
 {% block title %}Import ISO 16757 - Properties | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
@@ -13,142 +13,386 @@
 {% endblock %}
 
 {% block content %}
-<div class="module">
-    <h2>Import ISO 16757 Properties</h2>
-    
-    <div class="help">
-        <h3>ISO 16757 Import Information:</h3>
-        <p>Import properties from ISO 16757 compliant CSV files with full PA code support</p>
-        
-        <h4>Expected Fields:</h4>
-        <div class="help-section">
-            <h5>Core Fields (Required):</h5>
-            <ul>
-                <li><code>data_type</code> or <code>DataType</code> - Property data type</li>
-                <li><code>unit</code> or <code>Unit</code> - Unit of measurement</li>
-            </ul>
-            
-            <h5>PA Code Fields (Optional):</h5>
-            <ul>
-                <li><code>name</code>, <code>Name</code> - Property name</li>
-                <li><code>definition</code>, <code>Description</code> - Property definition</li>
-                <li><code>status</code> - Property status</li>
-                <li><code>version_number</code>, <code>revision_number</code> - Versioning</li>
-                <li><code>classification_system</code>, <code>classification_reference</code> - Classification</li>
-                <li><code>physical_quantity</code> - Physical quantity reference</li>
-                <li><code>country_of_origin</code>, <code>language</code> - Localization</li>
-            </ul>
-            
-            <h5>ISO 16757 Specific Fields:</h5>
-            <ul>
-                <li><code>iso_class_id</code>, <code>standard_reference</code> - ISO classification</li>
-                <li><code>property_definition</code>, <code>class_definition</code> - Extended definitions</li>
-                <li>Any field containing 'iso', '16757', 'standard', or 'class'</li>
-            </ul>
-        </div>
-        
+<div class="module filtered" id="changelist">
+    <div class="results">
         <div class="module">
-            <p><strong>Mapping Information:</strong> All fields are automatically categorized and stored according to PA code compliance and ISO 16757 standards.</p>
-        </div>
-    </div>
-    
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <div class="form-row">
-            <div>
-                <label for="dictionary_id">Target Dictionary:</label>
-                <select name="dictionary_id" id="dictionary_id" required>
-                    <option value="">Select dictionary...</option>
-                    {% for dictionary in dictionaries %}
-                        <option value="{{ dictionary.id }}">{{ dictionary.name }} 
-                            {% if dictionary.is_default %}(Default){% endif %}
-                        </option>
-                    {% endfor %}
-                </select>
-                <p class="help">All imported properties will be assigned to this dictionary.</p>
+            <h2>
+                <i class="fas fa-file-import"></i> Import ISO 16757 Properties
+            </h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="alert alert-info">
+                        <h4><i class="fas fa-info-circle"></i> ISO 16757 Import Guide</h4>
+                        <p>This import function is designed specifically for ISO 16757 compliant CSV files with PA code mapping.</p>
+                        <ul>
+                            <li><strong>Supported Fields:</strong> Property ID, Property type, UnitNo, Status, multilingual Names/Definitions</li>
+                            <li><strong>Field Mapping:</strong> All ISO 16757 fields preserved in extended_attributes, PA codes in metadata</li>
+                            <li><strong>CSV Format:</strong> Supports both comma (,) and semicolon (;) delimited files</li>
+                            <li><strong>Encoding:</strong> UTF-8 with BOM support for international characters</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
+            
+            {% if not dictionaries %}
+                <div class="alert alert-danger">
+                    <h4><i class="fas fa-exclamation-triangle"></i> No Dictionaries Available</h4>
+                    <p>You need to create at least one PropertyDictionary before importing properties.</p>
+                    <a href="{% url 'admin:dictionaries_propertydictionary_add' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Dictionary
+                    </a>
+                    <p class="mt-2">Or run: <code>python manage.py create_test_dictionaries</code></p>
+                </div>
+            {% else %}
+                    <form method="post" enctype="multipart/form-data" class="import-form" onsubmit="console.log('Form submitting...', this);">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="id_dictionary_id" class="required">
+                                <i class="fas fa-book"></i> Target Dictionary:
+                            </label>
+                            <select name="dictionary_id" id="id_dictionary_id" class="form-control" required>
+                                <option value="">-- Select a dictionary --</option>
+                                {% for dictionary in dictionaries %}
+                                    <option value="{{ dictionary.pk|stringformat:'s' }}">
+                                        {{ dictionary.name }} 
+                                        {% if dictionary.description %}({{ dictionary.description }}){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Properties will be imported into this dictionary</small>
+                            <div class="mt-1">
+                                <small class="text-info">
+                                    Available: {{ dictionaries.count }} dictionaries
+                                    {% if dictionaries.count == 0 %}
+                                        <span class="text-danger">- No dictionaries found!</span>
+                                    {% endif %}
+                                </small>
+                                {% if dictionaries %}
+                                    <details class="mt-2">
+                                        <summary>Debug: Raw dictionary data</summary>
+                                        <pre style="font-size: 10px; max-height: 100px; overflow-y: auto;">{% for d in dictionaries %}PK: {{ d.pk|stringformat:'s' }}, Name: {{ d.name }}
+{% endfor %}</pre>
+                                    </details>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group col-md-6">
+                            <label for="id_csv_file" class="required">
+                                <i class="fas fa-file-csv"></i> ISO 16757 CSV File:
+                            </label>
+                            <input type="file" name="csv_file" id="id_csv_file" 
+                                   accept=".csv,.txt" class="form-control" required>
+                            <small class="form-text text-muted">
+                                Select your ISO 16757 compliant CSV file (supports ; and , delimiters)
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-cogs"></i> Import Options</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="update_existing" id="id_update_existing" 
+                                               class="form-check-input" checked>
+                                        <label for="id_update_existing" class="form-check-label">
+                                            Update existing properties (matched by data type and unit)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" name="create_physical_quantities" 
+                                               id="id_create_physical_quantities" class="form-check-input" checked>
+                                        <label for="id_create_physical_quantities" class="form-check-label">
+                                            Auto-create Physical Quantities from QuantityID field
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" name="preserve_multilingual" 
+                                               id="id_preserve_multilingual" class="form-check-input" checked>
+                                        <label for="id_preserve_multilingual" class="form-check-label">
+                                            Create multilingual PropertyNames and PropertyDefinitions
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-table"></i> Expected ISO 16757 Columns</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <small>
+                                                <strong>Required:</strong><br>
+                                                • Property ID (or PA001.1)<br>
+                                                • Property type (1=string, 2=real, 3=integer, 4=boolean)<br>
+                                                <strong>Optional Core:</strong><br>
+                                                • UnitNo, Status, QuantityID<br>
+                                                • Version number, Revision number<br>
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <small>
+                                                <strong>Multilingual:</strong><br>
+                                                • Names in language de-DE<br>
+                                                • Names in language EN<br>
+                                                • Definitions in language de-DE<br>
+                                                • Definitions in language EN<br>
+                                                <strong>Classifications:</strong><br>
+                                                • Identifier ETIM, IFC, CIBSE, ECLASS, etc.<br>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-upload"></i> Import ISO 16757 Properties
+                        </button>
+                        <a href="{% url 'admin:properties_property_changelist' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancel
+                        </a>
+                        <a href="{% url 'admin:properties_property_import_csv' %}" class="btn btn-info">
+                            <i class="fas fa-file-csv"></i> Basic CSV Import
+                        </a>
+                        <button type="button" class="btn btn-warning" onclick="debugFormState()">
+                            <i class="fas fa-bug"></i> Debug Form
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
         </div>
-        
-        <div class="form-row">
-            <div>
-                <label for="csv_file">ISO 16757 CSV File:</label>
-                <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
-                <p class="help">Upload a CSV file with ISO 16757 compliant property data from your Heat Pumps dataset.</p>
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div>
-                <input type="submit" value="Import ISO 16757 Data" class="default">
-                <a href="{% url 'admin:properties_property_changelist' %}" class="button">Cancel</a>
-            </div>
-        </div>
-    </form>
-    
-    <div class="help">
-        <h3>Import Process:</h3>
-        <ol>
-            <li>CSV data is validated and parsed</li>
-            <li>PA001-PA025 compliant fields are mapped to Property model</li>
-            <li>ISO 16757 specific attributes are stored in <code>extended_attributes</code></li>
-            <li>Custom identifiers and metadata are preserved in <code>metadata</code></li>
-            <li>PropertyName and PropertyDefinition records are automatically created</li>
-            <li>Import is performed within a database transaction</li>
-            <li>User tracking is applied to all imported/updated records</li>
-            <li>Duplicate properties (same dictionary + data_type + unit) are updated, not duplicated</li>
-        </ol>
-        
-        <h3>Data Categorization:</h3>
-        <table>
-            <tr><th>Field Pattern</th><th>Storage Location</th><th>Examples</th></tr>
-            <tr>
-                <td>PA Code Fields</td>
-                <td>Direct model fields + metadata.pa_code_data</td>
-                <td>data_type, unit, status, version_number</td>
-            </tr>
-            <tr>
-                <td>ISO/Standard fields</td>
-                <td>extended_attributes</td>
-                <td>iso_class_id, standard_reference, class_definition</td>
-            </tr>
-            <tr>
-                <td>Identifier fields</td>
-                <td>metadata.identifiers</td>
-                <td>id_internal, code_legacy, ref_external, guid</td>
-            </tr>
-            <tr>
-                <td>Calculation fields</td>
-                <td>metadata.calculations</td>
-                <td>calc_method, formula_base, method_standard</td>
-            </tr>
-            <tr>
-                <td>Other fields</td>
-                <td>metadata.custom_attributes</td>
-                <td>custom_field, additional_info, notes</td>
-            </tr>
-        </table>
-        
-        <h3>Example CSV Structure:</h3>
-        <pre>
-DataType,Unit,Name,Definition,status,iso_class_id,internal_id
-Real,kW,Heating Capacity,Maximum heating output,active,HP001,THC_001
-Integer,rpm,Fan Speed,Rotational speed of fan,active,HP002,FAN_001
-String,,Model Number,Product model identifier,active,HP003,MDL_001
-        </pre>
-        
-        <h3>Transaction & Rollback:</h3>
-        <p>This import uses Django's atomic transaction system. If any error occurs during import, 
-           all changes are automatically rolled back. With django-reversion enabled, you can also 
-           view detailed change history and perform granular rollbacks.</p>
-        
-        <h3>Performance Notes:</h3>
-        <ul>
-            <li>Large files (>1000 rows) are processed in chunks</li>
-            <li>Existing properties are updated efficiently using database constraints</li>
-            <li>Related PropertyName and PropertyDefinition records are created automatically</li>
-            <li>All import metadata is preserved for audit trails</li>
-        </ul>
     </div>
 </div>
+
+<style>
+.import-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.form-group label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.form-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.btn {
+    margin-right: 10px;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.card {
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    padding: .75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0,0,0,.03);
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}
+
+.mt-2 {
+    margin-top: 0.5rem;
+}
+</style>
+
+<!-- Debug JavaScript to check form submission -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded, setting up form validation...');
+    
+    const form = document.querySelector('.import-form');
+    const dictionarySelect = document.getElementById('id_dictionary_id');
+    const csvFileInput = document.getElementById('id_csv_file');
+    
+    console.log('Form element:', form);
+    console.log('Dictionary select:', dictionarySelect);
+    console.log('CSV file input:', csvFileInput);
+    
+    // Check if dictionaries are available
+    if (dictionarySelect) {
+        console.log('Dictionary options count:', dictionarySelect.options.length);
+        for (let i = 0; i < dictionarySelect.options.length; i++) {
+            console.log(`Option ${i}: value="${dictionarySelect.options[i].value}", text="${dictionarySelect.options[i].text}"`);
+        }
+    }
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            console.log('Form submission started...');
+            
+            const dictionaryId = dictionarySelect ? dictionarySelect.value : '';
+            const csvFile = csvFileInput ? csvFileInput.files[0] : null;
+            
+            console.log('Form submission debug:');
+            console.log('Dictionary ID:', dictionaryId);
+            console.log('Dictionary ID type:', typeof dictionaryId);
+            console.log('Dictionary ID empty?:', dictionaryId === '');
+            console.log('CSV File:', csvFile);
+            console.log('CSV File name:', csvFile ? csvFile.name : 'N/A');
+            
+            // Check dictionary selection first
+            if (!dictionaryId || dictionaryId === '' || dictionaryId === 'undefined' || dictionaryId === 'null') {
+                console.error('Dictionary validation failed:', {
+                    'value': dictionaryId,
+                    'type': typeof dictionaryId,
+                    'isEmpty': dictionaryId === '',
+                    'isNull': dictionaryId === null,
+                    'isUndefined': dictionaryId === undefined
+                });
+                alert('Please select a dictionary from the dropdown.\n\nCurrent selection: "' + dictionaryId + '"');
+                e.preventDefault();
+                return false;
+            }
+            
+            // Check file selection
+            if (!csvFile) {
+                console.error('File validation failed');
+                alert('Please select a CSV file');
+                e.preventDefault();
+                return false;
+            }
+            
+            console.log('Client-side validation passed, submitting...');
+            
+            // Show loading indicator
+            const submitBtn = document.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
+                submitBtn.disabled = true;
+            }
+            
+            return true;
+        });
+        
+        // Add change event listeners for debugging
+        if (dictionarySelect) {
+            dictionarySelect.addEventListener('change', function() {
+                console.log('Dictionary selection changed to:', this.value);
+            });
+        }
+        
+        if (csvFileInput) {
+            csvFileInput.addEventListener('change', function() {
+                console.log('File selection changed to:', this.files[0] ? this.files[0].name : 'None');
+            });
+        }
+    } else {
+        console.error('Form not found!');
+    }
+});
+
+// Debug function to check form state
+function debugFormState() {
+    console.log('=== FORM DEBUG INFO ===');
+    
+    const form = document.querySelector('.import-form');
+    const dictionarySelect = document.getElementById('id_dictionary_id');
+    const csvFileInput = document.getElementById('id_csv_file');
+    
+    console.log('Form element exists:', !!form);
+    console.log('Dictionary select exists:', !!dictionarySelect);
+    console.log('CSV file input exists:', !!csvFileInput);
+    
+    if (dictionarySelect) {
+        console.log('Dictionary options:');
+        for (let i = 0; i < dictionarySelect.options.length; i++) {
+            const option = dictionarySelect.options[i];
+            console.log(`  ${i}: value="${option.value}", text="${option.text}", selected=${option.selected}`);
+        }
+        console.log('Current selection value:', dictionarySelect.value);
+        console.log('Current selection index:', dictionarySelect.selectedIndex);
+        console.log('Selected option:', dictionarySelect.options[dictionarySelect.selectedIndex]);
+    }
+    
+    if (csvFileInput && csvFileInput.files.length > 0) {
+        console.log('Selected file:', csvFileInput.files[0].name);
+    } else {
+        console.log('No file selected');
+    }
+    
+    // Show alert with summary
+    const dictCount = dictionarySelect ? dictionarySelect.options.length - 1 : 0; // -1 for placeholder
+    const fileName = csvFileInput && csvFileInput.files[0] ? csvFileInput.files[0].name : 'None';
+    const dictValue = dictionarySelect ? dictionarySelect.value : 'N/A';
+    const dictText = dictionarySelect && dictionarySelect.selectedIndex >= 0 ? 
+                    dictionarySelect.options[dictionarySelect.selectedIndex].text : 'N/A';
+    
+    alert(`Debug Info:
+• Dictionaries available: ${dictCount}
+• Selected dictionary ID: "${dictValue}"
+• Selected dictionary name: "${dictText}"
+• Selected file: ${fileName}
+• Form ready: ${form ? 'Yes' : 'No'}
+
+${dictValue === '' ? '⚠️ ISSUE: Dictionary value is empty string!' : '✅ Dictionary value looks good'}`);
+    
+    console.log('=== END DEBUG INFO ===');
+    
+    // Try to fix common issues
+    if (dictionarySelect && dictValue === '' && dictionarySelect.options.length > 1) {
+        console.log('Attempting to select first non-empty option...');
+        for (let i = 1; i < dictionarySelect.options.length; i++) {
+            if (dictionarySelect.options[i].value !== '') {
+                dictionarySelect.selectedIndex = i;
+                console.log('Selected option:', i, 'with value:', dictionarySelect.options[i].value);
+                alert('Auto-selected first available dictionary. Try submitting now.');
+                break;
+            }
+        }
+    }
+}
+</script>
 {% endblock %}

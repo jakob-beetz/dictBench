@@ -4,6 +4,9 @@ from django.contrib import messages
 from django.db import transaction
 from .models import Property
 from .forms import PropertyForm, PropertyNameFormSet, PropertyDefinitionFormSet, LANGUAGE_CHOICES
+from django.http import JsonResponse
+from django.contrib.admin.views.decorators import staff_member_required
+from dictionaries.models import PropertyDictionary
 
 @login_required
 def property_list(request):
@@ -107,3 +110,18 @@ def property_delete(request, pk):
         return redirect('properties:property_list')
     
     return render(request, 'properties/property_delete.html', {'property': prop})
+
+@staff_member_required
+def get_dictionaries_api(request):
+    """API endpoint to get all dictionaries for dropdowns."""
+    try:
+        dictionaries = PropertyDictionary.objects.all().values('guid', 'name', 'description')
+        dictionaries_list = list(dictionaries)
+        
+        # Convert UUID to string if needed
+        for d in dictionaries_list:
+            d['guid'] = str(d['guid'])
+        
+        return JsonResponse(dictionaries_list, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

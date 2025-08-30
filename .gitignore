@@ -141,3 +141,26 @@ Desktop.ini
 *.swp
 *~
 .backup/
+data/16757_examples/EN_ISO16757_sheet22_HeatPumps-Mono-properties2.csv
+doc/crud_implementation.md
+doc/developer_guide.md
+doc/frontend_components.md
+doc/iso23386_implementation.md
+doc/roadmap.md
+doc/architecture/dictionary_ui.md
+doc/architecture/property_dictionaries.md
+doc/design/23386/23386_base_quantities.csv
+doc/design/23386/23386_DA.csv
+doc/design/23386/23386_derived_quantities.csv
+doc/design/23386/23386_GA.csv
+doc/design/23386/23386_PA.csv
+doc/design/23386/23386_RA.csv
+doc/design/23386/ISO 23386 - 2020-03.pdf
+doc/design/23386/ISO 23386 - 2020-03.txt
+doc/design/23386/iso_23386.html
+doc/design/23386/iso_23386.md
+doc/design/23386/iso_23386_files/libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css
+doc/design/23386/iso_23386_files/libs/quarto-html/quarto.js
+doc/design/prompt/architecture.txt
+doc/design/prompt/generator_instructions.txt
+doc/design/prompt/iso23386_implementation_prompt.txt
