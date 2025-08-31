@@ -17,7 +17,7 @@ SECRET_KEY = 'django-insecure-propbench-dev-key-change-in-production'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dictmanager.semantic-collab.eu', 'localhost']
 
 # Application definition
 
