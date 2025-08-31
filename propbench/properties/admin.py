@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.db import transaction
+from django.db import models, transaction
 from django.contrib import messages
 from django.urls import path
 from django.shortcuts import render, redirect
@@ -12,6 +12,7 @@ from .models import (
     Property, PropertyName, PropertyDefinition, PhysicalQuantity, PropertyRelationship
 )
 from dictionaries.models import PropertyDictionary
+from .widgets import JSONEditorWidget
 
 
 class PropertyNameInline(admin.TabularInline):
@@ -26,11 +27,17 @@ class PropertyDefinitionInline(admin.TabularInline):
     fields = ('definition', 'language')
 
 
+@admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     """Admin interface for Property with comprehensive import/export functionality."""
     
     change_list_template = 'admin/properties/property/change_list.html'
     
+    # apply JSONEditorWidget to all JSONField fields
+    formfield_overrides = {
+        models.JSONField: {'widget': JSONEditorWidget},
+    }
+
     list_display = (
         'get_first_name', 'data_type', 'status', 'dictionary', 
         'unit_of_measurement', 'created_by', 'created_at'
@@ -960,7 +967,7 @@ class PropertyAdmin(admin.ModelAdmin):
 
 
 # Register the admin classes
-admin.site.register(Property, PropertyAdmin)
+# admin.site.register(Property, PropertyAdmin)
 admin.site.register(PropertyName)
 admin.site.register(PropertyDefinition)
 admin.site.register(PhysicalQuantity)
