@@ -141,6 +141,10 @@ Desktop.ini
 *.swp
 *~
 .backup/
+.gitignore
+data/16757_examples/.~lock.EN_ISO16757_sheet22_HeatPumps-Mono-properties.csv#
+data/16757_examples/.~lock.EN_ISO16757_sheet22_HeatPumps-Mono-properties2.csv#
+data/16757_examples/.~lock.EN_ISO16757_sheet22_HeatPumps-Mono-values.csv#
 data/16757_examples/EN_ISO16757_sheet22_HeatPumps-Mono-properties2.csv
 doc/crud_implementation.md
 doc/developer_guide.md
