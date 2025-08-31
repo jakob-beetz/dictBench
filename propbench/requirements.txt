@@ -30,3 +30,5 @@ django-extensions>=3.2.3
 # Production & Deployment
 python-dotenv>=1.0.0  # Environment variables management
 dj-database-url>=2.0.0  # Database URL configuration
+
+jazzmin==2.6.0  # Admin interface customization
