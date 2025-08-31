@@ -1,0 +1,148 @@
+/* jazzmin_compact.css
+   Compact admin styles for Jazzmin/Django admin change forms and lists.
+   Reduces vertical whitespace, tightens paddings, and arranges fieldset rows
+   into two columns on larger viewports for denser layouts.
+*/
+
+/* General compacting */
+body .content, body .container, .card, .module {
+    margin-bottom: 6px !important;
+    padding: 6px 8px !important;
+}
+
+/* Jazzmin card / panel adjustments */
+.jazzmin .card, .card {
+    padding: 8px !important;
+    margin-bottom: 6px !important;
+}
+
+/* Change form and inline adjustments */
+.change-form, .changeform-main, .inline-related, fieldset.module {
+    margin-bottom: 6px !important;
+    padding: 6px !important;
+}
+
+/* Reduce label sizes and spacing */
+.form-row .field-box label, .form-row label {
+    display: block;
+    font-size: 0.92rem !important;
+    margin-bottom: 3px !important;
+}
+
+/* Input sizing */
+.form-row input, .form-row select, .form-row textarea, .field-box input, .field-box select, .field-box textarea {
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+}
+
+/* Inline related rows */
+.inline-related .form-row, .inline-group .form-row {
+    padding: 6px 0 !important;
+    margin-bottom: 6px !important;
+}
+
+/* Property names container and inlines */
+#property-names-container, .inline-related .tabular.inline-group {
+    padding: 6px !important;
+    max-height: 220px !important;
+    overflow: auto;
+}
+
+.name-entry {
+    gap: 8px !important;
+    margin-bottom: 6px !important;
+}
+
+/* Fieldset two-column layout on larger screens */
+@media (min-width: 900px) {
+    fieldset.module .form-row {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 14px;
+        align-items: start;
+    }
+
+    /* If a field occupies full row, allow it to span two columns when marked */
+    fieldset.module .form-row.full-width, fieldset.module .form-row .full-width {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Force two-column changeform layout on desktop */
+@media (min-width: 700px) {
+    /* Apply two-column grid to form rows inside fieldsets and change forms */
+    .change-form .form-row,
+    fieldset.module .form-row,
+    .changeform-main .form-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 14px;
+        align-items: start;
+    }
+
+    /* Make elements explicitly marked full-width span both columns */
+    .form-row.full-width,
+    fieldset.module .form-row.full-width,
+    .form-row .full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* Ensure inline related rows remain compact but fit into grid */
+    .inline-related .form-row, .inline-group .form-row {
+        display: contents !important;
+    }
+
+    /* Tighten field-box margins to fit grid nicely */
+    .form-row .field-box, .field-box {
+        margin: 0 !important;
+    }
+
+    /* Align labels to the top for multi-line controls */
+    .form-row label, .field-box label {
+        align-self: start;
+        margin-bottom: 4px !important;
+    }
+}
+
+/* Tighten inline formset paddings */
+fieldset.module .inline-related .form-row, .inline-related .grp-row {
+    padding: 6px 4px !important;
+}
+
+/* Compact action buttons area */
+.submit-row, .object-tools, .changeform-buttons {
+    padding-top: 6px !important;
+    margin-top: 6px !important;
+}
+
+/* Reduce spacing in changelist results */
+.change-list .results, .changelist-form, .changelist-filter {
+    margin-bottom: 6px !important;
+}
+
+/* Smaller help text */
+.form-row .help, .form-row .help-text, .help, .text-muted {
+    font-size: 12px !important;
+    margin-top: 4px !important;
+}
+
+/* Reduce spacing around fieldset headings */
+fieldset.module > h2, fieldset > h2, fieldset.module legend {
+    margin: 6px 0 8px 0 !important;
+    font-size: 1rem !important;
+}
+
+/* Ensure buttons are compact */
+.button, .btn, .submit-row input, .submit-row button {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+}
+
+/* Keep responsiveness: fall back to single column on small screens */
+@media (max-width: 899px) {
+    fieldset.module .form-row {
+        display: block !important;
+    }
+}
+
+/* End of jazzmin_compact.css */
