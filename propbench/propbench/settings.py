@@ -17,9 +17,16 @@ SECRET_KEY = 'django-insecure-propbench-dev-key-change-in-production'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['dictmanager.semantic-collab.eu', 'localhost']
+ALLOWED_HOSTS = ['dictmanager.semantic-collab.eu', 'localhost', '127.0.0.1']
 
 # Application definition
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+raw_csrf = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+if raw_csrf:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in raw_csrf.split(",") if o.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = []
 
 INSTALLED_APPS = [
     'jazzmin',
