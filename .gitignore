@@ -176,3 +176,8 @@ IMPORT_EXPORT_GUIDE.md
 requirements-import-export.txt
 setup.ps1
 setup.sh
+propbench/API_DOCUMENTATION.md
+propbench/DOCKER_README.md
+propbench/PROPERTY_GRID_README.md
+propbench/README.md
+propbench/requirements-docker.txt
