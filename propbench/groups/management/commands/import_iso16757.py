@@ -256,6 +256,40 @@ class Command(BaseCommand):
         created_count = 0
         updated_count = 0
         
+        # Helper: robustly parse a cell value into native Python types
+        def _parse_cell_value(raw):
+            """Attempt to parse a CSV cell into a Python object.
+            Handles values that are already dict/list, plain strings, or nested JSON-encoded strings
+            (e.g. '"{\"key\": \"value\"}"'). Returns the native type or the stripped string.
+            """
+            if raw is None:
+                return None
+            if isinstance(raw, (dict, list)):
+                return raw
+            s = str(raw).strip()
+            # strip surrounding quotes if present
+            if len(s) >= 2 and ((s[0] == '"' and s[-1] == '"') or (s[0] == "'" and s[-1] == "'")):
+                s = s[1:-1].strip()
+
+            # try to JSON-decode repeatedly to unwrap nested encodings
+            try:
+                parsed = json.loads(s)
+                # unwrap repeatedly if result is a JSON string
+                unwrap_count = 0
+                while isinstance(parsed, str) and unwrap_count < 5:
+                    candidate = parsed.strip()
+                    if (candidate.startswith('{') or candidate.startswith('[') or candidate.startswith('"') or candidate.startswith("'")):
+                        try:
+                            parsed = json.loads(parsed)
+                        except Exception:
+                            break
+                    else:
+                        break
+                    unwrap_count += 1
+                return parsed
+            except Exception:
+                return s
+
         for index, row in df.iterrows():
             try:
                 # Extract core data
@@ -280,21 +314,25 @@ class Command(BaseCommand):
                 iso16757_attrs = {}
                 custom_attrs = {}
                 identifiers = {}
-                
+
                 for column, value in row.items():
-                    if not value or value.strip() == '':
+                    # normalize empty cells
+                    if value is None or str(value).strip() == '':
                         continue
-                        
+
+                    # skip core fields
                     if column in ['name', 'Name', 'description', 'Description', 'type', 'Type']:
                         continue  # Skip core fields
-                    
+
+                    parsed_value = _parse_cell_value(value)
+
                     if column in class_analysis['iso16757_fields']:
-                        iso16757_attrs[column] = str(value).strip()
+                        iso16757_attrs[column] = parsed_value
                     elif column in class_analysis['custom_identifiers']:
-                        identifiers[f'original_{column}'] = str(value).strip()
+                        identifiers[f'original_{column}'] = parsed_value
                     else:
-                        custom_attrs[column] = str(value).strip()
-                
+                        custom_attrs[column] = parsed_value
+
                 # Add import metadata
                 import_metadata = {
                     'import_source': 'ISO_16757_classes',
@@ -304,14 +342,14 @@ class Command(BaseCommand):
                     'pa_mappings': pa_mappings,
                     'identifiers': identifiers
                 }
-                
+
                 # Combine metadata
                 metadata = {
                     'import_metadata': import_metadata,
                     'custom_attributes': custom_attrs,
                     'identifiers': identifiers
                 }
-                
+
                 # Create or update group
                 group, created = PropertyGroup.objects.update_or_create(
                     name=name.strip(),
@@ -319,8 +357,9 @@ class Command(BaseCommand):
                     defaults={
                         'description': description.strip() if description else '',
                         'type': group_type,
-                        'extended_attributes': json.dumps(iso16757_attrs) if iso16757_attrs else None,
-                        'metadata': json.dumps(metadata),
+                        # store native types (dict/None) not JSON strings
+                        'extended_attributes': iso16757_attrs or None,
+                        'metadata': metadata or None,
                         'updated_by': user,
                     }
                 )
@@ -351,6 +390,40 @@ class Command(BaseCommand):
         created_count = 0
         updated_count = 0
         
+        # Helper: robustly parse a cell value into native Python types
+        def _parse_cell_value(raw):
+            """Attempt to parse a CSV cell into a Python object.
+            Handles values that are already dict/list, plain strings, or nested JSON-encoded strings
+            (e.g. '"{\"key\": \"value\"}"'). Returns the native type or the stripped string.
+            """
+            if raw is None:
+                return None
+            if isinstance(raw, (dict, list)):
+                return raw
+            s = str(raw).strip()
+            # strip surrounding quotes if present
+            if len(s) >= 2 and ((s[0] == '"' and s[-1] == '"') or (s[0] == "'" and s[-1] == "'")):
+                s = s[1:-1].strip()
+
+            # try to JSON-decode repeatedly to unwrap nested encodings
+            try:
+                parsed = json.loads(s)
+                # unwrap repeatedly if result is a JSON string
+                unwrap_count = 0
+                while isinstance(parsed, str) and unwrap_count < 5:
+                    candidate = parsed.strip()
+                    if (candidate.startswith('{') or candidate.startswith('[') or candidate.startswith('"') or candidate.startswith("'")):
+                        try:
+                            parsed = json.loads(parsed)
+                        except Exception:
+                            break
+                    else:
+                        break
+                    unwrap_count += 1
+                return parsed
+            except Exception:
+                return s
+
         for index, row in df.iterrows():
             try:
                 # Extract core PA code fields
@@ -373,29 +446,30 @@ class Command(BaseCommand):
                 custom_attrs = {}
                 identifiers = {}
                 pa_code_data = {}
-                
+
                 for column, value in row.items():
-                    if not value or value.strip() == '':
+                    # normalize empty cells
+                    if value is None or str(value).strip() == '':
                         continue
-                    
+
                     # Skip if core field
                     if column.lower() in ['datatype', 'unit']:
                         continue
-                    
-                    value_str = str(value).strip()
-                    
+
+                    parsed_value = _parse_cell_value(value)
+
                     if column in prop_analysis['iso16757_fields']:
-                        iso16757_attrs[column] = value_str
+                        iso16757_attrs[column] = parsed_value
                     elif column in prop_analysis['custom_identifiers']:
-                        identifiers[f'original_{column}'] = value_str
+                        identifiers[f'original_{column}'] = parsed_value
                     elif column in pa_mappings:
-                        pa_code_data[pa_mappings[column]] = value_str
+                        pa_code_data[pa_mappings[column]] = parsed_value
                     else:
-                        custom_attrs[column] = value_str
-                
+                        custom_attrs[column] = parsed_value
+
                 # Create unique identifier for property
                 property_key = f"{data_type}_{unit}_{index}"
-                
+
                 # Add import metadata
                 import_metadata = {
                     'import_source': 'ISO_16757_properties',
@@ -405,7 +479,7 @@ class Command(BaseCommand):
                     'pa_mappings': pa_mappings,
                     'pa_code_data': pa_code_data
                 }
-                
+
                 # Combine metadata
                 metadata = {
                     'import_metadata': import_metadata,
@@ -413,7 +487,7 @@ class Command(BaseCommand):
                     'identifiers': identifiers,
                     'pa_code_data': pa_code_data
                 }
-                
+
                 # Create or update property
                 property_obj, created = Property.objects.update_or_create(
                     dictionary=dictionary,
@@ -421,8 +495,9 @@ class Command(BaseCommand):
                     unit_of_measurement=unit,
                     defaults={
                         'status': 'active',
-                        'extended_attributes': json.dumps(iso16757_attrs) if iso16757_attrs else None,
-                        'metadata': json.dumps(metadata),
+                        # store native dicts/lists instead of JSON strings
+                        'extended_attributes': iso16757_attrs or None,
+                        'metadata': metadata or None,
                         'updated_by': user,
                     }
                 )

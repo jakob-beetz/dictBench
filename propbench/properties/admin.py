@@ -151,11 +151,11 @@ class PropertyAdmin(admin.ModelAdmin):
                             unit_of_measurement=core_data.get('unit_of_measurement', ''),
                             defaults={
                                 **core_data,
-                                'extended_attributes': json.dumps(iso16757_attrs) if iso16757_attrs else None,
-                                'metadata': json.dumps({
+                                'extended_attributes': iso16757_attrs or None,
+                                'metadata': {
                                     'pa_code_data': pa_code_data,
                                     'custom_attributes': custom_attrs
-                                }),
+                                } if (pa_code_data or custom_attrs) else None,
                                 'updated_by': request.user,
                             }
                         )
@@ -734,8 +734,6 @@ class PropertyAdmin(admin.ModelAdmin):
     def _process_iso16757_row(self, row, dictionary, user):
         """Process a single row for ISO 16757 import with comprehensive field mapping."""
         
-        # Import json at the beginning of the method
-        import json
         import time
         
         # Validate required fields for ISO 16757
@@ -810,7 +808,8 @@ class PropertyAdmin(admin.ModelAdmin):
             for prop in existing_properties[:5]:  # Limit to first 5 to avoid performance issues
                 if prop.extended_attributes:
                     try:
-                        attrs = json.loads(prop.extended_attributes)
+                        # extended_attributes is already a dict (not JSON string)
+                        attrs = prop.extended_attributes if isinstance(prop.extended_attributes, dict) else {}
                         if attrs.get('original_property_id') == property_id:
                             property_obj = prop
                             created = False
@@ -827,8 +826,8 @@ class PropertyAdmin(admin.ModelAdmin):
                     unit_of_measurement=core_data.get('unit_of_measurement', ''),
                     version_number=f"{core_data.get('version_number', '1')}-{unique_suffix}",
                     status=core_data.get('status', 'active'),
-                    extended_attributes=json.dumps(iso16757_attrs) if iso16757_attrs else None,
-                    metadata=json.dumps(metadata),
+                    extended_attributes=iso16757_attrs or None,
+                    metadata=metadata,
                     created_by=user,
                     updated_by=user,
                 )
@@ -836,8 +835,8 @@ class PropertyAdmin(admin.ModelAdmin):
             else:
                 # Update existing property
                 property_obj.status = core_data.get('status', property_obj.status)
-                property_obj.extended_attributes = json.dumps(iso16757_attrs) if iso16757_attrs else None
-                property_obj.metadata = json.dumps(metadata)
+                property_obj.extended_attributes = iso16757_attrs or None
+                property_obj.metadata = metadata
                 property_obj.updated_by = user
                 property_obj.save()
                 created = False
@@ -850,8 +849,8 @@ class PropertyAdmin(admin.ModelAdmin):
                 unit_of_measurement=core_data.get('unit_of_measurement', ''),
                 status=core_data.get('status', 'active'),
                 version_number=core_data.get('version_number', '1'),
-                extended_attributes=json.dumps(iso16757_attrs) if iso16757_attrs else None,
-                metadata=json.dumps(metadata),
+                extended_attributes=iso16757_attrs or None,
+                metadata=metadata,
                 created_by=user,
                 updated_by=user,
             )
