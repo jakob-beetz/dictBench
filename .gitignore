@@ -167,3 +167,12 @@ doc/design/23386/iso_23386_files/libs/quarto-html/quarto.js
 doc/design/prompt/architecture.txt
 doc/design/prompt/generator_instructions.txt
 doc/design/prompt/iso23386_implementation_prompt.txt
+doc/design/23386/iso_23386_files/libs/quarto-html/anchor.min.js
+doc/design/23386/iso_23386_files/libs/quarto-html/popper.min.js
+doc/design/23386/iso_23386_files/libs/quarto-html/tippy.css
+doc/design/23386/iso_23386_files/libs/quarto-html/tippy.umd.min.js
+CONTRIBUTING.md
+IMPORT_EXPORT_GUIDE.md
+requirements-import-export.txt
+setup.ps1
+setup.sh
