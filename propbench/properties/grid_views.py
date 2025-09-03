@@ -59,12 +59,74 @@ class PropertyGridView(TemplateView):
 def property_grid_data(request):
     """API endpoint to fetch property data for the grid."""
     try:
+        # DEBUG: print incoming request details for diagnosis
+        try:
+            print(f"DEBUG property_grid_data: method={request.method}")
+            print("DEBUG property_grid_data: GET ->", dict(request.GET))
+            print("DEBUG property_grid_data: QUERY_STRING ->", request.META.get('QUERY_STRING', ''))
+            print("DEBUG property_grid_data: CONTENT_TYPE ->", request.META.get('CONTENT_TYPE', ''))
+            body_sample = None
+            try:
+                body_sample = request.body[:500] if getattr(request, 'body', None) else b''
+                print("DEBUG property_grid_data: body (sample)->", body_sample)
+            except Exception:
+                print("DEBUG property_grid_data: could not read request.body")
+        except Exception:
+            print("DEBUG property_grid_data: failed to print request info")
+
         # Get query parameters
         search = request.GET.get('search', '').strip()
         page = int(request.GET.get('page', 1))
         size = int(request.GET.get('size', 50))
         sort_field = request.GET.get('sort', 'updated_at')
         sort_dir = request.GET.get('dir', 'desc')
+        
+        # If Tabulator sent a JSON payload via GET (e.g. payload={...}), prefer it
+        payload_param = None
+        try:
+            if 'payload' in request.GET:
+                # request.GET may expose list values; get first
+                raw = request.GET.get('payload')
+                if raw:
+                    try:
+                        # raw is expected to be a JSON string
+                        parsed = json.loads(raw)
+                        if isinstance(parsed, dict):
+                            payload_param = parsed
+                    except Exception:
+                        # Try URL-unquoted then parse
+                        try:
+                            from urllib.parse import unquote_plus
+                            parsed = json.loads(unquote_plus(raw))
+                            if isinstance(parsed, dict):
+                                payload_param = parsed
+                        except Exception:
+                            payload_param = None
+        except Exception:
+            payload_param = None
+
+        # Prefer values from payload if present; else fall back to GET params
+        if payload_param:
+            search = (payload_param.get('search') or '').strip()
+            try:
+                page = int(payload_param.get('page', page))
+            except Exception:
+                page = int(request.GET.get('page', page))
+            try:
+                size = int(payload_param.get('size', size))
+            except Exception:
+                size = int(request.GET.get('size', size))
+            # handle simple sorter extraction if provided
+            sorters = payload_param.get('sorters') or payload_param.get('sort')
+            if isinstance(sorters, list) and len(sorters) > 0 and isinstance(sorters[0], dict):
+                sf = sorters[0].get('field')
+                sd = sorters[0].get('dir', 'desc')
+                if sf:
+                    sort_field = sf
+                    sort_dir = sd
+            elif isinstance(sorters, dict):
+                sort_field = sorters.get('field', sort_field)
+                sort_dir = sorters.get('dir', sort_dir)
         
         # Build base queryset with optimized joins
         queryset = Property.objects.select_related(
@@ -144,18 +206,26 @@ def property_grid_data(request):
             # Parse extended attributes and metadata
             extended_attributes = {}
             metadata = {}
-            
+
             if prop.extended_attributes:
                 try:
-                    extended_attributes = json.loads(prop.extended_attributes)
-                except json.JSONDecodeError:
-                    logger.warning(f"Invalid JSON in extended_attributes for property {prop.pk}")
-            
+                    if isinstance(prop.extended_attributes, (dict, list)):
+                        extended_attributes = prop.extended_attributes
+                    else:
+                        extended_attributes = json.loads(prop.extended_attributes)
+                except Exception as ex:
+                    logger.warning(f"Invalid JSON in extended_attributes for property {prop.pk}: {ex}")
+                    extended_attributes = {}
+
             if prop.metadata:
                 try:
-                    metadata = json.loads(prop.metadata)
-                except json.JSONDecodeError:
-                    logger.warning(f"Invalid JSON in metadata for property {prop.pk}")
+                    if isinstance(prop.metadata, (dict, list)):
+                        metadata = prop.metadata
+                    else:
+                        metadata = json.loads(prop.metadata)
+                except Exception as ex:
+                    logger.warning(f"Invalid JSON in metadata for property {prop.pk}: {ex}")
+                    metadata = {}
             
             property_data = {
                 'id': str(prop.pk),  # Convert UUID to string if needed

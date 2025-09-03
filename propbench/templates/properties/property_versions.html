@@ -1,0 +1,28 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Versions for {{ property.names.first.name|default:'Property' }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Version history for {{ property.names.first.name|default:property.guid }}</h1>
+    <p>GUID: {{ property.guid }}</p>
+
+    {% if versions %}
+        <ul class="list-group">
+            {% for v in versions %}
+                <li class="list-group-item">
+                    <div><strong>{{ v.date }}</strong> — {{ v.user.username if v.user else 'system' }}</div>
+                    <div class="small text-muted">{{ v.comment }}</div>
+                    <pre style="white-space:pre-wrap">{{ v.field_dict|safe }}</pre>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">No versions recorded for this property.</div>
+    {% endif %}
+
+    <div class="mt-3">
+        <a href="{% url 'properties:property_detail' pk=property.guid %}" class="btn btn-secondary">Back to property</a>
+    </div>
+</div>
+{% endblock %}

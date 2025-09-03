@@ -8,6 +8,8 @@ from django.utils import timezone
 import json
 import csv
 import io
+import reversion
+import reversion.admin
 from .models import (
     Property, PropertyName, PropertyDefinition, PhysicalQuantity, PropertyRelationship
 )
@@ -19,16 +21,18 @@ class PropertyNameInline(admin.TabularInline):
     model = PropertyName
     extra = 1
     fields = ('name', 'language')
+    template = "admin/edit_inline/tabular.html"
 
 
 class PropertyDefinitionInline(admin.TabularInline):
     model = PropertyDefinition
     extra = 1
     fields = ('definition', 'language')
+    template = "admin/edit_inline/tabular.html"
 
 
 @admin.register(Property)
-class PropertyAdmin(admin.ModelAdmin):
+class PropertyAdmin(reversion.admin.VersionAdmin, admin.ModelAdmin):
     """Admin interface for Property with comprehensive import/export functionality."""
     
     change_list_template = 'admin/properties/property/change_list.html'
@@ -51,17 +55,21 @@ class PropertyAdmin(admin.ModelAdmin):
     inlines = [PropertyNameInline, PropertyDefinitionInline]
     
     fieldsets = (
-        ('Core Information (PA001-003)', {
-            'fields': ('dictionary', 'version_number', 'revision_number')
+        ('Names & Descriptions (PA003)', {
+            'fields': (),  # Names and definitions handled by inlines above
+            'description': 'Property names and definitions in multiple languages are managed in the sections above'
+        }),
+        ('Core Information (PA001-002)', {
+            'fields': ('pa_code', 'dictionary', 'version_number', 'revision_number')
         }),
         ('Technical Specifications (PA004-010)', {
             'fields': ('data_type', 'unit_of_measurement', 'value_domain', 'physical_quantity')
         }),
-        ('Classification (PA011-015)', {
-            'fields': ('classification_system', 'classification_reference')
-        }),
         ('Lifecycle & Authority (PA016-020)', {
             'fields': ('status', 'registration_authority', 'registration_date', 'deprecation_explanation')
+        }),
+        ('Classification (PA011-015)', {
+            'fields': ('classification_system', 'classification_reference')
         }),
         ('Geographic & Localization (PA021-025)', {
             'fields': ('country_of_origin', 'countries_of_use', 'creators_language')
@@ -90,8 +98,8 @@ class PropertyAdmin(admin.ModelAdmin):
         if not change:  # Creating new
             obj.created_by = request.user
         obj.updated_by = request.user
-        super().save_model(request, obj, form, change)
-    
+        super().save_model(request, obj, change=change, form=form)
+
     def get_urls(self):
         """Add custom import/export URLs."""
         urls = super().get_urls()
@@ -106,13 +114,13 @@ class PropertyAdmin(admin.ModelAdmin):
                  name='properties_property_grid_manager'),
         ]
         return custom_urls + urls
-    
+
     def grid_manager_view(self, request):
         """Advanced grid manager view."""
         from .grid_views import PropertyGridView
         view = PropertyGridView.as_view()
         return view(request)
-    
+
     def import_csv_view(self, request):
         """Basic CSV import view with transaction management."""
         if request.method == 'POST':
@@ -144,47 +152,83 @@ class PropertyAdmin(admin.ModelAdmin):
                         # Extract PA code and extended attributes
                         pa_code_data, iso16757_attrs, custom_attrs = self._extract_extended_attributes(row)
                         
-                        # Create or update Property
-                        property_obj, created = Property.objects.update_or_create(
-                            dictionary=dictionary,
-                            data_type=core_data.get('data_type', 'string'),
-                            unit_of_measurement=core_data.get('unit_of_measurement', ''),
-                            defaults={
-                                **core_data,
-                                'extended_attributes': iso16757_attrs or None,
-                                'metadata': {
+                        # Extract PA code for matching existing properties
+                        pa_code = row.get('Property ID', row.get('PA001.1', row.get('property_id', '')))
+                        
+                        # Try to find existing property by PA code first, then by other criteria
+                        property_obj = None
+                        created = False
+
+                        # Wrap per-row operations in a reversion revision so each row is recorded
+                        with reversion.create_revision():
+                            if pa_code and pa_code.strip():
+                                # Look for existing property with matching PA code
+                                try:
+                                    property_obj = Property.objects.get(pa_code=pa_code.strip())
+                                    created = False
+                                except Property.DoesNotExist:
+                                    pass
+                            
+                            if not property_obj:
+                                # Create or update Property using original logic
+                                property_obj, created = Property.objects.update_or_create(
+                                    dictionary=dictionary,
+                                    data_type=core_data.get('data_type', 'string'),
+                                    unit_of_measurement=core_data.get('unit_of_measurement', ''),
+                                    defaults={
+                                        **core_data,
+                                        'pa_code': pa_code.strip() if pa_code and pa_code.strip() else None,
+                                        'extended_attributes': iso16757_attrs or None,
+                                        'metadata': {
+                                            'pa_code_data': pa_code_data,
+                                            'custom_attributes': custom_attrs
+                                        } if (pa_code_data or custom_attrs) else None,
+                                        'updated_by': request.user,
+                                    }
+                                )
+                            else:
+                                # Update existing property found by PA code
+                                for field, value in core_data.items():
+                                    if field != 'dictionary':  # Don't change dictionary
+                                        setattr(property_obj, field, value)
+                                property_obj.extended_attributes = iso16757_attrs or None
+                                property_obj.metadata = {
                                     'pa_code_data': pa_code_data,
                                     'custom_attributes': custom_attrs
-                                } if (pa_code_data or custom_attrs) else None,
-                                'updated_by': request.user,
-                            }
-                        )
-                        
-                        # Set created_by only for new objects
-                        if created:
-                            property_obj.created_by = request.user
-                            property_obj.save(update_fields=['created_by'])
-                            created_count += 1
-                            
-                            # Create property name if available
-                            name_value = row.get('name', row.get('Name', row.get('property_name', '')))
-                            if name_value:
-                                PropertyName.objects.create(
-                                    property=property_obj,
-                                    name=str(name_value).strip(),
-                                    language='en'
-                                )
-                            
-                            # Create property definition if available
-                            def_value = row.get('definition', row.get('Definition', row.get('description', '')))
-                            if def_value:
-                                PropertyDefinition.objects.create(
-                                    property=property_obj,
-                                    definition=str(def_value).strip(),
-                                    language='en'
-                                )
-                        else:
-                            updated_count += 1
+                                } if (pa_code_data or custom_attrs) else None
+                                property_obj.updated_by = request.user
+                                property_obj.save()
+                                created = False
+
+                            # Set created_by only for new objects
+                            if created:
+                                property_obj.created_by = request.user
+                                property_obj.save(update_fields=['created_by'])
+                                created_count += 1
+                                
+                                # Create property name if available
+                                name_value = row.get('name', row.get('Name', row.get('property_name', '')))
+                                if name_value:
+                                    PropertyName.objects.create(
+                                        property=property_obj,
+                                        name=str(name_value).strip(),
+                                        language='en'
+                                    )
+                                    
+                                # Create property definition if available
+                                def_value = row.get('definition', row.get('Definition', row.get('description', '')))
+                                if def_value:
+                                    PropertyDefinition.objects.create(
+                                        property=property_obj,
+                                        definition=str(def_value).strip(),
+                                        language='en'
+                                    )
+                            else:
+                                updated_count += 1
+
+                            # annotate revision with user/comment
+                            reversion.set_user(request.user)
+                            reversion.set_comment('Imported via CSV')
                     
                     messages.success(
                         request, 
@@ -688,9 +732,15 @@ class PropertyAdmin(admin.ModelAdmin):
                                 print(f"DEBUG: Processing row {row_num}")
                                 print(f"DEBUG: Row data: {dict(row)}")
                                 
-                            result = self._process_iso16757_row(row, dictionary, request.user)
-                            import_stats[result] += 1
-                            
+                            # Wrap per-row processing in a reversion revision
+                            with reversion.create_revision():
+                                result = self._process_iso16757_row(row, dictionary, request.user)
+                                import_stats[result] += 1
+                                
+                                # annotate revision
+                                reversion.set_user(request.user)
+                                reversion.set_comment(f'ISO16757 import row {row_num}')
+                                
                             # Log progress for large files
                             if row_num % 100 == 0:
                                 print(f"DEBUG: Processed {row_num} rows...")
@@ -799,62 +849,90 @@ class PropertyAdmin(admin.ModelAdmin):
         if core_data.get('version_number'):
             lookup_fields['version_number'] = core_data.get('version_number')
         
-        # Try to find existing property - if multiple found, make it unique
-        existing_properties = Property.objects.filter(**lookup_fields)
+        # Try to find existing property by PA code first
+        existing_property = None
+        if property_id and property_id.strip():
+            try:
+                existing_property = Property.objects.get(pa_code=property_id.strip())
+            except Property.DoesNotExist:
+                pass
         
-        if existing_properties.exists():
-            # Check if any existing property has the same original_property_id
-            property_obj = None
-            for prop in existing_properties[:5]:  # Limit to first 5 to avoid performance issues
-                if prop.extended_attributes:
-                    try:
-                        # extended_attributes is already a dict (not JSON string)
-                        attrs = prop.extended_attributes if isinstance(prop.extended_attributes, dict) else {}
-                        if attrs.get('original_property_id') == property_id:
-                            property_obj = prop
-                            created = False
-                            break
-                    except Exception:
-                        continue
+        if existing_property:
+            # Update existing property found by PA code
+            property_obj = existing_property
+            created = False
             
-            if not property_obj:
-                # No exact match by property_id, create a new unique one
-                unique_suffix = str(int(time.time()))[-6:]  # Last 6 digits of timestamp
+            # Update core fields
+            for field, value in core_data.items():
+                if field != 'dictionary':  # Don't change dictionary on existing properties
+                    setattr(property_obj, field, value)
+            
+            # Update extended attributes and metadata
+            property_obj.extended_attributes = iso16757_attrs or None
+            property_obj.metadata = metadata
+            property_obj.updated_by = user
+            property_obj.save()
+            
+        else:
+            # Try to find existing property - if multiple found, make it unique
+            existing_properties = Property.objects.filter(**lookup_fields)
+            
+            if existing_properties.exists():
+                # Check if any existing property has the same original_property_id in extended_attributes
+                property_obj = None
+                for prop in existing_properties[:5]:  # Limit to first 5 to avoid performance issues
+                    if prop.extended_attributes:
+                        try:
+                            # extended_attributes is already a dict (not JSON string)
+                            attrs = prop.extended_attributes if isinstance(prop.extended_attributes, dict) else {}
+                            if attrs.get('original_property_id') == property_id:
+                                property_obj = prop
+                                created = False
+                                break
+                        except Exception:
+                            continue
+                
+                if not property_obj:
+                    # No exact match by property_id, create a new unique one
+                    unique_suffix = str(int(time.time()))[-6:]  # Last 6 digits of timestamp
+                    property_obj = Property.objects.create(
+                        dictionary=dictionary,
+                        data_type=core_data.get('data_type', 'string'),
+                        unit_of_measurement=core_data.get('unit_of_measurement', ''),
+                        version_number=f"{core_data.get('version_number', '1')}-{unique_suffix}",
+                        status=core_data.get('status', 'active'),
+                        pa_code=property_id.strip() if property_id and property_id.strip() else None,
+                        extended_attributes=iso16757_attrs or None,
+                        metadata=metadata,
+                        created_by=user,
+                        updated_by=user,
+                    )
+                    created = True
+                else:
+                    # Update existing property
+                    property_obj.status = core_data.get('status', property_obj.status)
+                    property_obj.pa_code = property_id.strip() if property_id and property_id.strip() else property_obj.pa_code
+                    property_obj.extended_attributes = iso16757_attrs or None
+                    property_obj.metadata = metadata
+                    property_obj.updated_by = user
+                    property_obj.save()
+                    created = False
+                    
+            else:
+                # No existing property, create new one
                 property_obj = Property.objects.create(
                     dictionary=dictionary,
                     data_type=core_data.get('data_type', 'string'),
                     unit_of_measurement=core_data.get('unit_of_measurement', ''),
-                    version_number=f"{core_data.get('version_number', '1')}-{unique_suffix}",
                     status=core_data.get('status', 'active'),
+                    version_number=core_data.get('version_number', '1'),
+                    pa_code=property_id.strip() if property_id and property_id.strip() else None,
                     extended_attributes=iso16757_attrs or None,
                     metadata=metadata,
                     created_by=user,
                     updated_by=user,
                 )
                 created = True
-            else:
-                # Update existing property
-                property_obj.status = core_data.get('status', property_obj.status)
-                property_obj.extended_attributes = iso16757_attrs or None
-                property_obj.metadata = metadata
-                property_obj.updated_by = user
-                property_obj.save()
-                created = False
-                
-        else:
-            # No existing property, create new one
-            property_obj = Property.objects.create(
-                dictionary=dictionary,
-                data_type=core_data.get('data_type', 'string'),
-                unit_of_measurement=core_data.get('unit_of_measurement', ''),
-                status=core_data.get('status', 'active'),
-                version_number=core_data.get('version_number', '1'),
-                extended_attributes=iso16757_attrs or None,
-                metadata=metadata,
-                created_by=user,
-                updated_by=user,
-            )
-            created = True
         
         # Create property names and definitions for new properties only
         if created:
@@ -920,35 +998,116 @@ class PropertyAdmin(admin.ModelAdmin):
                     created_definitions.add(def_value)
     
     def grid_data_view(self, request):
-        """Return JSON list of properties for the grid."""
+        """Return JSON list of properties for the grid.
+
+        Robustly parse an optional `payload` parameter which may come in as a JSON string,
+        URL-encoded JSON, bytes, or already-parsed dict. Fail gracefully with a JSON
+        error response on parse/processing errors.
+        """
         from django.http import JsonResponse
         from django.core.serializers.json import DjangoJSONEncoder
+        from urllib.parse import unquote_plus
+        from json import JSONDecodeError
 
-        qs = Property.objects.select_related('dictionary', 'physical_quantity', 'created_by', 'updated_by').prefetch_related('names')
-        data = []
-        for p in qs:
-            names = []
+        try:
+            # Obtain raw payload (prefer GET param)
+            raw_payload = request.GET.get('payload', None)
+            if raw_payload is None:
+                # Fall back to request body if provided
+                try:
+                    raw_payload = request.body or None
+                except Exception:
+                    raw_payload = None
+
+            # DEBUG: log payload type and a short sample for troubleshooting
             try:
-                for n in p.names.all():
-                    names.append({"language": getattr(n, 'language', 'en'), "name": getattr(n, 'name', '')})
+                print(f"DEBUG grid_data_view: raw_payload type={type(raw_payload)}, repr={str(raw_payload)[:200]}")
             except Exception:
+                print("DEBUG grid_data_view: could not repr raw_payload")
+
+            # DEBUG: also print the raw GET dict and query string for diagnosis
+            try:
+                print("DEBUG grid_data_view: request.GET ->", dict(request.GET))
+                print("DEBUG grid_data_view: QUERY_STRING ->", request.META.get('QUERY_STRING', ''))
+            except Exception:
+                print("DEBUG grid_data_view: could not print request.GET or QUERY_STRING")
+
+            params = {}
+
+            if raw_payload is not None:
+                # If it's bytes, decode
+                if isinstance(raw_payload, (bytes, bytearray)):
+                    try:
+                        raw_payload = raw_payload.decode('utf-8')
+                    except Exception:
+                        raw_payload = raw_payload.decode('latin-1') if isinstance(raw_payload, (bytes, bytearray)) else raw_payload
+
+                # If it's a QueryDict or dict-like, use directly
+                if isinstance(raw_payload, dict):
+                    params = raw_payload
+                elif isinstance(raw_payload, str):
+                    # Try plain JSON parse first
+                    try:
+                        params = json.loads(raw_payload)
+                    except JSONDecodeError:
+                        # Try URL-unquoting then parse
+                        try:
+                            unq = unquote_plus(raw_payload)
+                            params = json.loads(unq)
+                        except JSONDecodeError:
+                            # Last resort: if it looks like a python dict literal, try ast.literal_eval
+                            try:
+                                import ast
+                                parsed = ast.literal_eval(raw_payload)
+                                if isinstance(parsed, dict):
+                                    params = parsed
+                                else:
+                                    params = {}
+                            except Exception:
+                                params = {}
+                else:
+                    # Unknown type, ignore payload
+                    params = {}
+
+            # Extract search term (safe access)
+            search_term = ''
+            if isinstance(params, dict):
+                search_term = (params.get('search') or '').strip()
+
+            qs = Property.objects.select_related('dictionary', 'physical_quantity', 'created_by', 'updated_by').prefetch_related('names')
+            if search_term:
+                qs = qs.filter(names__name__icontains=search_term).distinct()
+
+            data = []
+            for p in qs:
                 names = []
+                try:
+                    for n in p.names.all():
+                        names.append({"language": getattr(n, 'language', 'en'), "name": getattr(n, 'name', '')})
+                except Exception:
+                    names = []
 
-            data.append({
-                'id': p.pk,
-                'guid': getattr(p, 'guid', None),
-                'names': names,
-                'data_type': getattr(p, 'data_type', None),
-                'unit_of_measurement': getattr(p, 'unit_of_measurement', None),
-                'status': getattr(p, 'status', None),
-                'dictionary_name': p.dictionary.name if getattr(p, 'dictionary', None) else None,
-                'physical_quantity_name': p.physical_quantity.name if getattr(p, 'physical_quantity', None) else None,
-                'version_number': getattr(p, 'version_number', None),
-                'updated_at': p.updated_at.isoformat() if getattr(p, 'updated_at', None) else None,
-                'extended_attributes': p.extended_attributes if getattr(p, 'extended_attributes', None) else None,
-            })
+                data.append({
+                    'id': p.pk,
+                    'guid': getattr(p, 'guid', None),
+                    'pa_code': getattr(p, 'pa_code', None),
+                    'names': names,
+                    'data_type': getattr(p, 'data_type', None),
+                    'unit_of_measurement': getattr(p, 'unit_of_measurement', None),
+                    'status': getattr(p, 'status', None),
+                    'dictionary_name': p.dictionary.name if getattr(p, 'dictionary', None) else None,
+                    'physical_quantity_name': p.physical_quantity.name if getattr(p, 'physical_quantity', None) else None,
+                    'version_number': getattr(p, 'version_number', None),
+                    'updated_at': p.updated_at.isoformat() if getattr(p, 'updated_at', None) else None,
+                    'extended_attributes': p.extended_attributes if getattr(p, 'extended_attributes', None) else None,
+                })
 
-        return JsonResponse({'properties': data}, encoder=DjangoJSONEncoder, safe=True)
+            return JsonResponse({'properties': data}, encoder=DjangoJSONEncoder, safe=True)
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return JsonResponse({'error': str(e)}, status=500)
 
     def dictionaries_view(self, request):
         """Return JSON list of dictionaries for dropdowns."""
@@ -964,9 +1123,44 @@ class PropertyAdmin(admin.ModelAdmin):
             })
         return JsonResponse(result, safe=False)
 
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        """Return a ModelForm class. If FieldError happens due to unexpected field names (e.g. from custom formset inputs),
+        fall back to a safe explicit field list built from the model's concrete fields.
+        """
+        from django.core.exceptions import FieldError
+
+        try:
+            return super().get_form(request, obj, change, **kwargs)
+        except FieldError:
+            # Build a safe list of fields from the model to avoid unknown dynamic names causing a 500
+            model_fields = [f.name for f in self.model._meta.concrete_fields]
+            # include any readonly fields so they are available
+            safe_fields = [f for f in model_fields if f not in getattr(self, 'exclude', [])]
+            try:
+                return super().get_form(request, obj, change, fields=safe_fields)
+            except Exception:
+                # Last resort: call super without custom fields
+                return super().get_form(request, obj, change)
+
 
 # Register the admin classes
 # admin.site.register(Property, PropertyAdmin)
 admin.site.register(PropertyName)
 admin.site.register(PropertyDefinition)
 admin.site.register(PhysicalQuantity)
+
+# Register models with reversion so changes are versioned (including follow for related inlines)
+try:
+    if not reversion.is_registered(Property):
+        reversion.register(Property, follow=['names', 'definitions'])
+except Exception:
+    # Already registered or reversion not available
+    pass
+
+for _m in (PropertyName, PropertyDefinition, PropertyRelationship, PhysicalQuantity):
+    try:
+        if not reversion.is_registered(_m):
+            reversion.register(_m)
+    except Exception:
+        # Ignore registration errors to keep startup resilient
+        pass

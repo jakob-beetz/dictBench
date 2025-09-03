@@ -5,33 +5,9 @@
 
 {% block extra_css %}
 <style>
-    .formset-ro                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.data_type.label_tag }}
-                                {{ form.data_type }}
-                                {% if form.data_type.help_text %}
-                                    <small class="form-text text-muted">{{ form.data_type.help_text }}</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.unit_of_measurement.label_tag }}
-                                {{ form.unit_of_measurement }}
-                                {% if form.unit_of_measurement.help_text %}
-                                    <small class="form-text text-muted">{{ form.unit_of_measurement.help_text }}</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.value_domain.label_tag }}
-                                {{ form.value_domain }}
-                                {% if form.value_domain.help_text %}
-                                    <small class="form-text text-muted">{{ form.value_domain.help_text }}</small>
-                                {% endif %}
-                            </div>
-                        </div>r: 1px solid #dee2e6;
+    /* Formset row styling (cleaned) */
+    .formset-row {
+        border: 1px solid #dee2e6;
         border-radius: 0.375rem;
         padding: 15px;
         margin-bottom: 10px;
@@ -148,6 +124,7 @@
             </div>
         </div>
 
+               
         <div class="row">
             <div class="col-md-9">
                 
@@ -284,6 +261,13 @@
                                 {{ form.dictionary }}
                                 {% if form.dictionary.help_text %}
                                     <small class="form-text text-muted">{{ form.dictionary.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.creators_language.label_tag }}
+                                {{ form.creators_language }}
+                                {% if form.creators_language.help_text %}
+                                    <small class="form-text text-muted">{{ form.creators_language.help_text }}</small>
                                 {% endif %}
                             </div>
                         </div>

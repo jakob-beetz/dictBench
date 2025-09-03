@@ -9,6 +9,16 @@ class Property(models.Model):
     """
     guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
+    # PA identifier field for handcrafted codes (PA001, PA002, etc.)
+    pa_code = models.CharField(
+        max_length=20, 
+        blank=True, 
+        null=True, 
+        unique=True,
+        help_text="Optional handcrafted PA identifier (e.g., PA001, PA002). Must be unique if provided.",
+        verbose_name="PA Code"
+    )
+    
     # ISO 23386 identification fields
     version_number = models.CharField(max_length=50, blank=True, null=True)
     revision_number = models.CharField(max_length=50, blank=True, null=True)
@@ -85,9 +95,13 @@ class Property(models.Model):
             name = self.names.filter(language='en-EN').first()
             if not name:
                 name = self.names.first()
-            return name.name if name else f"Property {self.guid}"
+            display_name = name.name if name else f"Property {self.guid}"
+            # Include PA code if available
+            if self.pa_code:
+                return f"{self.pa_code}: {display_name}"
+            return display_name
         except Exception:
-            return f"Property {self.guid}"
+            return f"{self.pa_code or self.guid}"
 
 
 class PropertyName(models.Model):

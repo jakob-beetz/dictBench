@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Recent Changes{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Recent Changes</h1>
+    {% if revisions %}
+        <ul class="list-group">
+            {% for r in revisions %}
+                <li class="list-group-item">
+                    <div><strong>{{ r.date }}</strong> — {{ r.user|default:'system' }}</div>
+                    <div class="small text-muted">{{ r.comment }}</div>
+                    <div class="mt-2">
+                        Changed:
+                        <ul>
+                            {% for c in r.changed %}
+                                <li>
+                                    {{ c.model }}: {{ c.object_id }}
+                                    {% if c.model == 'Property' and c.guid %}
+                                        — <a href="{% url 'properties:property_versions' c.guid %}">versions</a>
+                                        — <a href="{% url 'properties:property_detail' pk=c.guid %}">view</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">No recent revisions found.</div>
+    {% endif %}
+</div>
+{% endblock %}

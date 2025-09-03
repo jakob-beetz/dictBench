@@ -1,0 +1,16 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static %}
+
+{% block content %}
+  {% if inline_admin_formsets %}
+    {% comment %} <div class="module aligned inline-group" id="property-inlines-top">
+      {% for inline_admin_formset in inline_admin_formsets %}
+        {% include inline_admin_formset.opts.template %}
+      {% endfor %}
+    </div> {% endcomment %}
+  {% endif %}
+
+  {{ block.super }}
+{% endblock %}
+
+{% block after_field_sets %}{% endblock %}

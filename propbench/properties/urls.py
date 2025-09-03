@@ -24,4 +24,8 @@ urlpatterns = [
     path('api/physical-quantities/search/', grid_views.search_physical_quantities, name='api_search_quantities'),
     path('api/classifications/search/', grid_views.search_classifications, name='api_search_classifications'),
     path('api/dictionaries/', views.get_dictionaries_api, name='api_dictionaries'),
+
+    # Property versions page
+    path('property/<uuid:pk>/versions/', views.property_versions, name='property_versions'),
+    path('recent-changes/', views.recent_changes, name='recent_changes'),
 ]

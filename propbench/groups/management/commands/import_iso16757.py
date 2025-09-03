@@ -8,7 +8,7 @@ import csv
 from pathlib import Path
 
 from groups.models import PropertyGroup
-from properties.models import Property, PropertyName, PropertyDefinition
+from properties.models import PropertyName, PropertyDefinition
 from dictionaries.models import PropertyDictionary
 
 
@@ -488,19 +488,59 @@ class Command(BaseCommand):
                     'pa_code_data': pa_code_data
                 }
 
-                # Create or update property
-                property_obj, created = Property.objects.update_or_create(
-                    dictionary=dictionary,
-                    data_type=data_type,
-                    unit_of_measurement=unit,
-                    defaults={
-                        'status': 'active',
-                        # store native dicts/lists instead of JSON strings
-                        'extended_attributes': iso16757_attrs or None,
-                        'metadata': metadata or None,
-                        'updated_by': user,
-                    }
-                )
+                # Extract Property ID/PA code for matching
+                property_id = None
+                for col in ['Property ID', 'PA001.1', 'property_id']:
+                    if col in row and row[col]:
+                        property_id = str(row[col]).strip()
+                        break
+
+                # Try to find existing property by PA code first
+                property_obj = None
+                created = False
+                
+                if property_id:
+                    try:
+                        from properties.models import Property
+                        property_obj = Property.objects.get(pa_code=property_id)
+                        created = False
+                        
+                        # Update existing property
+                        property_obj.data_type = data_type
+                        property_obj.unit_of_measurement = unit
+                        property_obj.status = 'active'
+                        property_obj.extended_attributes = iso16757_attrs or None
+                        property_obj.metadata = metadata or None
+                        property_obj.updated_by = user
+                        property_obj.save()
+                        
+                    except Property.DoesNotExist:
+                        # Create new property with PA code
+                        property_obj = Property.objects.create(
+                            dictionary=dictionary,
+                            data_type=data_type,
+                            unit_of_measurement=unit,
+                            status='active',
+                            pa_code=property_id,
+                            extended_attributes=iso16757_attrs or None,
+                            metadata=metadata or None,
+                            created_by=user,
+                            updated_by=user,
+                        )
+                        created = True
+                else:
+                    # No PA code, use original logic
+                    property_obj = Property.objects.create(
+                        dictionary=dictionary,
+                        data_type=data_type,
+                        unit_of_measurement=unit,
+                        status='active',
+                        extended_attributes=iso16757_attrs or None,
+                        metadata=metadata or None,
+                        created_by=user,
+                        updated_by=user,
+                    )
+                    created = True
                 
                 if created:
                     property_obj.created_by = user

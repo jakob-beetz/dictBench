@@ -34,6 +34,11 @@
         </div>
     </div>
 
+    <div class="d-flex mb-3">
+        <a href="{% url 'properties:property_versions' pk=property.guid %}" class="btn btn-outline-secondary me-2">Versions</a>
+        <a href="{% url 'properties:recent_changes' %}" class="btn btn-outline-primary">Recent Changes</a>
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             <!-- Names and Definitions -->
@@ -143,6 +148,117 @@
         </div>
     </div>
     
+    {% comment %} {% comment %} <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Property Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Dictionary:</div>
+                    <div class="col-8">{{ property.dictionary.name }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Data Type:</div>
+                    <div class="col-8">{{ property.data_type }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Physical quantity:</div>
+                    <div class="col-8">{{ property.physical_quantity.name if property.physical_quantity else "N/A" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Unit:</div>
+                    <div class="col-8">{{ property.unit_of_measurement|default:"N/A" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Value Domain:</div>
+                    <div class="col-8">{{ property.value_domain|default:"Any value" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Status:</div>
+                    <div class="col-8">
+                        <span class="badge bg-{{ property.status|lower }}">{{ property.status }}</span>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-4 text-muted">Origin:</div>
+                    <div class="col-8">{{ property.country_of_origin|default:"N/A" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Countries of Use:</div>
+                    <div class="col-8">
+                        {% if property.countries_of_use %}
+                          <pre class="mb-0 small">{{ property.countries_of_use|default:"[]" }}</pre>
+                        {% else %}
+                          <em>N/A</em>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Creators language:</div>
+                    <div class="col-8">{{ property.creators_language|default:"en-EN" }}</div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-4 text-muted">Deprecation explanation:</div>
+                    <div class="col-8">{{ property.deprecation_explanation|default:"" }}</div>
+                </div>
+            </div>
+        </div>
+    </div> {% endcomment %}
+    
+    <div class="row">
+        <div class="col-md-12 mt-3">
+        <div class="card">
+            <div class="card-header">
+            <h5 class="card-title">Extended Attributes & Metadata</h5>
+            </div>
+            <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                <h6>Extended Attributes</h6>
+                <div id="extended-attributes-editor" style="height: 300px; border: 1px solid #ddd;"></div>
+                {{ property.extended_attributes|json_script:"extended_attributes_data" }}
+                </div>
+                <div class="col-md-6">
+                <h6>Metadata</h6>
+                <div id="metadata-editor" style="height: 300px; border: 1px solid #ddd;"></div>
+                {{ property.metadata|json_script:"metadata_data" }}
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        {# include JSONEditor assets & init script #}
+        {% block extra_scripts %}
+        {{ block.super }}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsoneditor@9.8.0/dist/jsoneditor.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/jsoneditor@9.8.0/dist/jsoneditor.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+            function initEditor(containerId, dataScriptId) {
+                var container = document.getElementById(containerId);
+                var scriptEl = document.getElementById(dataScriptId);
+                if (!container || !scriptEl) return;
+                var options = { mode: 'view', mainMenuBar: false, navigationBar: true, search: false };
+                var editor = new JSONEditor(container, options);
+                try {
+                var data = JSON.parse(scriptEl.textContent || 'null') || {};
+                } catch (e) {
+                var data = {};
+                }
+                editor.set(data);
+            }
+            initEditor('extended-attributes-editor','extended_attributes_data');
+            initEditor('metadata-editor','metadata_data');
+            });
+        </script>
+        {% endblock %}
+    </div>    
+
+
     <div class="row mt-4">
         <div class="col-md-12">
             <div class="card">
