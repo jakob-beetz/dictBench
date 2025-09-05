@@ -1,0 +1,45 @@
+@startuml
+title Django modules + reversion integration
+
+package "properties app" {
+  class Property <<Model>> {
+    +pa_code
+    +data_type
+    +value_domain (JSON)
+    +extended_attributes (JSON)
+    +metadata (JSON)
+    +groups (M2M)
+  }
+  class PropertyName <<Model>>
+  class PropertyDefinition <<Model>>
+  class PropertyExample <<Model>>
+  class PropertyDescription <<Model>>
+  class PropertyForm <<Form>>
+  class PropertyAdmin <<Admin>>
+  class ISO16757Importer <<Service>>
+}
+
+package "audit app" {
+  class Audit <<Model>>
+  class audit_signals() <<module>>
+}
+
+package "reversion" {
+  class Version <<Model>>
+  class create_revision() <<API>>
+}
+
+PropertyAdmin --> PropertyForm : uses
+PropertyAdmin --> Property : inlines (names, definitions)
+ISO16757Importer --> Property : create/update
+ISO16757Importer --> PropertyName : create names after property
+ISO16757Importer --> create_revision : wrap per-row
+ISO16757Importer --> Version : records versions
+
+audit_signals --> Audit : on pre_save/post_save create Audit rows
+Property.save --> audit_signals : triggers audit
+create_revision --> Version : records snapshot (follows related models)
+
+PropertyAdmin ..> reversion : inherits VersionAdmin (provides UI)
+PropertyAdmin -> Property : inline edit (names/definitions)
+PropertyForm -> Property : validation + JSONEditorWidget for JSON fields

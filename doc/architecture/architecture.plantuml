@@ -1,0 +1,54 @@
+@startuml HighLevelArchitecture
+skinparam linetype ortho
+title PropBench - High Level Architecture
+
+actor "User (browser / admin UI)" as User
+actor "CLI / Management" as CLI
+
+package "PropBench (Django)" {
+  [WSGI / runserver] as Server
+  package "Web UI & API" {
+    [Admin UI] as AdminUI
+    [Property Grid UI] as GridUI
+    [Public Property Views/API] as PublicAPI
+  }
+  package "Apps" {
+    [properties app] as Properties
+    [dictionaries app] as Dicts
+    [groups app] as Groups
+    [audit app] as Audit
+    [import service] as ImportSvc
+  }
+  component "django-reversion" as Reversion
+  component "Templates & Static (JS / JSONEditor / Tabulator)" as Static
+}
+
+database "Postgres/SQLite DB" as DB
+
+User --> AdminUI : browse / edit
+User --> GridUI : interactive grid
+AdminUI --> Server
+GridUI --> Server
+PublicAPI --> Server
+CLI --> ImportSvc : run import command
+
+Server --> Properties : calls views/forms/models
+Server --> Dicts
+Server --> Groups
+Server --> Audit
+Server --> Reversion
+
+ImportSvc --> ImportSvc : parse CSV (uses mapping)
+ImportSvc --> Properties : create/update properties
+ImportSvc --> Reversion : create per-row revisions
+ImportSvc --> Audit : create audit rows via signals
+
+Properties --> DB
+Dicts --> DB
+Groups --> DB
+Audit --> DB
+Reversion --> DB
+
+Static --> User
+Static --> AdminUI
+@enduml

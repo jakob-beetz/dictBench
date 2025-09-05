@@ -1,0 +1,45 @@
+@startuml ISO16757_Import_Workflow
+title ISO16757 CSV import workflow (per-row revisions)
+
+actor User
+participant "Import UI / Admin View\n(properties/admin.py)" as AdminView
+participant "Import Endpoint / view\n(properties/views.py)" as ImportView
+participant "ISO16757 Import Service\n(properties/iso16757_import.py)" as ImportSvc
+participant "Mapping Loader\n(properties/iso16757_mapping.py)" as Mapping
+participant "django-reversion" as Reversion
+participant "Audit signals\n(audit/signals.py)" as Audit
+database "DB\n(properties/models.py + reversion versions)" as DB
+
+User -> AdminView : Upload CSV + pick dictionary
+AdminView -> ImportView : POST file, dictionary_id, user
+ImportView -> Mapping : load mapping (ISO16757_MAPPING_FILE)
+ImportView -> ImportSvc : parse_and_import(fileobj, dictionary, user)
+
+note right of ImportSvc
+  parse_and_import:
+  - read headers
+  - read 2nd row (PA-tags) -> header->PA mapping
+  - create csv.DictReader
+end note
+
+ImportSvc -> ImportSvc : process rows
+loop per CSV row
+  ImportSvc -> Mapping : map CSV columns -> model attrs / pa keys
+  ImportSvc -> Reversion : with reversion.create_revision()
+  activate Reversion
+    Reversion -> ImportSvc : enter revision context
+    ImportSvc -> DB : find existing Property (by pa_code/guid) or create
+    ImportSvc -> DB : create/update related models (names, definitions, examples, descriptions)
+    ImportSvc -> DB : assign dictionary, groups, links (replaced/replacing)
+    ImportSvc -> DB : save property and related objects
+    ImportSvc -> Reversion : reversion.set_user(user); reversion.set_comment("ISO16757 import row X")
+    ImportSvc -> Audit : (signals triggered by save) -> Audit rows created
+    Reversion -> DB : persist version (includes followed related objects)
+  deactivate Reversion
+end
+ImportSvc -> ImportView : return stats (created/updated/errors)
+ImportView -> AdminView : render results page (summary)
+User <-- AdminView : import results (UI message / link)
+
+note left: See\n[`propbench/properties/iso16757_import.py`](propbench/properties/iso16757_import.py)\n[`propbench/properties/iso16757_mapping.py`](propbench/properties/iso16757_mapping.py)\n[`propbench/audit/signals.py`](propbench/audit/signals.py)
+@enduml
