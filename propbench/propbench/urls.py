@@ -22,6 +22,7 @@ urlpatterns = [
     
     # Basic views with proper namespacing
     path('properties/', include('properties.urls', namespace='properties')),
+    path('properties/', include('properties.urls')),
     path('groups/', include('groups.urls', namespace='groups')),
     path('requests/', include('requests.urls', namespace='requests')),
     path('audit/', include('audit.urls', namespace='audit')),

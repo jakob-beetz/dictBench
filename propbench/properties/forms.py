@@ -1,10 +1,9 @@
 from django import forms
-from django.forms import inlineformset_factory
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, Field, HTML, Div, Fieldset
-from .models import Property, PropertyName, PropertyDefinition
+from django.forms import inlineformset_factory, ModelForm
+from .models import Property, PropertyName, PropertyDefinition, PhysicalQuantity
 from groups.models import PropertyGroup
 from dictionaries.models import PropertyDictionary
+from .widgets import JSONEditorWidget
 
 
 # Language choices for ISO 23386 compliance
@@ -90,7 +89,7 @@ PropertyDefinitionFormSet = inlineformset_factory(
 )
 
 
-class PropertyForm(forms.ModelForm):
+class PropertyForm(ModelForm):
     """
     ISO 23386 compliant form for creating and updating properties with all mandatory and optional fields.
     
@@ -347,6 +346,12 @@ class PropertyForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
+        # Disable system fields
+        for fld in ('created_by', 'updated_by', 'created_at', 'updated_at'):
+            if fld in self.fields:
+                self.fields[fld].required = False
+                self.fields[fld].disabled = True
+        
         # Set up group queryset
         if self.instance and self.instance.pk and hasattr(self.instance, 'dictionary'):
             try:
@@ -365,7 +370,6 @@ class PropertyForm(forms.ModelForm):
                 self.fields['groups'].queryset = PropertyGroup.objects.all()
         
         # Set up physical quantity queryset
-        from .models import PhysicalQuantity
         self.fields['physical_quantity'].queryset = PhysicalQuantity.objects.all()
         
         # Set selected groups for existing properties

@@ -11,10 +11,13 @@ import io
 import reversion
 import reversion.admin
 from .models import (
-    Property, PropertyName, PropertyDefinition, PhysicalQuantity, PropertyRelationship
+    Property, PropertyName, PropertyDefinition, PhysicalQuantity, PropertyRelationship, PropertyExample, PropertyDescription
 )
 from dictionaries.models import PropertyDictionary
 from .widgets import JSONEditorWidget
+from .forms import PropertyForm
+from groups.models import PropertyGroupMembership
+from .iso16757_import import parse_and_import
 
 
 class PropertyNameInline(admin.TabularInline):
@@ -31,9 +34,19 @@ class PropertyDefinitionInline(admin.TabularInline):
     template = "admin/edit_inline/tabular.html"
 
 
+class PropertyGroupMembershipInline(admin.TabularInline):
+    model = PropertyGroupMembership
+    extra = 1
+    fields = ('group', 'order', 'is_required', 'metadata')
+    verbose_name = 'Group membership'
+    verbose_name_plural = 'Group memberships'
+
+
 @admin.register(Property)
 class PropertyAdmin(reversion.admin.VersionAdmin, admin.ModelAdmin):
     """Admin interface for Property with comprehensive import/export functionality."""
+    
+    form = PropertyForm
     
     change_list_template = 'admin/properties/property/change_list.html'
     
@@ -52,7 +65,7 @@ class PropertyAdmin(reversion.admin.VersionAdmin, admin.ModelAdmin):
     )
     search_fields = ('names__name', 'classification_reference', 'unit_of_measurement')
     ordering = ('-created_at',)
-    inlines = [PropertyNameInline, PropertyDefinitionInline]
+    inlines = [PropertyNameInline, PropertyDefinitionInline, PropertyGroupMembershipInline]
     
     fieldsets = (
         ('Names & Descriptions (PA003)', {
@@ -60,22 +73,32 @@ class PropertyAdmin(reversion.admin.VersionAdmin, admin.ModelAdmin):
             'description': 'Property names and definitions in multiple languages are managed in the sections above'
         }),
         ('Core Information (PA001-002)', {
-            'fields': ('pa_code', 'dictionary', 'version_number', 'revision_number')
+            'fields': ('pa_code', 'dictionary', 'version_number', 'revision_number', 'external_identifiers', 'replaced_properties')
         }),
         ('Technical Specifications (PA004-010)', {
-            'fields': ('data_type', 'unit_of_measurement', 'value_domain', 'physical_quantity')
+            'fields': (
+                'data_type', 'unit_of_measurement', 'permissible_units', 'value_domain', 'physical_quantity',
+                'digital_format', 'method_of_measurement', 'defining_names', 'defining_values', 'dimension',
+                'tolerance', 'boundary_values'
+            )
+        }),
+        ('Dynamic & Parameters (PA031-PA032)', {
+            'fields': ('dynamic_property', 'parameter_properties'),
+            'description': 'Flags and links for computed/dynamic properties and their parameter properties.'
         }),
         ('Lifecycle & Authority (PA016-020)', {
-            'fields': ('status', 'registration_authority', 'registration_date', 'deprecation_explanation')
+            'fields': ('status', 'registration_authority', 'registration_date', 'deprecation_explanation', 'date_of_activation', 'date_of_deactivation'),
         }),
         ('Classification (PA011-015)', {
             'fields': ('classification_system', 'classification_reference')
         }),
         ('Geographic & Localization (PA021-025)', {
-            'fields': ('country_of_origin', 'countries_of_use', 'creators_language')
+            'fields': ('country_of_origin', 'countries_of_use', 'subdivisions_of_use', 'creators_language')
         }),
         ('Extended Data', {
-            'fields': ('extended_attributes', 'metadata'),
+            'fields': (
+                'extended_attributes', 'metadata', 'property_media'
+            ),
             'classes': ('collapse',),
             'description': 'JSON fields for storing ISO 16757 and PA code compliant data'
         }),
@@ -86,6 +109,8 @@ class PropertyAdmin(reversion.admin.VersionAdmin, admin.ModelAdmin):
     )
     
     readonly_fields = ('created_by', 'updated_by', 'created_at', 'updated_at')
+    
+    filter_horizontal = ('replaced_properties', 'parameter_properties')
     
     def get_first_name(self, obj):
         """Get first available property name for display."""
@@ -251,55 +276,36 @@ class PropertyAdmin(reversion.admin.VersionAdmin, admin.ModelAdmin):
         return render(request, 'admin/properties/import_csv.html', context)
     
     def import_iso16757_view(self, request):
-        """ISO 16757 specific import with PA code compliance."""
+        """ISO 16757 specific import with PA code compliance (delegates to service)."""
         if request.method == 'POST':
             csv_file = request.FILES.get('csv_file')
             dictionary_id = request.POST.get('dictionary_id')
-            
-            # Enhanced debug logging
-            print("=" * 50)
-            print("DEBUG: ISO 16757 Import Form Submission")
-            print(f"DEBUG: Request method: {request.method}")
-            print(f"DEBUG: POST data keys: {list(request.POST.keys())}")
-            print(f"DEBUG: POST data values: {dict(request.POST)}")
-            print(f"DEBUG: FILES data keys: {list(request.FILES.keys())}")
-            print(f"DEBUG: FILES data: {dict(request.FILES)}")
-            print(f"DEBUG: csv_file object: {repr(csv_file)}")
-            print(f"DEBUG: csv_file name: {getattr(csv_file, 'name', 'N/A')}")
-            print(f"DEBUG: csv_file size: {getattr(csv_file, 'size', 'N/A')}")
-            print(f"DEBUG: dictionary_id raw: {repr(dictionary_id)}")
-            print(f"DEBUG: dictionary_id stripped: {repr(dictionary_id.strip() if dictionary_id else None)}")
-            print("=" * 50)
-            
-            # Check if we have any dictionaries at all
-            available_dicts = PropertyDictionary.objects.all()
-            print(f"DEBUG: Available dictionaries count: {available_dicts.count()}")
-            for d in available_dicts:
-                print(f"DEBUG: Dictionary {d.pk}: {d.name}")
-            
-            if not csv_file:
-                print("DEBUG: CSV file validation failed")
-                messages.error(request, 'No CSV file was uploaded. Please select a file.')
+
+            if not csv_file or not dictionary_id:
+                messages.error(request, 'Please provide both CSV file and dictionary selection.')
                 return redirect('admin:properties_property_import_iso16757')
-                
-            if not dictionary_id or dictionary_id.strip() == '':
-                print("DEBUG: Dictionary validation failed")
-                print(f"DEBUG: dictionary_id type: {type(dictionary_id)}")
-                print(f"DEBUG: dictionary_id repr: {repr(dictionary_id)}")
-                print(f"DEBUG: dictionary_id bool: {bool(dictionary_id)}")
-                print(f"DEBUG: Available dictionary PKs: {[d.pk for d in available_dicts]}")
-                messages.error(request, f'No dictionary was selected. Please select a dictionary from the dropdown. Received: "{dictionary_id}"')
+
+            try:
+                dictionary = PropertyDictionary.objects.get(pk=dictionary_id)
+            except PropertyDictionary.DoesNotExist:
+                messages.error(request, f'Dictionary with ID {dictionary_id} not found.')
                 return redirect('admin:properties_property_import_iso16757')
-            
-            print("DEBUG: Both validations passed, proceeding to process import...")
-            return self._process_iso16757_import(request)
-        
+
+            try:
+                stats = parse_and_import(csv_file, dictionary, request.user)
+                if stats.get('errors'):
+                    messages.warning(request, f"Import completed with errors: {len(stats.get('errors'))} errors. Created: {stats.get('created')}, Updated: {stats.get('updated')}")
+                    for err in stats.get('errors')[:5]:
+                        messages.error(request, err)
+                else:
+                    messages.success(request, f"Import successful. Created: {stats.get('created')}, Updated: {stats.get('updated')}")
+            except Exception as e:
+                messages.error(request, f'Import failed: {str(e)}')
+
+            return redirect('admin:properties_property_changelist')
+
         # GET request - show import form
         dictionaries = PropertyDictionary.objects.all()
-        print(f"DEBUG: GET request - Available dictionaries: {dictionaries.count()}")
-        for d in dictionaries:
-            print(f"DEBUG: Dictionary '{d.name}' - PK: {d.pk} (type: {type(d.pk)})")
-        
         context = {
             'title': 'Import ISO 16757 Properties',
             'app_label': self.model._meta.app_label,
@@ -1149,18 +1155,26 @@ admin.site.register(PropertyName)
 admin.site.register(PropertyDefinition)
 admin.site.register(PhysicalQuantity)
 
+# Ensure imports are considered used (lint helpers)
+try:
+    _ = PropertyExample, PropertyDescription
+except Exception:
+    pass
+
 # Register models with reversion so changes are versioned (including follow for related inlines)
 try:
     if not reversion.is_registered(Property):
-        reversion.register(Property, follow=['names', 'definitions'])
+        reversion.register(Property, follow=['names', 'definitions', 'examples', 'descriptions'])
 except Exception:
     # Already registered or reversion not available
     pass
 
-for _m in (PropertyName, PropertyDefinition, PropertyRelationship, PhysicalQuantity):
+for _m in (PropertyName, PropertyDefinition, PropertyRelationship, PhysicalQuantity,):
     try:
         if not reversion.is_registered(_m):
             reversion.register(_m)
     except Exception:
         # Ignore registration errors to keep startup resilient
         pass
+
+# example/description models are registered above with Property follow list

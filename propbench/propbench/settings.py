@@ -143,7 +143,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Optional: tune WhiteNoise cache max age (in seconds) for long-lived caching in production
 WHITENOISE_MAX_AGE = 31536000  # 1 year for fingerprinted files
-# ...existing code...
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -395,6 +395,9 @@ JAZZMIN_SETTINGS = {
     # Add a language dropdown into the admin
     "language_chooser": False,
 }
+
+# Path to optional ISO16757 mapping JSON. Set to a JSON file relative to BASE_DIR or an absolute path.
+ISO16757_MAPPING_FILE = 'properties/iso16757_mapping_sample.json'
 
 # Jazzmin compact CSS: point Jazzmin to our compact stylesheet
 try:

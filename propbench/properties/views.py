@@ -9,6 +9,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from dictionaries.models import PropertyDictionary
 from reversion.models import Revision, Version
 from pprint import pprint;
+from .iso16757_import import parse_and_import
+
 @login_required
 def property_list(request):
     """List all properties."""
@@ -19,8 +21,19 @@ def property_list(request):
 def property_detail(request, pk):
     """Show property details."""
     prop = get_object_or_404(Property, pk=pk)
-    pprint(prop)
-    return render(request, 'properties/property_detail.html', {'property': prop})
+    # Bind a form to the instance for display (read-only fields are disabled in form)
+    form = PropertyForm(instance=prop)
+
+    # DEBUG: JSON dump of prop printed previously
+    try:
+        import json
+        from django.forms.models import model_to_dict
+        data = model_to_dict(prop, fields=[f.name for f in prop._meta.fields])
+        print(json.dumps(data, default=str, indent=2))
+    except Exception:
+        pass
+
+    return render(request, 'properties/property_detail.html', {'property': prop, 'form': form})
 
 @login_required
 def property_create(request):
@@ -222,3 +235,37 @@ def recent_changes(request):
         })
 
     return render(request, 'properties/recent_changes.html', {'revisions': entries})
+
+@login_required
+def index_view(request):
+    """Render the index page."""
+    return render(request, 'properties/index.html')
+
+@login_required
+def iso16757_import_view(request):
+    """Handle the ISO 16757 import."""
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        dictionary_id = request.POST.get('dictionary_id')
+        if not csv_file or not dictionary_id:
+            messages.error(request, 'Please provide both CSV and dictionary')
+            return redirect('properties:iso16757_import')
+        try:
+            dictionary = PropertyDictionary.objects.get(pk=dictionary_id)
+        except PropertyDictionary.DoesNotExist:
+            messages.error(request, 'Dictionary not found')
+            return redirect('properties:iso16757_import')
+        try:
+            stats = parse_and_import(csv_file, dictionary, request.user)
+            if stats.get('errors'):
+                messages.warning(request, f"Import completed with errors: {len(stats.get('errors'))} errors. Created: {stats.get('created')}, Updated: {stats.get('updated')}")
+                for err in stats.get('errors')[:5]:
+                    messages.error(request, err)
+            else:
+                messages.success(request, f"Import successful. Created: {stats.get('created')}, Updated: {stats.get('updated')}")
+        except Exception as e:
+            messages.error(request, f'Import failed: {e}')
+        return redirect('properties:iso16757_import')
+
+    dictionaries = PropertyDictionary.objects.all()
+    return render(request, 'properties/iso16757_import.html', {'dictionaries': dictionaries})

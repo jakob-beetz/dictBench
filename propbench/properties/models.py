@@ -45,6 +45,7 @@ class Property(models.Model):
     deprecation_explanation = models.TextField(blank=True)
     country_of_origin = models.CharField(max_length=50, blank=True)
     countries_of_use = models.JSONField(blank=True, null=True)
+    subdivisions_of_use = models.JSONField(blank=True, null=True, help_text="Optional subdivisions/regions (ISO3166-2)")
     creators_language = models.CharField(max_length=10, default='en-EN')
     
     # Data type information
@@ -58,6 +59,7 @@ class Property(models.Model):
     physical_quantity = models.ForeignKey('PhysicalQuantity', on_delete=models.SET_NULL, 
                                        null=True, blank=True, related_name='properties')
     unit_of_measurement = models.CharField(max_length=50, blank=True)
+    permissible_units = models.JSONField(blank=True, null=True, help_text="Optional list of permissible units")
     value_domain = models.JSONField(blank=True, null=True)
     
     # Classification
@@ -68,6 +70,35 @@ class Property(models.Model):
     dictionary = models.ForeignKey('dictionaries.PropertyDictionary', on_delete=models.CASCADE, 
                                 related_name='properties')
     
+    # External identifiers mapping to other dictionaries (PA014)
+    external_identifiers = models.JSONField(blank=True, null=True, help_text="Map of external dictionary IDs")
+
+    # Replaced / replacing properties (PA011 / PA012)
+    replaced_properties = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='replacing_properties')
+
+    # Dynamic property flags and parameter relations (PA031 / PA032)
+    dynamic_property = models.BooleanField(default=False, help_text="Is this property a computed/dynamic property?")
+    parameter_properties = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='parameter_of')
+
+    # Dimension / exponent vector (PA028)
+    dimension = models.JSONField(blank=True, null=True, help_text="Dimension exponent vector (e.g. {\"L\":1, \"T\":-2})")
+
+    # Method of measurement (PA029)
+    method_of_measurement = models.CharField(max_length=255, blank=True)
+
+    # Array headers / defining values (PA034 / PA035)
+    defining_names = models.JSONField(blank=True, null=True, help_text="Names of defining values (for arrays)")
+    defining_values = models.JSONField(blank=True, null=True, help_text="Actual header values for arrays")
+
+    # Tolerance, formats, boundaries (PA036, PA037, PA038, PA040)
+    tolerance = models.JSONField(blank=True, null=True, help_text="Tolerance information")
+    digital_format = models.JSONField(blank=True, null=True, help_text="Numeric/digital format (precision etc.)")
+    text_format = models.CharField(max_length=255, blank=True, help_text="Text encoding/format details")
+    boundary_values = models.JSONField(blank=True, null=True, help_text="Boundary intervals and units")
+
+    # Media / visual representation (PA023)
+    property_media = models.JSONField(blank=True, null=True, help_text="Media entries: url, type, caption")
+
     # Extended attributes (non-ISO 23386 PA codes)
     extended_attributes = models.JSONField(blank=True, null=True, 
                                        help_text="Store PA codes like PA0001-PA0010 for non-standard property attributes")
@@ -136,6 +167,38 @@ class PropertyDefinition(models.Model):
     
     def __str__(self):
         return f"Definition in {self.language}"
+
+
+class PropertyExample(models.Model):
+    """Model for multi-language examples for a Property (PA018).
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='examples')
+    example = models.TextField()
+    language = models.CharField(max_length=10, blank=True)
+
+    class Meta:
+        verbose_name = 'Property Example'
+        verbose_name_plural = 'Property Examples'
+
+    def __str__(self):
+        return f"Example ({self.language})"
+
+
+class PropertyDescription(models.Model):
+    """Alternate model for descriptions if you prefer separate storage (PA019).
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='descriptions')
+    description = models.TextField()
+    language = models.CharField(max_length=10, blank=True)
+
+    class Meta:
+        verbose_name = 'Property Description'
+        verbose_name_plural = 'Property Descriptions'
+
+    def __str__(self):
+        return f"Description ({self.language})"
 
 
 class PhysicalQuantity(models.Model):
