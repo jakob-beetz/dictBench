@@ -1,0 +1,15 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form method="post" hx-post="{% url 'properties:property_create_crisp' %}" hx-target="#form-container" hx-swap="outerHTML">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <div id="replaced-properties-container" hx-get="{% url 'properties:load_replaced_properties' %}" hx-trigger="load">
+    <!-- HTMX will load content here -->
+  </div>
+  <div id="parameter-properties-container" hx-get="{% url 'properties:load_parameter_properties' %}" hx-trigger="load">
+    <!-- HTMX will load content here -->
+  </div>
+</form>
+{% endblock %}

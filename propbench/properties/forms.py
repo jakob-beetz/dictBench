@@ -5,7 +5,11 @@ from groups.models import PropertyGroup
 from dictionaries.models import PropertyDictionary
 from .widgets import JSONEditorWidget
 
-
+from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, Submit, Row, Column, HTML
+from crispy_forms.bootstrap import StrictButton
+# from .models import Property, PropertyName, PhysicalQuantity, PropertyDictionary
 # Language choices for ISO 23386 compliance
 LANGUAGE_CHOICES = [
     ('en', 'English'),
@@ -519,3 +523,111 @@ class PropertyForm(ModelForm):
                     group.properties.add(instance)
         
         return instance
+    
+    
+class PropertyFormCrisp(forms.ModelForm):
+    class Meta:
+        model = Property
+        fields = "__all__"
+        widgets = {
+            "date_of_activation": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "date_of_version": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "date_of_revision": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "date_of_deactivation": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "date_of_deprecation": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "registration_date": forms.DateInput(attrs={"type": "date"}),
+            "countries_of_use": forms.JSONField(widget=forms.HiddenInput()),
+            "subdivisions_of_use": forms.JSONField(widget=forms.HiddenInput()),
+            "permissible_units": forms.JSONField(widget=forms.HiddenInput()),
+            "value_domain": forms.JSONField(widget=forms.HiddenInput()),
+            "external_identifiers": forms.JSONField(widget=forms.HiddenInput()),
+            "dimension": forms.JSONField(widget=forms.HiddenInput()),
+            "defining_names": forms.JSONField(widget=forms.HiddenInput()),
+            "defining_values": forms.JSONField(widget=forms.HiddenInput()),
+            "tolerance": forms.JSONField(widget=forms.HiddenInput()),
+            "digital_format": forms.JSONField(widget=forms.HiddenInput()),
+            "boundary_values": forms.JSONField(widget=forms.HiddenInput()),
+            "property_media": forms.JSONField(widget=forms.HiddenInput()),
+            "extended_attributes": forms.JSONField(widget=forms.HiddenInput()),
+            "metadata": forms.JSONField(widget=forms.HiddenInput()),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            Row(
+                Column("pa_code", css_class="col-md-6"),
+                Column("status", css_class="col-md-6"),
+            ),
+            Row(
+                Column("version_number", css_class="col-md-4"),
+                Column("revision_number", css_class="col-md-4"),
+                Column("data_type", css_class="col-md-4"),
+            ),
+            Row(
+                Column("date_of_activation", css_class="col-md-3"),
+                Column("date_of_version", css_class="col-md-3"),
+                Column("date_of_revision", css_class="col-md-3"),
+                Column("date_of_deactivation", css_class="col-md-3"),
+            ),
+            Row(
+                Column("registration_authority", css_class="col-md-6"),
+                Column("registration_date", css_class="col-md-6"),
+            ),
+            Row(
+                Column("country_of_origin", css_class="col-md-6"),
+                Column("creators_language", css_class="col-md-6"),
+            ),
+            Row(
+                Column("physical_quantity", css_class="col-md-6"),
+                Column("unit_of_measurement", css_class="col-md-6"),
+            ),
+            Row(
+                Column("dictionary", css_class="col-md-6"),
+                Column("classification_system", css_class="col-md-6"),
+            ),
+            Row(
+                Column("replaced_properties", css_class="col-md-6"),
+                Column("parameter_properties", css_class="col-md-6"),
+            ),
+            Row(
+                Column("dynamic_property", css_class="col-md-6"),
+                Column("method_of_measurement", css_class="col-md-6"),
+            ),
+            Row(
+                Column("deprecation_explanation", css_class="col-md-12"),
+            ),
+            Row(
+                Column(HTML("<h4>JSON Fields</h4>"), css_class="col-md-12"),
+            ),
+            Row(
+                Column("countries_of_use", css_class="col-md-6"),
+                Column("subdivisions_of_use", css_class="col-md-6"),
+            ),
+            Row(
+                Column("permissible_units", css_class="col-md-6"),
+                Column("value_domain", css_class="col-md-6"),
+            ),
+            Row(
+                Column("dimension", css_class="col-md-6"),
+                Column("defining_names", css_class="col-md-6"),
+            ),
+            Row(
+                Column("defining_values", css_class="col-md-6"),
+                Column("tolerance", css_class="col-md-6"),
+            ),
+            Row(
+                Column("digital_format", css_class="col-md-6"),
+                Column("boundary_values", css_class="col-md-6"),
+            ),
+            Row(
+                Column("property_media", css_class="col-md-6"),
+                Column("extended_attributes", css_class="col-md-6"),
+            ),
+            Row(
+                Column("metadata", css_class="col-md-12"),
+            ),
+            Submit("submit", "Save", css_class="btn-primary mt-3"),
+        )

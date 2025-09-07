@@ -11,6 +11,9 @@ from reversion.models import Revision, Version
 from pprint import pprint;
 from .iso16757_import import parse_and_import
 
+from django.views.generic import CreateView, TemplateView
+from django.urls import reverse_lazy
+
 @login_required
 def property_list(request):
     """List all properties."""
@@ -76,6 +79,9 @@ def property_create(request):
         'language_choices': LANGUAGE_CHOICES,
     }
     return render(request, 'properties/property_form.html', context)
+
+
+
 
 @login_required
 def property_edit(request, pk):
@@ -269,3 +275,27 @@ def iso16757_import_view(request):
 
     dictionaries = PropertyDictionary.objects.all()
     return render(request, 'properties/iso16757_import.html', {'dictionaries': dictionaries})
+
+
+
+class PropertyCreateView(CreateView):
+    model = Property
+    form_class = PropertyForm
+    template_name = "properties/property_form_crisp.html"
+    success_url = reverse_lazy("property_list")
+
+class LoadReplacedPropertiesView(TemplateView):
+    template_name = "partials/replaced_properties_dropdown.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["properties"] = Property.objects.all()
+        return context
+
+class LoadParameterPropertiesView(TemplateView):
+    template_name = "partials/parameter_properties_dropdown.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["properties"] = Property.objects.all()
+        return context

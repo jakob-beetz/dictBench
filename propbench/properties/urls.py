@@ -1,7 +1,7 @@
 from django.urls import path, include
 from django.urls import path
 from . import grid_views, views
-
+from .views import PropertyCreateView, LoadReplacedPropertiesView, LoadParameterPropertiesView
 app_name = 'properties'
 
 urlpatterns = [
@@ -14,7 +14,12 @@ urlpatterns = [
     path('properties/<uuid:pk>/', views.property_detail, name='property_detail'),
     path('properties/<uuid:pk>/edit/', views.property_edit, name='property_edit'),
     path('properties/<uuid:pk>/delete/', views.property_delete, name='property_delete'),
-
+    
+    
+    #new crispy forms
+    path("properties/create_crisp/", PropertyCreateView.as_view(), name="property_create_crisp"),
+    path("properties/load-replaced/", LoadReplacedPropertiesView.as_view(), name="load_replaced_properties"),
+    path("properties/load-parameter/", LoadParameterPropertiesView.as_view(), name="load_parameter_properties"),
     # Grid URLs - main grid functionality
     path('properties/grid/', grid_views.PropertyGridView.as_view(), name='property_grid'),
     path('properties/api/grid-data/', grid_views.property_grid_data, name='property_grid_data'),
