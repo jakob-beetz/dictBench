@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from .models import Property
-from .forms import PropertyForm, PropertyNameFormSet, PropertyDefinitionFormSet, LANGUAGE_CHOICES
+from .forms import PropertyForm, PropertyFormCrisp, PropertyNameFormSet, PropertyDefinitionFormSet, LANGUAGE_CHOICES
 from django.http import JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from dictionaries.models import PropertyDictionary
@@ -280,7 +280,7 @@ def iso16757_import_view(request):
 
 class PropertyCreateView(CreateView):
     model = Property
-    form_class = PropertyForm
+    form_class = PropertyFormCrisp
     template_name = "properties/property_form_crisp.html"
     success_url = reverse_lazy("property_list")
 

@@ -3,6 +3,7 @@ from django.forms import inlineformset_factory, ModelForm
 from .models import Property, PropertyName, PropertyDefinition, PhysicalQuantity
 from groups.models import PropertyGroup
 from dictionaries.models import PropertyDictionary
+import json
 from .widgets import JSONEditorWidget
 
 from django import forms
@@ -350,6 +351,22 @@ class PropertyForm(ModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
+        # Compact crispy helper (Bootstrap5)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_tag = True
+        self.helper.form_class = "row g-2 align-items-start"   # small gutters
+        self.helper.label_class = "form-label small"
+        # use small controls to reduce vertical space
+        self.helper.field_class = "form-control form-control-sm"
+        self.helper.include_media = False
+
+        # adjust column spacing in existing Layout — prefer 'mb-1' or 'mb-2'
+        # Example convert Column("pa_code", css_class="col-md-6") -> css_class="col-md-6 mb-1"
+        for name, field in self.fields.items():
+            if isinstance(field.widget, forms.Select):
+                field.widget.attrs['class'] += ' mb-1'
+        
         # Disable system fields
         for fld in ('created_by', 'updated_by', 'created_at', 'updated_at'):
             if fld in self.fields:
@@ -525,7 +542,30 @@ class PropertyForm(ModelForm):
         return instance
     
     
-class PropertyFormCrisp(forms.ModelForm):
+class CrispyJSONField(forms.CharField):
+    """
+    Lightweight wrapper so ModelForm.field_classes can map JSON model fields
+    to a CharField that uses JSONEditorWidget and tolerates encoder kwargs.
+    """
+    def __init__(self, *args, **kwargs):
+        # accept and drop extra kwargs Django's JSONField.formfield may pass
+        kwargs.pop("encoder", None)
+        kwargs.pop("decoder", None)
+        kwargs.pop("max_length", None)
+        kwargs.setdefault("required", False)
+        # create widget instance without passing options here (some widget impls don't accept options kwarg)
+        kwargs.setdefault("widget", JSONEditorWidget())
+        # ensure initial is JSON string for widgets that expect text
+        if kwargs.get("initial") is None:
+            kwargs["initial"] = "{}"
+        super().__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        if value is None:
+            return ""
+        return super().to_python(value)
+
+class PropertyFormCrisp(ModelForm):
     class Meta:
         model = Property
         fields = "__all__"
@@ -536,98 +576,159 @@ class PropertyFormCrisp(forms.ModelForm):
             "date_of_deactivation": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "date_of_deprecation": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "registration_date": forms.DateInput(attrs={"type": "date"}),
-            "countries_of_use": forms.JSONField(widget=forms.HiddenInput()),
-            "subdivisions_of_use": forms.JSONField(widget=forms.HiddenInput()),
-            "permissible_units": forms.JSONField(widget=forms.HiddenInput()),
-            "value_domain": forms.JSONField(widget=forms.HiddenInput()),
-            "external_identifiers": forms.JSONField(widget=forms.HiddenInput()),
-            "dimension": forms.JSONField(widget=forms.HiddenInput()),
-            "defining_names": forms.JSONField(widget=forms.HiddenInput()),
-            "defining_values": forms.JSONField(widget=forms.HiddenInput()),
-            "tolerance": forms.JSONField(widget=forms.HiddenInput()),
-            "digital_format": forms.JSONField(widget=forms.HiddenInput()),
-            "boundary_values": forms.JSONField(widget=forms.HiddenInput()),
-            "property_media": forms.JSONField(widget=forms.HiddenInput()),
-            "extended_attributes": forms.JSONField(widget=forms.HiddenInput()),
-            "metadata": forms.JSONField(widget=forms.HiddenInput()),
+
+            # create widget instances without options here
+            "countries_of_use": JSONEditorWidget(),
+            "subdivisions_of_use": JSONEditorWidget(),
+            "permissible_units": JSONEditorWidget(),
+            "value_domain": JSONEditorWidget(),
+            "external_identifiers": JSONEditorWidget(),
+            "dimension": JSONEditorWidget(),
+            "defining_names": JSONEditorWidget(),
+            "defining_values": JSONEditorWidget(),
+            "tolerance": JSONEditorWidget(),
+            "digital_format": JSONEditorWidget(),
+            "boundary_values": JSONEditorWidget(),
+            "property_media": JSONEditorWidget(),
+            "extended_attributes": JSONEditorWidget(),
+            "metadata": JSONEditorWidget(),
+        }
+
+        # map model JSONFields to a CharField so crispy sees a normal BoundField
+        field_classes = {
+            "countries_of_use": CrispyJSONField,
+            "subdivisions_of_use": CrispyJSONField,
+            "permissible_units": CrispyJSONField,
+            "value_domain": CrispyJSONField,
+            "external_identifiers": CrispyJSONField,
+            "dimension": CrispyJSONField,
+            "defining_names": CrispyJSONField,
+            "defining_values": CrispyJSONField,
+            "tolerance": CrispyJSONField,
+            "digital_format": CrispyJSONField,
+            "boundary_values": CrispyJSONField,
+            "property_media": CrispyJSONField,
+            "extended_attributes": CrispyJSONField,
+            "metadata": CrispyJSONField,
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # per-field JSONEditor options (safe assign)
+        json_options = {
+            "countries_of_use": {"mode": "tree"},
+            "subdivisions_of_use": {"mode": "tree"},
+            "permissible_units": {"mode": "form"},
+            "value_domain": {"mode": "form"},
+            "external_identifiers": {"mode": "form"},
+            "dimension": {"mode": "form"},
+            "defining_names": {"mode": "tree"},
+            "defining_values": {"mode": "form"},
+            "tolerance": {"mode": "form"},
+            "digital_format": {"mode": "form"},
+            "boundary_values": {"mode": "form"},
+            "property_media": {"mode": "tree"},
+            "extended_attributes": {"mode": "code"},
+            "metadata": {"mode": "code"},
+        }
+
+        for fname, opts in json_options.items():
+            if fname not in self.fields:
+                continue
+            widget = self.fields[fname].widget
+            # try the common attribute name first
+            if hasattr(widget, "options"):
+                try:
+                    widget.options = opts
+                except Exception:
+                    widget.attrs.setdefault("data-jsoneditor-options", json.dumps(opts))
+            else:
+                # fall back to data attribute so client init JS can read it
+                widget.attrs.setdefault("data-jsoneditor-options", json.dumps(opts))
+
+        # Compact crispy helper (Bootstrap5)
         self.helper = FormHelper()
         self.helper.form_method = "post"
+        self.helper.form_tag = True
+        self.helper.form_class = "row g-2 align-items-start"   # small gutters
+        self.helper.label_class = "form-label small"
+        # use small controls to reduce vertical space
+        self.helper.field_class = "form-control form-control-sm"
+        self.helper.include_media = False
         self.helper.layout = Layout(
+            
             Row(
-                Column("pa_code", css_class="col-md-6"),
-                Column("status", css_class="col-md-6"),
+                Column("pa_code", css_class="col-md- mb-1"),
+                Column("status", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("version_number", css_class="col-md-4"),
-                Column("revision_number", css_class="col-md-4"),
-                Column("data_type", css_class="col-md-4"),
+                Column("version_number", css_class="col-md-4 mb-1"),
+                Column("revision_number", css_class="col-md-4 mb-1"),
+                Column("data_type", css_class="col-md-4 mb-1"),
             ),
             Row(
-                Column("date_of_activation", css_class="col-md-3"),
-                Column("date_of_version", css_class="col-md-3"),
-                Column("date_of_revision", css_class="col-md-3"),
-                Column("date_of_deactivation", css_class="col-md-3"),
+                Column("date_of_activation", css_class="col-md-3 mb-1"),
+                Column("date_of_version", css_class="col-md-3 mb-1"),
+                Column("date_of_revision", css_class="col-md-3 mb-1"),
+                Column("date_of_deactivation", css_class="col-md-3 mb-1"),
             ),
             Row(
-                Column("registration_authority", css_class="col-md-6"),
-                Column("registration_date", css_class="col-md-6"),
+                Column("registration_authority", css_class="col-md-6 mb-1"),
+                Column("registration_date", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("country_of_origin", css_class="col-md-6"),
-                Column("creators_language", css_class="col-md-6"),
+                Column("country_of_origin", css_class="col-md-6 mb-1"),
+                Column("creators_language", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("physical_quantity", css_class="col-md-6"),
-                Column("unit_of_measurement", css_class="col-md-6"),
+                Column("physical_quantity", css_class="col-md-6 mb-1"),
+                Column("unit_of_measurement", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("dictionary", css_class="col-md-6"),
-                Column("classification_system", css_class="col-md-6"),
+                Column("dictionary", css_class="col-md-6 mb-1"),
+                Column("classification_system", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("replaced_properties", css_class="col-md-6"),
-                Column("parameter_properties", css_class="col-md-6"),
+                Column("replaced_properties", css_class="col-md-6 mb-1"),
+                Column("parameter_properties", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("dynamic_property", css_class="col-md-6"),
-                Column("method_of_measurement", css_class="col-md-6"),
+                Column("dynamic_property", css_class="col-md-6 mb-1"),
+                Column("method_of_measurement", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("deprecation_explanation", css_class="col-md-12"),
+                Column("deprecation_explanation", css_class="col-md-12 mb-1"),
             ),
             Row(
                 Column(HTML("<h4>JSON Fields</h4>"), css_class="col-md-12"),
             ),
             Row(
-                Column("countries_of_use", css_class="col-md-6"),
-                Column("subdivisions_of_use", css_class="col-md-6"),
+                Column("countries_of_use", css_class="col-md-6 mb-1"),
+                Column("subdivisions_of_use", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("permissible_units", css_class="col-md-6"),
-                Column("value_domain", css_class="col-md-6"),
+                Column("permissible_units", css_class="col-md-6 mb-1"),
+                Column("value_domain", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("dimension", css_class="col-md-6"),
-                Column("defining_names", css_class="col-md-6"),
+                Column("dimension", css_class="col-md-6 mb-1"),
+                Column("defining_names", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("defining_values", css_class="col-md-6"),
-                Column("tolerance", css_class="col-md-6"),
+                Column("defining_values", css_class="col-md-6 mb-1"),
+                Column("tolerance", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("digital_format", css_class="col-md-6"),
-                Column("boundary_values", css_class="col-md-6"),
+                Column("digital_format", css_class="col-md-6 mb-1"),
+                Column("boundary_values", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("property_media", css_class="col-md-6"),
-                Column("extended_attributes", css_class="col-md-6"),
+                Column("property_media", css_class="col-md-6 mb-1"),
+                Column("extended_attributes", css_class="col-md-6 mb-1"),
             ),
             Row(
-                Column("metadata", css_class="col-md-12"),
+                Column("metadata", css_class="col-md-12 mb-1"),
             ),
-            Submit("submit", "Save", css_class="btn-primary mt-3"),
+            Submit("submit", "Save", css_class="btn-sm btn-primary mt-2"),
         )
