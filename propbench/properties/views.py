@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, TemplateView, DetailView
 from django.db import transaction
 from .models import Property
 from .forms import PropertyForm, PropertyFormCrisp, PropertyNameFormSet, PropertyDefinitionFormSet, LANGUAGE_CHOICES
@@ -10,9 +12,10 @@ from dictionaries.models import PropertyDictionary
 from reversion.models import Revision, Version
 from pprint import pprint;
 from .iso16757_import import parse_and_import
-
-from django.views.generic import CreateView, TemplateView
 from django.urls import reverse_lazy
+import json
+from collections import defaultdict
+import math
 
 @login_required
 def property_list(request):
@@ -132,8 +135,47 @@ def property_edit(request, pk):
 
         if form.is_valid() and name_formset.is_valid() and definition_formset.is_valid():
             with transaction.atomic():
-                property_instance = form.save()
+                # Save form but delay committing so we can ensure JSON fields are Python objects
+                property_instance = form.save(commit=False)
+
+                # list of model JSON fields that use the JSONEditor/CrispyJSONField
+                json_fields = [
+                    "countries_of_use", "subdivisions_of_use", "permissible_units",
+                    "value_domain", "external_identifiers", "dimension",
+                    "defining_names", "defining_values", "tolerance",
+                    "digital_format", "boundary_values", "property_media",
+                    "extended_attributes", "metadata",
+                ]
+
+                for fname in json_fields:
+                    if fname not in form.cleaned_data:
+                        continue
+                    val = form.cleaned_data.get(fname)
+                    # If widget returned a JSON string, parse it to Python objects
+                    if isinstance(val, str):
+                        v = val.strip()
+                        if v == "" or v.lower() == "null":
+                            parsed = None
+                        else:
+                            try:
+                                parsed = json.loads(v)
+                            except Exception:
+                                # fallback: keep raw string (avoid crash) or set None
+                                parsed = None
+                        setattr(property_instance, fname, parsed)
+                    else:
+                        # already a Python object (e.g. widget/set by form), assign directly
+                        setattr(property_instance, fname, val)
+
+                # ensure updater is recorded
+                property_instance.updated_by = request.user
+                property_instance.save()
+
+                # save m2m & formsets after instance exists
+                form.save_m2m()
+                name_formset.instance = property_instance
                 name_formset.save()
+                definition_formset.instance = property_instance
                 definition_formset.save()
                 
                 # Get primary name for success message
@@ -293,9 +335,102 @@ class LoadReplacedPropertiesView(TemplateView):
         return context
 
 class LoadParameterPropertiesView(TemplateView):
+
     template_name = "partials/parameter_properties_dropdown.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["properties"] = Property.objects.all()
         return context
+
+class PropertyCompactDetailView(LoginRequiredMixin, DetailView):
+    """
+    Render a compact, read-only multi-column view of a Property using
+    PropertyFormCrisp (fields disabled). Template groups fields into cards.
+    """
+    model = Property
+    template_name = "properties/property_compact_detail.html"
+    context_object_name = "property"
+
+    def _chunk_fields(self, fields, cols):
+        """Distribute a flat list of fields into `cols` lists, balanced vertically."""
+        if not fields:
+            return [[] for _ in range(cols)]
+        n = len(fields)
+        per_col = math.ceil(n / cols)
+        return [fields[i * per_col:(i + 1) * per_col] for i in range(cols)]
+
+    def _build_groups(self):
+        # same groups as before, but don't compute columns here
+        return [
+            {"title": "Identification", "cols": 2, "fields": [
+                "pa_code", "status", "version_number", "revision_number", "data_type"
+            ]},
+            {"title": "Lifecycle / Dates", "cols": 4, "fields": [
+                "date_of_activation", "date_of_version", "date_of_revision", "date_of_deactivation",
+                "registration_authority", "registration_date"
+            ]},
+            {"title": "Origin & Classification", "cols": 2, "fields": [
+                "country_of_origin", "creators_language", "dictionary", "classification_system", "classification_reference"
+            ]},
+            {"title": "Units & Value", "cols": 3, "fields": [
+                "physical_quantity", "unit_of_measurement", "permissible_units", "value_domain", "dimension"
+            ]},
+            {"title": "Defining / Tolerance", "cols": 2, "fields": [
+                "defining_names", "defining_values", "tolerance", "digital_format", "text_format", "boundary_values"
+            ]},
+            {"title": "Media & Metadata (JSON)", "cols": 2, "fields": [
+                "property_media", "extended_attributes", "metadata", "external_identifiers"
+            ]},
+            {"title": "Relations & Flags", "cols": 2, "fields": [
+                "replaced_properties", "parameter_properties", "dynamic_property", "method_of_measurement", "deprecation_explanation"
+            ]},
+            {"title": "System", "cols": 2, "fields": [
+                "created_by", "updated_by", "created_at", "updated_at"
+            ]},
+        ]
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        prop = self.object
+        form = PropertyFormCrisp(instance=prop)
+
+        # make all fields read-only / compact
+        for fld in form.fields.values():
+            fld.disabled = True
+            cls = fld.widget.attrs.get("class", "")
+            fld.widget.attrs["class"] = (cls + " form-control form-control-sm").strip()
+            if hasattr(fld.widget, "attrs"):
+                if fld.widget.__class__.__name__.lower().find("select") != -1:
+                    fld.widget.attrs["class"] = (fld.widget.attrs.get("class", "") + " form-select form-select-sm").strip()
+
+        # ensure helper is not trying to render a form tag and labels are shown
+        if hasattr(form, "helper"):
+            form.helper.form_tag = False
+            form.helper.form_class = "row g-2"
+            form.helper.label_class = "form-label small"
+            form.helper.field_class = "form-control form-control-sm"
+            form.helper.form_show_labels = True     # <-- ensure labels are enabled
+
+        # --- multilingual names mapping ---
+        names_by_lang = defaultdict(list)
+        # assume related_name 'names' on Property -> PropertyName
+        for n in prop.names.all():
+            # n.language and n.name assumed; adjust if fields differ
+            lang = getattr(n, "language", "") or "und"
+            names_by_lang[lang].append({
+                "name": getattr(n, "name", str(n)),
+                "is_primary": getattr(n, "is_primary", False),
+                "pk": getattr(n, "pk", None),
+            })
+        ctx["names_by_lang"] = dict(names_by_lang)
+
+        # --- split group fields into columns for the template ---
+        groups = self._build_groups()
+        for g in groups:
+            cols = g.get("cols", 1) or 1
+            g["columns"] = self._chunk_fields(g.get("fields", []), cols)
+
+        ctx["form"] = form
+        ctx["groups"] = groups
+        return ctx

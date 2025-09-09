@@ -16,7 +16,7 @@ class Property(models.Model):
         null=True, 
         unique=True,
         help_text="Optional handcrafted PA identifier (e.g., PA001, PA002). Must be unique if provided.",
-        verbose_name="PA Code"
+        verbose_name="PA Code "
     )
     
     # ISO 23386 identification fields
@@ -34,14 +34,20 @@ class Property(models.Model):
     registration_date = models.DateField(blank=True, null=True)
     
     # Status and localization
-    status = models.CharField(max_length=20, choices=[
-        ('draft', 'Draft'),
-        ('candidate', 'Candidate'),
-        ('active', 'Active'),
-        ('deprecated', 'Deprecated'),
-        ('inactive', 'Inactive'),
-        ('rejected', 'Rejected')
-    ], default='draft')
+    status = models.CharField(
+        max_length=20, 
+        choices=[
+            ('draft', 'Draft'),
+            ('candidate', 'Candidate'),
+            ('active', 'Active'),
+            ('deprecated', 'Deprecated'),
+            ('inactive', 'Inactive'),
+            ('rejected', 'Rejected')
+            
+        ], 
+        help_text="Status of the property during its life cycle",
+        verbose_name="Status (PA002)",  
+        default='draft')
     deprecation_explanation = models.TextField(blank=True)
     country_of_origin = models.CharField(max_length=50, blank=True)
     countries_of_use = models.JSONField(blank=True, null=True)

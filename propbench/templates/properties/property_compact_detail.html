@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+{% load static form_extras %}
+
+{% block extra_head %}
+  {{ form.media }}
+  <!-- neatcss base (CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/neatcss@1.0.0/neat.min.css">
+  <link href="{% static 'css/neat-overrides.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header class="mb-3">
+    <h1 class="h4">Property: {{ property }}</h1>
+    <p class="text-muted small">Compact read-only view</p>
+  </header>
+
+  {% for group in groups %}
+    <section class="card mb-3">
+      <div class="card-header"><strong>{{ group.title }}</strong></div>
+      <div class="card-body">
+        <div class="form-grid" style="grid-template-columns: repeat({{ group.cols }}, 1fr);">
+          {% for fname in group.fields %}
+            {% with field=form|get_field:fname %}
+              {% if field %}
+                <div class="form-grid-item">
+                  <label for="{{ field.id_for_label }}" class="form-label small">{{ field.label }}</label>
+                  <div class="field-wrap">
+                    {{ field }}
+                    {% if field.errors %}
+                      <div class="invalid-feedback d-block">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                    {% if field.help_text %}
+                      <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endwith %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endfor %}
+
+  <div class="d-flex justify-end mt-2">
+    <a href="{% url 'properties:property_detail' property.pk %}" class="btn btn-outline-secondary btn-sm">Open full detail</a>
+    <a href="{% url 'properties:property_edit' property.pk %}" class="btn btn-primary btn-sm ml-2">Edit</a>
+  </div>
+</div>
+{% endblock %}

@@ -659,7 +659,7 @@ class PropertyFormCrisp(ModelForm):
         self.helper.layout = Layout(
             
             Row(
-                Column("pa_code", css_class="col-md- mb-1"),
+                Column("pa_code", css_class="col-md-6 mb-1"),
                 Column("status", css_class="col-md-6 mb-1"),
             ),
             Row(

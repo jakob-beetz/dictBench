@@ -1,7 +1,7 @@
 from django.urls import path, include
 from django.urls import path
 from . import grid_views, views
-from .views import PropertyCreateView, LoadReplacedPropertiesView, LoadParameterPropertiesView
+from .views import PropertyCreateView, LoadReplacedPropertiesView, LoadParameterPropertiesView, PropertyCompactDetailView
 app_name = 'properties'
 
 urlpatterns = [
@@ -39,4 +39,6 @@ urlpatterns = [
 
     # External import view
     path('import/iso16757/', views.iso16757_import_view, name='iso16757_import'),
+    
+    path('<uuid:pk>/compact/', PropertyCompactDetailView.as_view(), name='property_compact_detail'),
 ]
