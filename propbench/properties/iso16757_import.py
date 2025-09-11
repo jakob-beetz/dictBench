@@ -9,17 +9,39 @@ from .models import Property, PropertyName, PropertyDefinition, PhysicalQuantity
 import reversion
 
 
-mapping = load_mapping()
+def get_mapping(mapping_file=None):
+    """Resolve mapping: None => default load_mapping(), else accept path, file-like, json-string or dict."""
+    if mapping_file is None:
+        return load_mapping()
+    # dict already provided
+    if isinstance(mapping_file, dict):
+        return mapping_file
+    # file-like
+    if hasattr(mapping_file, 'read'):
+        raw = mapping_file.read()
+        if isinstance(raw, bytes):
+            raw = raw.decode('utf-8-sig')
+        return json.loads(raw)
+    # string: try path first, then JSON
+    if isinstance(mapping_file, str):
+        try:
+            with open(mapping_file, 'r', encoding='utf-8') as fh:
+                return json.load(fh)
+        except Exception:
+            # try parse as JSON content
+            return json.loads(mapping_file)
+    raise ValueError("Unsupported mapping_file type")
 
 
 def _detect_delimiter(sample):
     return ';' if sample.count(';') > sample.count(',') else ','
 
 
-def parse_and_import(fileobj, dictionary, user, delimiter=None, dry_run=False):
+def parse_and_import(fileobj, dictionary, user, delimiter=None, dry_run=False, mapping_file=None):
     """Parse ISO16757 CSV file-like and import rows using process_row.
     Returns stats dict.
     """
+    mapping = get_mapping(mapping_file)
     if hasattr(fileobj, 'read'):
         raw = fileobj.read()
         if isinstance(raw, bytes):
@@ -77,7 +99,7 @@ def parse_and_import(fileobj, dictionary, user, delimiter=None, dry_run=False):
             continue
         try:
             with transaction.atomic():
-                result = process_row(row, dictionary, user, pa_tags=pa_tags)
+                result = process_row(row, dictionary, user, pa_tags=pa_tags, mapping=mapping)
                 stats[result] += 1
         except Exception as e:
             stats['errors'].append(f'Row {rownum}: {e}')
@@ -85,11 +107,12 @@ def parse_and_import(fileobj, dictionary, user, delimiter=None, dry_run=False):
     return stats
 
 
-def process_row(row, dictionary, user, pa_tags=None):
+def process_row(row, dictionary, user, pa_tags=None, mapping=None):
     """Process a single CSV Dict row and create/update Property.
     pa_tags: optional mapping header->PA tag
     """
     # helper mapping
+    mapping = mapping or get_mapping()
     field_mappings = mapping.get('field_mappings', {})
     type_mapping = mapping.get('type_mapping', {})
 
@@ -178,7 +201,16 @@ def process_row(row, dictionary, user, pa_tags=None):
     # Perform DB writes and related creations inside a reversion revision
     with reversion.create_revision():
         if property_id:
-            prop = Property.objects.filter(pa_code=property_id).first()
+            # Prefer matching pa_code within the same dictionary (and exact version if provided)
+            lookup = {'pa_code': property_id, 'dictionary': dictionary}
+            # prefer explicit version if present in mapped core or the CSV row
+            vn = core.get('version_number') or (row.get('Version number') or row.get('version_number'))
+            if vn:
+                lookup['version_number'] = vn
+            prop = Property.objects.filter(**lookup).first()
+            # fallback: if exact version match not found, try pa_code + dictionary without version
+            if not prop:
+                prop = Property.objects.filter(pa_code=property_id, dictionary=dictionary).first()
 
         if prop:
             # update
@@ -274,21 +306,23 @@ def process_row(row, dictionary, user, pa_tags=None):
                 lang = k.split()[-1]
                 PropertyDescription.objects.get_or_create(property=prop, description=v.strip(), language=lang)
 
-        # Handle Replaces / Replaced by
+        # Handle Replaces / Replaced by (resolve within same dictionary when possible)
         if 'Replaces' in row and row['Replaces']:
             for token in str(row['Replaces']).split(','):
                 t = token.strip()
-                if t:
-                    p2 = Property.objects.filter(pa_code=t).first()
-                    if p2:
-                        prop.replaced_properties.add(p2)
+                if not t:
+                    continue
+                p2 = Property.objects.filter(pa_code=t, dictionary=dictionary).first() or Property.objects.filter(pa_code=t).first()
+                if p2:
+                    prop.replaced_properties.add(p2)
         if 'Replaced by' in row and row['Replaced by']:
             for token in str(row['Replaced by']).split(','):
                 t = token.strip()
-                if t:
-                    p2 = Property.objects.filter(pa_code=t).first()
-                    if p2:
-                        prop.replacing_properties.add(p2)
+                if not t:
+                    continue
+                p2 = Property.objects.filter(pa_code=t, dictionary=dictionary).first() or Property.objects.filter(pa_code=t).first()
+                if p2:
+                    prop.replacing_properties.add(p2)
 
         # annotate revision
         try:

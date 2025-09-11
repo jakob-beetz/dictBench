@@ -17,35 +17,94 @@
         </div>
     </div>
 
+    <form method="get" class="row g-3 mb-3">
+        <div class="col-md-3">
+            <label for="id_dictionary_id" class="form-label">Dictionary</label>
+            <select id="id_dictionary_id" name="dictionary_id" class="form-select">
+                <option value="">All</option>
+                {% for d in dictionaries %}
+                    <option value="{{ d.pk }}" {% if current.dictionary_id|stringformat:"s" == d.pk|stringformat:"s" %}selected{% endif %}>{{ d.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="id_status" class="form-label">Status</label>
+            <select id="id_status" name="status" class="form-select">
+                <option value="">All</option>
+                {% for s in statuses %}
+                    <option value="{{ s }}" {% if current.status == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="id_q" class="form-label">Search</label>
+            <input id="id_q" name="q" value="{{ current.q }}" class="form-control" placeholder="name or pa_code">
+        </div>
+
+        <div class="col-md-2">
+            <label for="id_per_page" class="form-label">Per page</label>
+            <select id="id_per_page" name="per_page" class="form-select">
+                <option value="10" {% if current.per_page == 10 %}selected{% endif %}>10</option>
+                <option value="25" {% if current.per_page == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if current.per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if current.per_page == 100 %}selected{% endif %}>100</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 align-self-end text-end">
+            <button type="submit" class="btn btn-primary mt-2">Apply</button>
+            <a href="{% url 'properties:property_list' %}" class="btn btn-secondary mt-2">Reset</a>
+        </div>
+    </form>
+
+    <div class="row mb-2">
+        <div class="col-md-6">
+            {% if page_obj %}
+                <small class="text-muted">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</small>
+            {% endif %}
+        </div>
+    </div>
+
     <div class="row">
         {% if properties %}
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>
+                            <a href="?sort=name&dir={% if current.sort == 'name' and current.dir != 'desc' %}desc{% else %}asc{% endif %}{% if current.per_page %}&per_page={{ current.per_page }}{% endif %}{% if current.dictionary_id %}&dictionary_id={{ current.dictionary_id }}{% endif %}{% if current.status %}&status={{ current.status }}{% endif %}{% if current.q %}&q={{ current.q|urlencode }}{% endif %}">
+                                Name
+                                {% if current.sort == 'name' %}
+                                    <small>({{ current.dir }})</small>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=pa_code&dir={% if current.sort == 'pa_code' and current.dir != 'desc' %}desc{% else %}asc{% endif %}{% if current.per_page %}&per_page={{ current.per_page }}{% endif %}{% if current.dictionary_id %}&dictionary_id={{ current.dictionary_id }}{% endif %}{% if current.status %}&status={{ current.status }}{% endif %}{% if current.q %}&q={{ current.q|urlencode }}{% endif %}">PA Code</a>
+                        </th>
+                        <th>
+                            <a href="?sort=data_type&dir={% if current.sort == 'data_type' and current.dir != 'desc' %}desc{% else %}asc{% endif %}{% if current.per_page %}&per_page={{ current.per_page }}{% endif %}{% if current.dictionary_id %}&dictionary_id={{ current.dictionary_id }}{% endif %}{% if current.status %}&status={{ current.status }}{% endif %}{% if current.q %}&q={{ current.q|urlencode }}{% endif %}">Data Type</a>
+                        </th>
+                        <th>
+                            <a href="?sort=status&dir={% if current.sort == 'status' and current.dir != 'desc' %}desc{% else %}asc{% endif %}{% if current.per_page %}&per_page={{ current.per_page }}{% endif %}{% if current.dictionary_id %}&dictionary_id={{ current.dictionary_id }}{% endif %}{% if current.q %}&q={{ current.q|urlencode }}{% endif %}">Status</a>
+                        </th>
                         <th>Dictionary</th>
-                        <th>Data Type</th>
-                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for property in properties %}
                         <tr>
-                            <td>
-                                {% if property.names.exists %}
-                                    {{ property.names.first.name }}
-                                {% else %}
-                                    <em>No name provided</em>
-                                {% endif %}
-                            </td>
-                            <td>{{ property.dictionary.name }}</td>
+                            <td>{{ property.primary_name|default:"(No name)" }}</td>
+                            <td>{{ property.pa_code }}</td>
                             <td>{{ property.data_type }}</td>
                             <td>
                                 <span class="badge bg-{{ property.status|lower }}">
                                     {{ property.status }}
                                 </span>
                             </td>
+                            <td>{{ property.dictionary.name }}</td>
                             <td>
                                 <a href="{% url 'properties:property_detail' pk=property.guid %}" class="btn btn-sm btn-outline-primary">View</a>
                                 <a href="{% url 'properties:property_edit' pk=property.guid %}" class="btn btn-sm btn-outline-secondary">Edit</a>
@@ -55,6 +114,44 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+            <!-- Pagination controls -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current.per_page %}&per_page={{ current.per_page }}{% endif %}{% if current.dictionary_id %}&dictionary_id={{ current.dictionary_id }}{% endif %}{% if current.status %}&status={{ current.status }}{% endif %}{% if current.q %}&q={{ current.q|urlencode }}{% endif %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                    {% endif %}
+
+                    {% for p in page_links %}
+                        {% if p.ellipsis %}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% else %}
+                            <li class="page-item {% if p.current %}active{% endif %}">
+                                <a class="page-link" href="?page={{ p.num }}{% if current.per_page %}&per_page={{ current.per_page }}{% endif %}{% if current.dictionary_id %}&dictionary_id={{ current.dictionary_id }}{% endif %}{% if current.status %}&status={{ current.status }}{% endif %}{% if current.q %}&q={{ current.q|urlencode }}{% endif %}">{{ p.num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current.per_page %}&per_page={{ current.per_page }}{% endif %}{% if current.dictionary_id %}&dictionary_id={{ current.dictionary_id }}{% endif %}{% if current.status %}&status={{ current.status }}{% endif %}{% if current.q %}&q={{ current.q|urlencode }}{% endif %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
         {% else %}
             <div class="alert alert-info">
                 No properties found. Click "Create New Property" to add one.

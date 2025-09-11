@@ -1,0 +1,25 @@
+{
+  "field_mappings": {
+    "Property type": "data_type",
+    "Data Type": "data_type",
+    "UnitNo": "unit_of_measurement",
+    "Unit": "unit_of_measurement",
+    "Status": "status",
+    "Version number": "version_number",
+    "Revision number": "revision_number",
+    "Creators language": "creators_language",
+    "Country of use": "countries_of_use",
+    "Country of origin": "country_of_origin",
+    "Classification system": "classification_system",
+    "Reference to standard or document": "classification_reference",
+    "Date of creation": "registration_date",
+    "Date of activation": "registration_date",
+    "Reference to VDI 3805 record no": "registration_authority"
+  },
+  "type_mapping": {
+    "1": "string",
+    "2": "real",
+    "3": "integer",
+    "4": "boolean"
+  }
+}

@@ -31,7 +31,7 @@ urlpatterns = [
     path('properties/api/units/search/', grid_views.search_units, name='api_search_units'),
     path('properties/api/physical-quantities/search/', grid_views.search_physical_quantities, name='api_search_quantities'),
     path('properties/api/classifications/search/', grid_views.search_classifications, name='api_search_classifications'),
-    path('properties/api/dictionaries/', views.get_dictionaries_api, name='api_dictionaries'),
+    # path('properties/api/dictionaries/', views.get_dictionaries_api, name='api_dictionaries'),
 
     # Property versions page
     path('properties/property/<uuid:pk>/versions/', views.property_versions, name='property_versions'),

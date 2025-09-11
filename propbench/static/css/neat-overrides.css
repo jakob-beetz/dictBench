@@ -2,3 +2,11 @@
 .form-grid-item { min-width: 0; }
 .field-wrap > .form-control, .field-wrap > .form-select { width: 100%; }
 .form-label.small { display: block; margin-bottom: .25rem; font-weight: 600; }
+/* Force grid layout for group columns and prevent upstream overrides */
+.group-columns {
+  display: grid !important;
+  gap: .6rem !important;
+  align-items: start !important;
+  grid-auto-rows: min-content;
+  /* grid-template-columns will be set inline in the template per-group */
+}

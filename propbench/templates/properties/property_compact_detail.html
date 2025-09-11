@@ -6,6 +6,14 @@
   <!-- neatcss base (CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/neatcss@1.0.0/neat.min.css">
   <link href="{% static 'css/neat-overrides.css' %}" rel="stylesheet">
+  <style>
+    /* Ensure group columns render even if external CSS conflicts */
+    .group-columns { display: grid !important; gap: .6rem; align-items: start; }
+    .group-columns > .col { min-width: 0; }
+    .form-group { margin-bottom: .5rem; }
+    .form-label.small { display:block; margin-bottom:.25rem; font-weight:600; }
+    .field-wrap > * { width:100%; box-sizing:border-box; }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -15,28 +23,53 @@
     <p class="text-muted small">Compact read-only view</p>
   </header>
 
+  {% if names_by_lang %}
+  <section class="card mb-3">
+    <div class="card-header"><strong>Names (multilingual)</strong></div>
+    <div class="card-body">
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        {% for lang, names in names_by_lang.items %}
+          <div style="min-width:160px;">
+            <div class="small text-muted mb-1">{{ lang }}</div>
+            <ul class="list-unstyled mb-0">
+              {% for n in names %}
+                <li>
+                  <span class="badge bg-light text-dark">{{ n.name }}</span>
+                  {% if n.is_primary %}<span class="badge bg-primary text-white small">primary</span>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
   {% for group in groups %}
     <section class="card mb-3">
       <div class="card-header"><strong>{{ group.title }}</strong></div>
       <div class="card-body">
-        <div class="form-grid" style="grid-template-columns: repeat({{ group.cols }}, 1fr);">
-          {% for fname in group.fields %}
-            {% with field=form|get_field:fname %}
-              {% if field %}
-                <div class="form-grid-item">
-                  <label for="{{ field.id_for_label }}" class="form-label small">{{ field.label }}</label>
-                  <div class="field-wrap">
-                    {{ field }}
-                    {% if field.errors %}
-                      <div class="invalid-feedback d-block">{{ field.errors|striptags }}</div>
-                    {% endif %}
-                    {% if field.help_text %}
-                      <small class="form-text text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                  </div>
-                </div>
-              {% endif %}
-            {% endwith %}
+        {# Use explicit grid-template-columns with minmax to avoid collapsing #}
+        <div class="group-columns" style="display:grid !important; grid-template-columns: repeat({{ group.cols|default:1 }}, minmax(0, 1fr)) !important; gap:.6rem !important;">
+          {% for col in group.columns %}
+            <div class="col">
+              {% for fname in col %}
+                {% with field=form|get_field:fname %}
+                  {% if field %}
+                    <div class="form-group">
+                      <label for="{{ field.id_for_label }}" class="form-label small">{{ field.label }}</label>
+                      <div class="field-wrap">
+                        {{ field }}
+                        {% if field.help_text %}
+                          <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endwith %}
+              {% endfor %}
+            </div>
           {% endfor %}
         </div>
       </div>

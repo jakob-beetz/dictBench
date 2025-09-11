@@ -1,27 +1,145 @@
+from collections import defaultdict
+import math
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, TemplateView, DetailView
 from django.db import transaction
-from .models import Property
+from django.db.models import OuterRef, Subquery, CharField, Q
+from dictionaries.models import PropertyDictionary
+from .models import Property, PropertyName
 from .forms import PropertyForm, PropertyFormCrisp, PropertyNameFormSet, PropertyDefinitionFormSet, LANGUAGE_CHOICES
 from django.http import JsonResponse
-from django.contrib.admin.views.decorators import staff_member_required
-from dictionaries.models import PropertyDictionary
-from reversion.models import Revision, Version
-from pprint import pprint;
-from .iso16757_import import parse_and_import
 from django.urls import reverse_lazy
-import json
-from collections import defaultdict
-import math
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from .iso16757_import import parse_and_import
+from reversion.models import Revision, Version
+
+def import_iso16757_view(request):
+    """
+    POST multipart/form-data:
+      - csv_file: uploaded CSV
+      - mapping_file: optional uploaded JSON mapping
+      - dictionary: dictionary id or object (adjust as needed)
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    csv_file = request.FILES.get('csv_file')
+    mapping_file = request.FILES.get('mapping_file')  # optional
+    if not csv_file:
+        return JsonResponse({'error': 'csv_file required'}, status=400)
+    # resolve dictionary object according to your app (placeholder)
+    dictionary = request.POST.get('dictionary')
+    stats = parse_and_import(csv_file, dictionary, request.user, mapping_file=mapping_file)
+    return JsonResponse({'stats': stats})
 
 @login_required
 def property_list(request):
-    """List all properties."""
-    properties = Property.objects.all()
-    return render(request, 'properties/property_list.html', {'properties': properties})
+    """List all properties with filtering, sorting and pagination."""
+    # base queryset + annotate primary name
+    # PropertyName model has no `is_primary` field (see FieldError). Order deterministically by PK.
+    # If your model uses a different flag (e.g. `is_preferred`), replace 'pk' ordering with that field.
+    primary_name_qs = PropertyName.objects.filter(property=OuterRef('pk')).order_by('pk')
+    qs = Property.objects.select_related('dictionary').annotate(
+        primary_name=Subquery(primary_name_qs.values('name')[:1], output_field=CharField())
+    )
+
+    # --- filters ---
+    dictionary_id = request.GET.get('dictionary_id')
+    if dictionary_id:
+        qs = qs.filter(dictionary_id=dictionary_id)
+
+    status = request.GET.get('status')
+    if status:
+        qs = qs.filter(status=status)
+
+    # optional text search (on primary name or pa_code) - small convenience
+    q = request.GET.get('q')
+    if q:
+        qs = qs.filter(Q(primary_name__icontains=q) | Q(pa_code__icontains=q))
+
+    # --- sorting ---
+    sort = request.GET.get('sort', 'pk')  # allowed: name,status,pa_code,data_type,created
+    sort_dir = request.GET.get('dir', 'asc')
+    sort_map = {
+        'name': 'primary_name',
+        'status': 'status',
+        'pa_code': 'pa_code',
+        'data_type': 'data_type',
+        'created': 'created_at',
+        'pk': 'pk'
+    }
+    sort_field = sort_map.get(sort, 'pk')
+    if sort_dir == 'desc':
+        sort_field = '-' + sort_field
+    qs = qs.order_by(sort_field)
+
+    # --- pagination ---
+    try:
+        per_page = int(request.GET.get('per_page', 25))
+        if per_page <= 0:
+            per_page = 25
+    except Exception:
+        per_page = 25
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(qs, per_page)
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # helper lists for filter widgets
+    dictionaries = PropertyDictionary.objects.all()
+    statuses = list(Property.objects.values_list('status', flat=True).distinct())
+
+    # build compact page links (handles ellipsis)
+    def build_page_links(paginator, current_page, window=3):
+        num_pages = paginator.num_pages
+        cur = int(current_page)
+        links = []
+        if num_pages <= 10:
+            for i in range(1, num_pages + 1):
+                links.append({'num': i, 'ellipsis': False, 'current': (i == cur)})
+            return links
+
+        links.append({'num': 1, 'ellipsis': False, 'current': (1 == cur)})
+        left = max(2, cur - window)
+        right = min(num_pages - 1, cur + window)
+
+        if left > 2:
+            links.append({'ellipsis': True})
+        for i in range(left, right + 1):
+            links.append({'num': i, 'ellipsis': False, 'current': (i == cur)})
+        if right < num_pages - 1:
+            links.append({'ellipsis': True})
+
+        links.append({'num': num_pages, 'ellipsis': False, 'current': (num_pages == cur)})
+        return links
+
+    page_links = build_page_links(paginator, page_obj.number)
+
+    context = {
+        'properties': page_obj.object_list,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'dictionaries': dictionaries,
+        'statuses': statuses,
+        # echo back current filter/sort params for template
+        'current': {
+            'dictionary_id': dictionary_id,
+            'status': status,
+            'q': q or '',
+            'sort': sort,
+            'dir': sort_dir,
+            'per_page': per_page,
+        },
+        'page_links': page_links,
+    }
+    return render(request, 'properties/property_list.html', context)
 
 @login_required
 def property_detail(request, pk):
@@ -210,21 +328,6 @@ def property_delete(request, pk):
         return redirect('properties:property_list')
     
     return render(request, 'properties/property_delete.html', {'property': prop})
-
-@staff_member_required
-def get_dictionaries_api(request):
-    """API endpoint to get all dictionaries for dropdowns."""
-    try:
-        dictionaries = PropertyDictionary.objects.all().values('guid', 'name', 'description')
-        dictionaries_list = list(dictionaries)
-        
-        # Convert UUID to string if needed
-        for d in dictionaries_list:
-            d['guid'] = str(d['guid'])
-        
-        return JsonResponse(dictionaries_list, safe=False)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
 
 def property_versions(request, pk):
     """Show a list of versions recorded by django-reversion for a Property (by guid)."""

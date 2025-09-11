@@ -1,22 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
   <h1>Import ISO 16757</h1>
-  <form method="post" enctype="multipart/form-data">
+  <form method="post" enctype="multipart/form-data" class="row g-3">
     {% csrf_token %}
-    <div>
-      <label for="id_csv_file">CSV file</label>
-      <input type="file" name="csv_file" id="id_csv_file" accept=".csv" />
+
+    <div class="mb-3">
+        <label for="id_dictionary_id" class="form-label">Dictionary</label>
+        <select name="dictionary_id" id="id_dictionary_id" class="form-select" required>
+            {% for d in dictionaries %}
+                <option value="{{ d.pk }}">{{ d }}</option>
+            {% endfor %}
+        </select>
     </div>
-    <div>
-      <label for="id_dictionary">Dictionary</label>
-      <select name="dictionary_id" id="id_dictionary">
-        {% for d in dictionaries %}
-          <option value="{{ d.pk }}">{{ d.name }}</option>
-        {% endfor %}
-      </select>
+
+    <div class="mb-3">
+        <label for="id_csv_file" class="form-label">CSV file</label>
+        <input type="file" name="csv_file" id="id_csv_file" accept=".csv,text/csv" class="form-control" required>
     </div>
-    <div>
-      <button type="submit">Import</button>
+
+    <div class="mb-3">
+        <label for="id_mapping_file" class="form-label">Mapping JSON (optional)</label>
+        <input type="file" name="mapping_file" id="id_mapping_file" accept=".json,application/json" class="form-control">
+        <div class="form-text">Upload a JSON mapping to override the default mapping used by the importer.</div>
     </div>
+
+    <button type="submit" class="btn btn-primary">Import</button>
   </form>
 {% endblock %}

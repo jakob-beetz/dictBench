@@ -14,7 +14,7 @@ class Property(models.Model):
         max_length=20, 
         blank=True, 
         null=True, 
-        unique=True,
+        unique=False,
         help_text="Optional handcrafted PA identifier (e.g., PA001, PA002). Must be unique if provided.",
         verbose_name="PA Code "
     )
