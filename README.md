@@ -15,42 +15,62 @@ PropBench is a Django-based collaborative editor system for managing properties 
 ## Setup
 
 1. Clone the repository
+
    ```
    git clone https://github.com/yourusername/propbench.git
    cd propbench
    ```
 
-2. Create and activate a virtual environment
+2. Install Python 3.11 and make sure that the path to `python.exe` (e.g. `C:\Users\<username>\AppData\Local\Programs\Python\Python311`) is at the top of your PATH environment variable.
+
+3. Create the virtual environment explicitly with Python 3.11:
+
    ```
-   python -m venv venv-3.11
-   # On Windows:
-   .\venv-3.11\Scripts\activate.ps1
-   # On Unix/macOS:
-   source venv-3.11/bin/activate
+   "C:\Users\<username>\AppData\Local\Programs\Python\Python311\python.exe" -m venv venv-3.11
    ```
 
-3. Install dependencies
+4. Activate the venv (Windows CMD):
+
+   ```
+   venv-3.11\Scripts\activate.bat
+   ```
+
+   (For PowerShell: `venv-3.11\Scripts\Activate.ps1`)
+
+5. Install the dependencies:
+
    ```
    pip install -r propbench/requirements.txt
    ```
 
-4. Apply migrations
+6. If you get errors about missing packages when running `python manage.py migrate`, install them manually, e.g.:
+
+   ```
+   pip install django-debug-toolbar django-json-widget
+   ```
+
+   Repeat this for any other missing packages reported.
+
+7. Apply migrations
+
    ```
    cd propbench
    python manage.py migrate
    ```
 
-5. Create a superuser
+8. Create a superuser
+
    ```
    python manage.py createsuperuser
    ```
 
-6. Run the development server
+9. Run the development server
+
    ```
    python manage.py runserver
    ```
 
-7. Access the admin interface at `http://127.0.0.1:8000/admin/`
+10. Access the admin interface at `http://127.0.0.1:8000/admin/`
 
 ## Project Structure
 
@@ -64,8 +84,15 @@ PropBench is a Django-based collaborative editor system for managing properties 
 
 ## License
 
-MIT 
+MIT
 
 ## Contributors
 
 RWTH Aachen University - Chair of Design Comptuation
+
+---
+
+### Troubleshooting
+
+- If after activating the venv you still see the wrong Python version, check your PATH variable and use the full path to Python 3.11.
+- For any error about missing modules, simply install the named package with `pip install <packagename>`.
