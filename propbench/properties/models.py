@@ -253,3 +253,108 @@ class PropertyRelationship(models.Model):
     
     def __str__(self):
         return f"{self.source_property} -> {self.relationship_type} -> {self.target_property}"
+
+
+class ExternalLibrary(models.Model):
+    SCOPE_GLOBAL = "global"
+    SCOPE_DICTIONARY = "dictionary"
+    SCOPE_USER = "user"
+    SCOPE_CHOICES = [
+        (SCOPE_GLOBAL, "Global"),
+        (SCOPE_DICTIONARY, "Dictionary"),
+        (SCOPE_USER, "User"),
+    ]
+
+    guid = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    slug = models.SlugField(max_length=200, unique=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    scope = models.CharField(max_length=20, choices=SCOPE_CHOICES, default=SCOPE_GLOBAL)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    dictionary = models.ForeignKey('dictionaries.PropertyDictionary', null=True, blank=True, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
+    version = models.CharField(max_length=50, default="1")
+    metadata = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['slug']),
+            models.Index(fields=['scope','dictionary'])
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.slug})"
+
+
+class LibraryItem(models.Model):
+    guid = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    library = models.ForeignKey(ExternalLibrary, related_name='items', on_delete=models.CASCADE)
+    code = models.CharField(max_length=200)   # canonical code e.g. "kWh"
+    label = models.CharField(max_length=500)
+    description = models.TextField(blank=True)
+    data = models.JSONField(default=dict, blank=True)  # extensible payload
+    active = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('library', 'code')
+        ordering = ['order', 'label']
+
+    def __str__(self):
+        return f"{self.label} ({self.code})"
+
+
+class LibraryImport(models.Model):
+    """Record of uploaded file (CSV/JSON) for audit and re-import."""
+    guid = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    library = models.ForeignKey(ExternalLibrary, null=True, blank=True, on_delete=models.SET_NULL)
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    filename = models.CharField(max_length=255)
+    raw = models.BinaryField()   # store original content
+    content_type = models.CharField(max_length=100)
+    notes = models.TextField(blank=True)
+
+
+class FieldLibraryBinding(models.Model):
+    """Configure which ExternalLibrary(ies) feed values for a specific model field.
+
+    target_model: full app model path, e.g. "properties.Property"
+    target_field: field name on the model, e.g. "unit_item"
+    """
+    guid = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    name = models.CharField(max_length=200)
+    target_model = models.CharField(max_length=255, help_text="app.ModelName e.g. properties.Property")
+    target_field = models.CharField(max_length=200, help_text="field name e.g. unit_item")
+    active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} -> {self.target_model}.{self.target_field}"
+
+
+class FieldLibraryBindingEntry(models.Model):
+    """Orderable list of libraries used by a binding plus optional filters/transforms.
+
+    Each entry links a binding to an ExternalLibrary and can contain a small filter/transform JSON
+    that is applied when building the final option list.
+    """
+    guid = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    binding = models.ForeignKey(FieldLibraryBinding, related_name="entries", on_delete=models.CASCADE)
+    # reference to the ExternalLibrary model (kept as string import to avoid circular import on module load)
+    library = models.ForeignKey('properties.ExternalLibrary', on_delete=models.CASCADE)
+    order = models.PositiveSmallIntegerField(default=0)
+    filter_json = models.JSONField(default=dict, blank=True,
+                                   help_text="Optional filter e.g. {\"active\": true, \"code__startswith\":\"k\"}")
+    transform_json = models.JSONField(default=dict, blank=True,
+                                      help_text="Optional transform e.g. {\"label_prefix\":\"(std) \"}")
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.binding.name} - {self.library.slug} (order={self.order})"

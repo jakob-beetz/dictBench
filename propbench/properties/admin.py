@@ -1,10 +1,13 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db import models, transaction
-from django.contrib import messages
 from django.urls import path
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
+from django.utils.text import slugify
+from django.contrib.admin import AdminSite
+from django.contrib.admin.views.decorators import staff_member_required
+from django import forms
 import json
 import csv
 import io
@@ -13,8 +16,8 @@ import reversion.admin
 from .models import (
     Property, PropertyName, PropertyDefinition, PhysicalQuantity, PropertyRelationship, PropertyExample, PropertyDescription
 )
+from .models import ExternalLibrary, LibraryItem, LibraryImport
 from dictionaries.models import PropertyDictionary
-from .widgets import JSONEditorWidget
 from .forms import PropertyForm
 from groups.models import PropertyGroupMembership
 from .iso16757_import import parse_and_import
@@ -50,11 +53,6 @@ class PropertyAdmin(reversion.admin.VersionAdmin, admin.ModelAdmin):
     
     change_list_template = 'admin/properties/property/change_list.html'
     
-    # apply JSONEditorWidget to all JSONField fields
-    formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
-    }
-
     list_display = (
         'get_first_name', 'data_type', 'status', 'dictionary', 
         'unit_of_measurement', 'created_by', 'created_at'
@@ -1177,4 +1175,211 @@ for _m in (PropertyName, PropertyDefinition, PropertyRelationship, PhysicalQuant
         # Ignore registration errors to keep startup resilient
         pass
 
-# example/description models are registered above with Property follow list
+@admin.register(ExternalLibrary)
+class ExternalLibraryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'scope', 'dictionary', 'owner', 'active', 'version', 'created_at')
+    search_fields = ('name', 'slug')
+    list_filter = ('scope', 'active')
+    change_list_template = "admin/properties/externalibrary/change_list.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('upload/', self.admin_site.admin_view(self.upload_view), name='properties_externalibrary_upload'),
+            path('<path:object_id>/export/', self.admin_site.admin_view(self.export_view), name='properties_externalibrary_export'),
+        ]
+        return custom_urls + urls
+
+    def upload_view(self, request):
+        if not request.user.has_perm('properties.add_externallibrary'):
+            return redirect('admin:index')
+        if request.method == 'POST':
+            form = AdminLibraryUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                # reuse the existing upload logic by calling model-level helper or inline parse
+                f = form.cleaned_data['file']
+                slug = form.cleaned_data.get('slug') or slugify(form.cleaned_data.get('name') or f.name.rsplit('.', 1)[0])
+                name = form.cleaned_data.get('name') or slug
+                scope = form.cleaned_data.get('scope')
+                dict_obj = form.cleaned_data.get('dictionary')
+
+                library, _ = ExternalLibrary.objects.update_or_create(slug=slug, defaults={
+                    'name': name,
+                    'scope': scope,
+                    'owner': request.user if scope == ExternalLibrary.SCOPE_USER else None,
+                    'version': form.cleaned_data.get('version') or '1',
+                })
+
+                if scope == ExternalLibrary.SCOPE_DICTIONARY and dict_obj:
+                    library.dictionary = dict_obj
+                    library.save()
+
+                raw = f.read()
+                LibraryImport.objects.create(library=library, uploaded_by=request.user, filename=f.name, raw=raw, content_type=f.content_type or "")
+
+                # Basic parse (CSV/JSON) - keep it minimal here: use same parsing from views.upload_library
+                text = raw.decode('utf-8-sig') if isinstance(raw, (bytes, bytearray)) else str(raw)
+                try:
+                    import csv, io, json
+                    items = []
+                    if f.name.lower().endswith('.json') or text.strip().startswith(('{','[')):
+                        payload = json.loads(text)
+                        items = payload.get('items', [])
+                    else:
+                        reader = csv.DictReader(io.StringIO(text))
+                        for row in reader:
+                            data = {}
+                            if row.get('data_json'):
+                                try:
+                                    data = json.loads(row.get('data_json'))
+                                except Exception:
+                                    data = {}
+                            items.append({
+                                "code": row.get('code') or row.get('Code'),
+                                "label": row.get('label') or row.get('Label') or row.get('name'),
+                                "description": row.get('description',''),
+                                "data": data,
+                                "active": str(row.get('active','true')).lower() in ('1','true','yes'),
+                                "order": int(row.get('order') or 0),
+                            })
+                    for it in items:
+                        if not it.get('code'):
+                            continue
+                        LibraryItem.objects.update_or_create(
+                            library=library,
+                            code=it['code'],
+                            defaults={
+                                'label': it.get('label') or it['code'],
+                                'description': it.get('description',''),
+                                'data': it.get('data', {}),
+                                'active': it.get('active', True),
+                                'order': it.get('order', 0),
+                            }
+                        )
+                except Exception as e:
+                    form.add_error(None, f"Parse error: {e}")
+                    return render(request, "admin/properties/externalibrary/upload.html", {'form': form, 'title': 'Upload library'})
+
+                self.message_user(request, f"Library '{library.name}' uploaded/updated.")
+                return redirect('admin:properties_externallibrary_changelist')
+        else:
+            form = AdminLibraryUploadForm()
+        return render(request, "admin/properties/externalibrary/upload.html", {'form': form, 'title': 'Upload library'})
+
+    def export_view(self, request, object_id):
+        library = self.get_object(request, object_id)
+        if not library:
+            return redirect('admin:properties_externalibrary_changelist')
+        # export as JSON
+        import json
+        items = list(library.items.values('code','label','description','data','active','order'))
+        payload = {
+            'slug': library.slug,
+            'name': library.name,
+            'version': library.version,
+            'description': library.description,
+            'items': items
+        }
+        resp = admin.helpers.JsonResponse(payload) if hasattr(admin.helpers, 'JsonResponse') else None
+        # fallback to HttpResponse
+        from django.http import HttpResponse
+        return HttpResponse(json.dumps(payload, indent=2, default=str), content_type='application/json')
+
+@admin.register(LibraryItem)
+class LibraryItemAdmin(admin.ModelAdmin):
+    list_display = ('label', 'code', 'library', 'active', 'order')
+    search_fields = ('label', 'code')
+    list_filter = ('library', 'active')
+
+@admin.register(LibraryImport)
+class LibraryImportAdmin(admin.ModelAdmin):
+    list_display = ('filename', 'library', 'uploaded_by', 'uploaded_at')
+    readonly_fields = ('raw',)
+    actions = ['reimport_selected']
+
+    def reimport_selected(self, request, queryset):
+        for li in queryset:
+            try:
+                raw = li.raw
+                text = raw.decode('utf-8-sig') if isinstance(raw, (bytes, bytearray)) else str(raw)
+                # detect JSON vs CSV
+                if li.filename.lower().endswith('.json') or text.strip().startswith(('{','[')):
+                    payload = json.loads(text)
+                    lib_slug = payload.get('slug') or (li.library.slug if li.library else li.filename.rsplit('.',1)[0])
+                    library, _ = ExternalLibrary.objects.update_or_create(slug=lib_slug, defaults={
+                        'name': payload.get('name', lib_slug),
+                        'description': payload.get('description',''),
+                    })
+                    for it in payload.get('items', []):
+                        LibraryItem.objects.update_or_create(library=library, code=it.get('code'), defaults={
+                            'label': it.get('label') or it.get('code'),
+                            'description': it.get('description',''),
+                            'data': it.get('data', {}),
+                            'active': it.get('active', True),
+                            'order': it.get('order', 0),
+                        })
+                else:
+                    reader = csv.DictReader(io.StringIO(text))
+                    lib_slug = (li.library.slug if li.library else li.filename.rsplit('.',1)[0])
+                    library, _ = ExternalLibrary.objects.update_or_create(slug=lib_slug, defaults={'name': lib_slug})
+                    for row in reader:
+                        data = {}
+                        if row.get('data_json'):
+                            try:
+                                data = json.loads(row.get('data_json'))
+                            except Exception:
+                                data = {}
+                        LibraryItem.objects.update_or_create(library=library, code=row.get('code'), defaults={
+                            'label': row.get('label') or row.get('code'),
+                            'description': row.get('description',''),
+                            'data': data,
+                            'active': (row.get('active','true').lower() in ('1','true','yes')),
+                            'order': int(row.get('order') or 0),
+                        })
+                messages.success(request, f"Re-imported {li.filename}")
+            except Exception as e:
+                messages.error(request, f"Failed to re-import {li.filename}: {e}")
+    reimport_selected.short_description = "Re-import selected uploaded files"
+
+# Add binding admin
+from .models import FieldLibraryBinding, FieldLibraryBindingEntry
+
+class FieldLibraryBindingEntryInline(admin.TabularInline):
+    model = FieldLibraryBindingEntry
+    extra = 1
+    fields = ('library', 'order', 'filter_json', 'transform_json')
+
+@admin.register(FieldLibraryBinding)
+class FieldLibraryBindingAdmin(admin.ModelAdmin):
+    list_display = ('name', 'target_model', 'target_field', 'active', 'created_at')
+    search_fields = ('name', 'target_model', 'target_field')
+    inlines = (FieldLibraryBindingEntryInline,)
+
+    change_form_template = 'admin/properties/fieldlibrarybinding/change_form.html'
+
+    class Media:
+        js = ('properties/js/binding_order.js',)
+        css = {
+            'all': ('properties/css/binding_admin.css',)
+        }
+
+
+from django import forms
+from dictionaries.models import PropertyDictionary
+from .models import ExternalLibrary
+
+class AdminLibraryUploadForm(forms.Form):
+    file = forms.FileField(required=True)
+    slug = forms.CharField(required=False, help_text="Optional slug (will be autogenerated from name/file if absent)")
+    name = forms.CharField(required=False)
+    scope = forms.ChoiceField(choices=ExternalLibrary.SCOPE_CHOICES, initial=ExternalLibrary.SCOPE_GLOBAL)
+    dictionary = forms.ModelChoiceField(queryset=PropertyDictionary.objects.all(), required=False)
+    version = forms.CharField(required=False)
+    file = forms.FileField(required=True)
+    slug = forms.CharField(required=False, help_text="Optional slug (will be autogenerated from name/file if absent)")
+    name = forms.CharField(required=False)
+    scope = forms.ChoiceField(choices=ExternalLibrary.SCOPE_CHOICES, initial=ExternalLibrary.SCOPE_GLOBAL)
+    dictionary = forms.ModelChoiceField(queryset=PropertyDictionary.objects.all(), required=False)
+    version = forms.CharField(required=False)
+
+

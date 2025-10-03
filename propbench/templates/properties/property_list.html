@@ -108,9 +108,15 @@
                             </td>
                             <td>{{ property.dictionary.name }}</td>
                             <td>
-                                <a href="{% url 'properties:property_detail' pk=property.guid %}" class="btn btn-sm btn-outline-primary">View</a>
-                                <a href="{% url 'properties:property_edit' pk=property.guid %}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <a href="{% url 'properties:property_delete' pk=property.guid %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                <div class="property-actions">
+                                    <a href="{% url 'properties:property_detail' pk=property.guid %}" class="btn btn-sm btn-outline-primary">View</a>
+                                    <a href="{% url 'properties:property_edit' pk=property.guid %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a href="{% url 'properties:property_delete' pk=property.guid %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                    <a href="{% url 'properties:property_edit2' pk=property.guid %}" class="btn btn-sm btn-outline-success" 
+                                       title="Edit with minimal form">
+                                        <i class="bi bi-pencil-square"></i> Quick Edit
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}

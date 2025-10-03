@@ -1,476 +1,86 @@
-{% extends 'base/base.html' %}
-{% load static %}
+{% extends 'base/base.html' %}{% load static crispy_forms_tags crispy_forms_field %}
 
 {% block title %}{% if is_new %}Create Property{% else %}Edit {{ property.names.first.name|default:"Property" }}{% endif %} - PropBench{% endblock %}
 
-{% block extra_css %}
-<style>
-    /* Formset row styling (cleaned) */
-    .formset-row {
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        padding: 15px;
-        margin-bottom: 10px;
-        background-color: #f8f9fa;
-        transition: all 0.3s ease;
-    }
-    .formset-row.marked-for-deletion {
-        opacity: 0.5;
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
-    }
-    .formset-row.marked-for-deletion input,
-    .formset-row.marked-for-deletion textarea,
-    .formset-row.marked-for-deletion select {
-        background-color: #f8d7da;
-    }
-    .delete-row {
-        color: #dc3545;
-        font-size: 0.9rem;
-    }
-    .remove-form-btn {
-        border: none;
-        padding: 0.25rem 0.5rem;
-    }
-    .formset-row:hover {
-        border-color: #adb5bd;
-    }
-    .form-check-label {
-        cursor: pointer;
-    }
-    .language-badge {
-        font-size: 0.8rem;
-        margin-right: 0.5rem;
-    }
-    .text-danger.small {
-        margin-top: 0.25rem;
-        display: block;
-    }
-    .field-section {
-        margin-bottom: 2rem;
-    }
-    .section-title {
-        color: var(--primary-color);
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .help-section {
-        background: #f8f9fa;
-        border-left: 4px solid var(--primary-color);
-        padding: 1rem;
-        margin-top: 2rem;
-    }
-</style>
+{% block extrahead %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'properties/css/property_form.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <form method="post">
+<div class="container-fluid property-form">
+    <h1 class="mb-4">{% if form.instance.pk %}Edit a Property{% else %}New Property{% endif %}</h1>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-        
-        <!-- Form validation errors -->
-        {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-                {{ form.non_field_errors }}
-            </div>
-        {% endif %}
-        
-        <!-- Formset errors -->
-        {% if name_formset.non_form_errors %}
-            <div class="alert alert-danger">
-                <strong>Name errors:</strong> {{ name_formset.non_form_errors }}
-            </div>
-        {% endif %}
-        
-        {% if definition_formset.non_form_errors %}
-            <div class="alert alert-danger">
-                <strong>Definition errors:</strong> {{ definition_formset.non_form_errors }}
-            </div>
-        {% endif %}
-        
-        <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'properties:property_list' %}">Properties</a></li>
-                        {% if not is_new %}
-                            <li class="breadcrumb-item"><a href="{% url 'properties:property_detail' pk=property.guid %}">{{ property.names.first.name|default:"Property" }}</a></li>
-                            <li class="breadcrumb-item active">Edit</li>
-                        {% else %}
-                            <li class="breadcrumb-item active">Create New</li>
-                        {% endif %}
-                    </ol>
-                </nav>
-                
-                <div class="d-flex justify-content-between align-items-center">
-                    <h1>
-                        {% if is_new %}
-                            Create New Property <span class="badge bg-success">PA000</span>
-                        {% else %}
-                            Edit {{ property.names.first.name|default:"Property" }}
-                        {% endif %}
-                    </h1>
-                    <div>
-                        <button type="submit" class="btn btn-primary me-2">
-                            <i class="bi bi-save"></i> Save Property
-                        </button>
-                        <a href="{% if not is_new %}{% url 'properties:property_detail' pk=property.guid %}{% else %}{% url 'properties:property_list' %}{% endif %}" class="btn btn-secondary">
-                            Cancel
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% crispy form %}
 
-               
-        <div class="row">
-            <div class="col-md-9">
-                
-                <!-- Names Section -->
-                <div class="field-section">
-                    <h3 class="section-title">
-                        <i class="bi bi-tag"></i> Names & Descriptions 
-                        <span class="field-code">PA003</span>
-                    </h3>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h6 class="mb-0">Property Names <span class="field-code">PA003a</span></h6>
-                                </div>
-                                <div class="card-body">
-                                    {{ name_formset.management_form }}
-                                    {% if name_formset.errors %}
-                                        <div class="alert alert-danger">
-                                            {{ name_formset.errors }}
-                                        </div>
-                                    {% endif %}
-                                    <div id="name-formset">
-                                        {% for form in name_formset %}
-                                            <div class="formset-row" data-form-idx="{{ forloop.counter0 }}">
-                                                <div class="row">
-                                                    <div class="col-md-7">
-                                                        {{ form.name.label_tag }}
-                                                        {{ form.name }}
-                                                        {% if form.name.errors %}
-                                                            <div class="text-danger small">{{ form.name.errors }}</div>
-                                                        {% endif %}
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        {{ form.language.label_tag }}
-                                                        {{ form.language }}
-                                                    </div>
-                                                    <div class="col-md-2 d-flex align-items-end">
-                                                        {% if form.DELETE %}
-                                                            <div class="form-check">
-                                                                {{ form.DELETE }}
-                                                                <label for="{{ form.DELETE.id_for_label }}" class="form-check-label delete-row">
-                                                                    <i class="bi bi-trash"></i>
-                                                                </label>
-                                                            </div>
-                                                        {% else %}
-                                                            <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                                {% for hidden in form.hidden_fields %}
-                                                    {{ hidden }}
-                                                {% endfor %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                    <button type="button" id="add-name" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-plus"></i> Add Name
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h6 class="mb-0">Property Definitions <span class="field-code">PA003b</span></h6>
-                                </div>
-                                <div class="card-body">
-                                    {{ definition_formset.management_form }}
-                                    {% if definition_formset.errors %}
-                                        <div class="alert alert-danger">
-                                            {{ definition_formset.errors }}
-                                        </div>
-                                    {% endif %}
-                                    <div id="definition-formset">
-                                        {% for form in definition_formset %}
-                                            <div class="formset-row" data-form-idx="{{ forloop.counter0 }}">
-                                                <div class="row">
-                                                    <div class="col-md-8">
-                                                        {{ form.definition.label_tag }}
-                                                        {{ form.definition }}
-                                                        {% if form.definition.errors %}
-                                                            <div class="text-danger small">{{ form.definition.errors }}</div>
-                                                        {% endif %}
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        {{ form.language.label_tag }}
-                                                        {{ form.language }}
-                                                    </div>
-                                                    <div class="col-md-2 d-flex align-items-end">
-                                                        {% if form.DELETE %}
-                                                            <div class="form-check">
-                                                                {{ form.DELETE }}
-                                                                <label for="{{ form.DELETE.id_for_label }}" class="form-check-label delete-row">
-                                                                    <i class="bi bi-trash"></i>
-                                                                </label>
-                                                            </div>
-                                                        {% else %}
-                                                            <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                                {% for hidden in form.hidden_fields %}
-                                                    {{ hidden }}
-                                                {% endfor %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                    <button type="button" id="add-definition" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-plus"></i> Add Definition
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Core Information -->
-                <div class="field-section">
-                    <h3 class="section-title">
-                        <i class="bi bi-info-circle"></i> Core Information
-                    </h3>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                {{ form.dictionary.label_tag }}
-                                {{ form.dictionary }}
-                                {% if form.dictionary.help_text %}
-                                    <small class="form-text text-muted">{{ form.dictionary.help_text }}</small>
-                                {% endif %}
-                            </div>
-                            <div class="mb-3">
-                                {{ form.creators_language.label_tag }}
-                                {{ form.creators_language }}
-                                {% if form.creators_language.help_text %}
-                                    <small class="form-text text-muted">{{ form.creators_language.help_text }}</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            {% if not is_new %}
-                                <div class="mb-3">
-                                    <label class="form-label">GUID <span class="field-code">PA002</span></label>
-                                    <input type="text" class="form-control" value="{{ property.guid }}" readonly>
-                                    <small class="form-text text-muted">Auto-generated unique identifier</small>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Technical Specifications -->
-                <div class="field-section">
-                    <h3 class="section-title">
-                        <i class="bi bi-gear"></i> Technical Specifications
-                    </h3>
-                    
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.data_type.label_tag|safe }}
-                                {{ form.data_type }}
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.unit_of_measurement.label_tag|safe }}
-                                {{ form.unit_of_measurement }}
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.value_domain.label_tag|safe }}
-                                {{ form.value_domain }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Classification & Grouping -->
-                <div class="field-section">
-                    <h3 class="section-title">
-                        <i class="bi bi-collection"></i> Classification & Grouping
-                    </h3>
-                    
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mb-4">
-                                {{ form.groups.label_tag|safe }}
-                                {{ form.groups.code}}
-                                {{ form.groups }}
-                                <small class="form-text text-muted">{{ form.groups.help_text }}</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-4">
-                                {{ form.classification_system.label_tag|safe }}
-                                {{ form.classification_system }}
-                                <small class="form-text text-muted">{{ form.classification_system.help_text }}</small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                {{ form.classification_reference.label_tag|safe }}
-                                {{ form.classification_reference }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Status & Geographic -->
-                <div class="field-section">
-                    <h3 class="section-title">
-                        <i class="bi bi-globe"></i> Status & Geographic
-                    </h3>
-                    
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.status.label_tag }}
-                                {{ form.status }}
-                                {% if form.status.help_text %}
-                                    <small class="form-text text-muted">{{ form.status.help_text }}</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.country_of_origin.label_tag }}
-                                {{ form.country_of_origin }}
-                                {% if form.country_of_origin.help_text %}
-                                    <small class="form-text text-muted">{{ form.country_of_origin.help_text }}</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.countries_of_use.label_tag }}
-                                {{ form.countries_of_use }}
-                                {% if form.countries_of_use.help_text %}
-                                    <small class="form-text text-muted">{{ form.countries_of_use.help_text }}</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- System Information -->
-                {% if not is_new %}
-                <div class="field-section">
-                    <h3 class="section-title">
-                        <i class="bi bi-clock"></i> System Information
-                    </h3>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Created At</label>
-                                <input type="text" class="form-control" value="{{ property.created_at|date:'Y-m-d H:i:s' }}" readonly>
-                                <small class="form-text text-muted">Timestamp when this property was first created (auto-generated)</small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Updated At</label>
-                                <input type="text" class="form-control" value="{{ property.updated_at|date:'Y-m-d H:i:s' }}" readonly>
-                                <small class="form-text text-muted">Timestamp when this property was last modified (auto-generated)</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
+        <!-- Names formset -->
+        <section class="mt-5">
+            <h2 class="h5 border-bottom pb-2">Localized Names</h2>
+            <!-- Debug during development - remove style later -->
+            <div style="background:#f8f9fa; padding:10px; margin-bottom:10px; border:1px solid #ddd;">
+                {{ name_formset.management_form }}
+                <!-- Explicit fields as fallback -->
+                <input type="hidden" name="names-TOTAL_FORMS" value="{{ name_formset|length }}" id="id_names-TOTAL_FORMS">
+                <input type="hidden" name="names-INITIAL_FORMS" value="{{ name_formset.initial_forms|length }}" id="id_names-INITIAL_FORMS">
+                <input type="hidden" name="names-MIN_NUM_FORMS" value="0" id="id_names-MIN_NUM_FORMS">
+                <input type="hidden" name="names-MAX_NUM_FORMS" value="1000" id="id_names-MAX_NUM_FORMS">
             </div>
             
-            <!-- Help Section -->
-            <div class="col-md-3">
-                <div class="help-section">
-                    <h6><i class="bi bi-question-circle"></i> ISO 23386 Field Guide</h6>
-                    
-                    <div class="mb-3">
-                        <strong>Required Fields <span class="text-danger">*</span></strong>
-                        <ul class="small mb-0">
-                            <li><code>PA001</code> Dictionary assignment</li>
-                            <li><code>PA003</code> At least one name</li>
-                            <li><code>PA003</code> At least one definition</li>
-                            <li><code>PA004</code> Data type specification</li>
-                            <li><code>PA016</code> Status indication</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <strong>Technical Fields</strong>
-                        <ul class="small mb-0">
-                            <li><code>PA005</code> Unit of measurement</li>
-                            <li><code>PA007</code> Permitted value range</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <strong>Classification</strong>
-                        <ul class="small mb-0">
-                            <li><code>PA006</code> Property groups</li>
-                            <li><code>PA011</code> Classification system</li>
-                            <li><code>PA012</code> Classification reference</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <strong>Geographic</strong>
-                        <ul class="small mb-0">
-                            <li><code>PA021</code> Country of origin</li>
-                            <li><code>PA022</code> Countries of use</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <strong>Multi-language Support</strong>
-                        <ul class="small mb-0">
-                            <li>Add names in different languages</li>
-                            <li>Add definitions in different languages</li>
-                            <li>Common: EN, DE, FR, ES, IT</li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <strong>Language Codes</strong>
-                        <div class="small">
-                            {% for code, name in language_choices|slice:":6" %}
-                                <span class="badge bg-light text-dark me-1">{{ code|upper }}</span>
-                            {% endfor %}
-                            <br><em>+ {{ language_choices|length|add:"-6" }} more available</em>
+            <div id="name-formset" class="formset-collection">
+                {% for form in name_formset %}
+                    <div class="formset-row row g-2 mb-2" data-form-idx="{{ forloop.counter0 }}">
+                        <div class="col-md-3">
+                            {% crispy_field form.language %}
+                        </div>
+                        <div class="col-md-8">
+                            {% crispy_field form.name %}
+                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                        </div>
+                        <div class="col-md-1">
+                            <!-- Delete button -->
                         </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-        </div>
+            <button type="button" id="add-name" class="btn btn-sm btn-outline-primary mt-2">Add name</button>
+        </section>
+
+        <!-- Definitions formset -->
+        <section class="mt-5">
+            <h2 class="h5 border-bottom pb-2">Localized Definitions</h2>
+            <!-- Debug during development - remove style later -->
+            <div style="background:#f8f9fa; padding:10px; margin-bottom:10px; border:1px solid #ddd;">
+                {{ definition_formset.management_form }}
+                <!-- Explicit fields as fallback -->
+                <input type="hidden" name="definitions-TOTAL_FORMS" value="{{ definition_formset|length }}" id="id_definitions-TOTAL_FORMS">
+                <input type="hidden" name="definitions-INITIAL_FORMS" value="{{ definition_formset.initial_forms|length }}" id="id_definitions-INITIAL_FORMS">
+                <input type="hidden" name="definitions-MIN_NUM_FORMS" value="0" id="id_definitions-MIN_NUM_FORMS">
+                <input type="hidden" name="definitions-MAX_NUM_FORMS" value="1000" id="id_definitions-MAX_NUM_FORMS">
+            </div>
+            
+            <div id="definition-formset" class="formset-collection">
+                {% for form in definition_formset %}
+                    <div class="formset-row row g-2 mb-2" data-form-idx="{{ forloop.counter0 }}">
+                        <div class="col-md-3">
+                            {% crispy_field form.language %}
+                        </div>
+                        <div class="col-md-8">
+                            {% crispy_field form.definition %}
+                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                        </div>
+                        <div class="col-md-1">
+                            <!-- Delete button -->
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-definition" class="btn btn-sm btn-outline-primary mt-2">Add definition</button>
+        </section>
+    <div class="mt-5">
+        <button type="submit" name="save" class="btn btn-primary">Save</button>
+    </div>
     </form>
 </div>
 {% endblock %}
@@ -491,9 +101,7 @@ $(document).ready(function() {
         theme: 'bootstrap-5', 
         width: '100%',
         closeOnSelect: false,
-        placeholder: function() {
-            return $(this).data('placeholder');
-        }
+        placeholder: 'Select options'
     });
     
     // Language dropdowns in formsets
@@ -504,7 +112,7 @@ $(document).ready(function() {
     });
 });
 
-// Formset management JavaScript
+// Formset management code
 document.addEventListener('DOMContentLoaded', function() {
     // Language choices for new forms
     const languageChoices = [
@@ -523,43 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         addFormsetForm('definitions', 'definition-formset', languageChoices, 'definition');
     });
     
-    // Handle delete checkboxes for existing forms
-    document.addEventListener('change', function(e) {
-        if (e.target.type === 'checkbox' && e.target.name.includes('DELETE')) {
-            const row = e.target.closest('.formset-row');
-            if (e.target.checked) {
-                row.classList.add('marked-for-deletion');
-                const inputs = row.querySelectorAll('input[type="text"], textarea, select');
-                inputs.forEach(input => {
-                    input.disabled = true;
-                });
-            } else {
-                row.classList.remove('marked-for-deletion');
-                const inputs = row.querySelectorAll('input[type="text"], textarea, select');
-                inputs.forEach(input => {
-                    input.disabled = false;
-                });
-            }
-        }
-    });
-    
-    // Handle remove buttons for dynamically added forms
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.remove-form-btn')) {
-            e.preventDefault();
-            const button = e.target.closest('.remove-form-btn');
-            const row = button.closest('.formset-row');
-            const formsetContainer = row.parentElement;
-            const prefix = formsetContainer.id.includes('name') ? 'names' : 'definitions';
-            
-            row.remove();
-            updateFormsetIndices(formsetContainer, prefix);
-            
-            const totalFormsField = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
-            totalFormsField.value = parseInt(totalFormsField.value) - 1;
-        }
-    });
-    
+    // Implement formset functions
     function addFormsetForm(prefix, containerId, langChoices, fieldType) {
         const container = document.getElementById(containerId);
         const totalForms = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
@@ -584,21 +156,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateFormsetIndices(container, prefix) {
         const rows = container.querySelectorAll('.formset-row');
         rows.forEach((row, index) => {
-            row.setAttribute('data-form-idx', index);
-            
-            const inputs = row.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                if (input.name) {
-                    input.name = input.name.replace(/\d+/, index);
-                    input.id = input.id.replace(/\d+/, index);
-                }
+            row.dataset.formIdx = index;
+            row.querySelectorAll('[name]').forEach(el => {
+                // Replace the -<oldindex>- segment only
+                el.name = el.name.replace(new RegExp(`${prefix}-(\\d+)-`), `${prefix}-${index}-`);
+                el.id = el.id.replace(new RegExp(`${prefix}-(\\d+)-`), `${prefix}-${index}-`);
             });
-            
-            const labels = row.querySelectorAll('label');
-            labels.forEach(label => {
-                if (label.getAttribute('for')) {
-                    label.setAttribute('for', label.getAttribute('for').replace(/\d+/, index));
-                }
+            row.querySelectorAll('label[for]').forEach(lab => {
+                lab.htmlFor = lab.htmlFor.replace(new RegExp(`${prefix}-(\\d+)-`), `${prefix}-${index}-`);
             });
         });
     }

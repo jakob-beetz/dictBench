@@ -14,6 +14,14 @@ window.PropertyGrid = window.PropertyGrid || {
     bulkSelectedRows: []
 };
 
+// Ensure updateLastModified exists to avoid "updateLastModified is not defined" errors
+if (typeof window.updateLastModified === 'undefined') {
+    window.updateLastModified = function() {
+        // no-op fallback for grids that expect this function
+        return;
+    };
+}
+
 // Helper functions
 function getCsrfToken() {
     if (cfg.CSRF_TOKEN) return cfg.CSRF_TOKEN;
@@ -63,7 +71,7 @@ function populateDictionaryDropdowns(dictionaries) {
     // update tabulator header filter params if table column exists
     try{
         const col = window.PropertyGrid.table.getColumn('dictionary_guid');
-        if (col) col.updateDefinition({ headerFilterParams: headerParams });
+        if (col) col.updateDefinition({ headerFilterParams: { values: headerParams } });
     } catch(e) { console.warn('update header params failed', e); }
 }
 
@@ -102,10 +110,11 @@ async function initializePropertyGrid() {
         ajaxResponse: function(url, params, response){ if (!response) return []; if (Array.isArray(response)) return response; if (response.properties && Array.isArray(response.properties)) return response.properties; if (response.data && Array.isArray(response.data)) return response.data; return []; },
         columns: [
             { title: 'Property Name', field: 'names', headerFilter:'input', headerFilterPlaceholder:'Search name...', headerFilterFunc: function(hv,rv,rd,fp){ if(!hv) return true; const names = rv||[]; const combined = names.map(n=>n.name).join(' '); return fuzzyFilter(hv,combined,rd,fp); }, formatter:function(cell){ const names = cell.getValue()||[]; if (names.length===0) return '<em class="text-muted">No name</em>'; const primary = names.find(n=>n.language==='en')||names[0]; return `<strong>${escapeHtml(primary.name)}</strong>`; }, width:250 },
-            { title:'Data Type', field:'data_type', headerFilter:'select', headerFilterParams:{'':'All','string':'String','real':'Real','integer':'Integer','boolean':'Boolean'}, formatter:function(cell){ const type = cell.getValue(); return type? type.charAt(0).toUpperCase()+type.slice(1):''; }, width:120 },
+            { title:'Data Type', field:'data_type', headerFilter:'list', headerFilterParams:{ values: {'':'All','string':'String','real':'Real','integer':'Integer','boolean':'Boolean'} }, formatter:function(cell){ const type = cell.getValue(); return type? type.charAt(0).toUpperCase()+type.slice(1):''; }, width:120 },
             { title:'Unit', field:'unit_of_measurement', headerFilter:'input', headerFilterPlaceholder:'Filter unit...', formatter:function(cell){ const unit = cell.getValue(); return unit? `<code>${escapeHtml(unit)}</code>`:'<em class="text-muted">No unit</em>'; }, width:100 },
-            { title:'Status', field:'status', headerFilter:'select', headerFilterParams:{'':'All','active':'Active','draft':'Draft','deprecated':'Deprecated','withdrawn':'Withdrawn'}, formatter:function(cell){ const status = cell.getValue(); return status? status.charAt(0).toUpperCase()+status.slice(1):''; }, width:100 },
-            { title:'Dictionary', field:'dictionary_guid', headerFilter:'select', headerFilterParams:{}, formatter:function(cell){ const guidOrName = cell.getValue(); const nameFallback = cell.getRow().getData().dictionary_name; return guidOrName? escapeHtml(nameFallback||guidOrName) : (nameFallback? escapeHtml(nameFallback) : '<em class="text-muted">None</em>'); }, width:150 }
+            { title:'Status', field:'status', headerFilter:'list', headerFilterParams:{ values: {'':'All','active':'Active','draft':'Draft','deprecated':'Deprecated','withdrawn':'Withdrawn'} }, formatter:function(cell){ const status = cell.getValue(); return status? status.charAt(0).toUpperCase()+status.slice(1):''; }, width:100 },
+            // Start with a simple input filter for Dictionary and upgrade to list once values are available
+            { title:'Dictionary', field:'dictionary_guid', headerFilter:'input', headerFilterPlaceholder:'Filter dictionary...', formatter:function(cell){ const guidOrName = cell.getValue(); const nameFallback = cell.getRow().getData().dictionary_name; return guidOrName? escapeHtml(nameFallback||guidOrName) : (nameFallback? escapeHtml(nameFallback) : '<em class="text-muted">None</em>'); }, width:150 }
         ],
         dataLoaded:function(data){ const totalElement = document.getElementById('total-properties'); const filteredElement = document.getElementById('filtered-properties'); if (totalElement) totalElement.textContent = `Total: ${data.length}`; if (filteredElement) filteredElement.textContent = `Filtered: ${data.length}`; }
     });

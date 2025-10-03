@@ -6,11 +6,12 @@ class JSONEditorWidget(Textarea):
     class Media:
         css = {
             'all': (
-                'admin/vendor/jsoneditor/jsoneditor.min.css',
+                'https://cdn.jsdelivr.net/npm/jsoneditor@9.10.0/dist/jsoneditor.min.css',
+                'css/jsoneditor.css',  # Our custom JSONEditor styles
             )
         }
         js = (
-            'admin/vendor/jsoneditor/jsoneditor.min.js',
+            'https://cdn.jsdelivr.net/npm/jsoneditor@9.10.0/dist/jsoneditor.min.js',
         )
 
     def __init__(self, schema=None, mode='text', attrs=None):
@@ -46,7 +47,7 @@ class JSONEditorWidget(Textarea):
         schema_js = json.dumps(self.schema) if self.schema else 'null'
 
         js = f"""
-<div id="{container_id}" style="min-height:200px;border:1px solid #ddd;background:white;"></div>
+<div id="{container_id}" class="json-editor-wrapper"></div>
 <script>
 (function(){{
     function tryParse(v){{

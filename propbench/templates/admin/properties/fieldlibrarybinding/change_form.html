@@ -1,0 +1,8 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {# optional JS to enable drag-drop ordering for inline entries (create static file if not present) #}
+  <script src="{% static 'properties/js/binding_order.js' %}"></script>
+{% endblock %}

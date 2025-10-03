@@ -1,6 +1,7 @@
 .form-grid { display: grid; gap: .6rem; align-items: start; }
 .form-grid-item { min-width: 0; }
 .field-wrap > .form-control, .field-wrap > .form-select { width: 100%; }
+.form-label.small { display: block; margin-bottom: .25rem; font-weight: 600; }
 /* Force grid layout for group columns and prevent upstream overrides */
 .group-columns {
   display: grid !important;

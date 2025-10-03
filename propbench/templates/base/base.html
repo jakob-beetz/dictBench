@@ -2,289 +2,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PropBench - ISO 23386 Property Management{% endblock %}</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/flatly/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
-    
-    <!-- Custom CSS -->
-    <style>
-        :root {
-            --primary-color: #3f51b5;
-            --secondary-color: #f50057;
-            --light-bg: #f5f5f5;
-            --header-height: 60px;
-        }
-        
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding-top: var(--header-height);
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary-color) !important;
-        }
-        
-        .main-content {
-            flex: 1;
-            padding: 20px 0;
-            background-color: var(--light-bg);
-        }
-        
-        .card {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .language-badge  {
-            font-size: 0.75rem;
-            padding: 0.25em 0.4em;
-            border-radius: 0.25rem;
-            background-color: #6c757d;
-            color: white;
-            vertical-align: middle;
-        }
-              
 
-        .card-header {
-            background-color: rgba(183, 183, 183, 0.98);
-            font-weight: 500;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .btn-primary:hover {
-            background-color: #303f9f;
-            border-color: #303f9f;
-        }
-        
-        .btn-danger {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-        
-        .btn-danger:hover {
-            background-color: #c51162;
-            border-color: #c51162;
-        }
-        
-        .htmx-indicator {
-            opacity: 0;
-            transition: opacity 500ms ease-in;
-        }
-        
-        .htmx-request .htmx-indicator {
-            opacity: 1;
-        }
-        
-        .htmx-request.htmx-indicator {
-            opacity: 1;
-        }
-        
-        .json-editor {
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-        
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px 0;
-            font-size: 0.9rem;
-        }
-        
-        .bg-draft {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        
-        .bg-active {
-            background-color: #28a745;
-            color: white;
-        }
-        
-        .bg-deprecated {
-            background-color: #6c757d;
-            color: white;
-        }
-        
-        .bg-inactive {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        /* Select2 compact styling */
-        .select2-container--default .select2-selection--single {
-            height: 38px;
-            border: 1px solid #ced4da;
-        }
-        
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            padding-left: 8px;
-            padding-right: 20px;
-            line-height: 36px;
-        }
-        
-        .select2-container--default .select2-selection--multiple {
-            min-height: 38px;
-            border: 1px solid #ced4da;
-        }
-        
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: var(--primary-color);
-            border: none;
-            color: white;
-            padding: 0 8px;
-            margin-top: 4px;
-        }
-        
-        .select2-dropdown {
-            border: 1px solid #ced4da;
-        }
-        
-        .field-label {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-        
-        .field-code {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.8rem;
-            color: #6c757d;
-            background: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 3px;
-            margin-left: 8px;
-        }
-        
-        .required-field::after {
-            content: " *";
-            color: #dc3545;
-        }
-    </style>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Select2 - UNCOMMENT THESE LINES -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap5.min.css" rel="stylesheet" />
     
-    <!-- HTMX -->
+    <!-- Tom Select CSS - ADDED -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
+    <!-- App CSS -->
+    <link href="{% static 'css/propbench-base.css' %}" rel="stylesheet">
+    <link href="{% static 'css/components.css' %}" rel="stylesheet">
+    <link href="{% static 'css/jsoneditor.css' %}" rel="stylesheet">
+
     <script src="https://unpkg.com/htmx.org@1.8.5"></script>
-    
+
+    {% block extrahead %}
+        <!-- Remove the duplicate Select2 theme link here -->
+    {% endblock %}
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="/">PropBench</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dictionaries:dictionary_list' %}">Dictionaries</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'properties:property_list' %}">Properties</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'groups:group_list' %}">Groups</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Management
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'requests:change_request_list' %}">Change Requests</a></li>
-                            <li><a class="dropdown-item" href="{% url 'requests:change_request_list' %}">Change Requests</a></li>
-                            <li><a class="dropdown-item" href="{% url 'audit:audit_list' %}">Audit History</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/admin/">Admin</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                
-                <div class="d-flex">
-                    {% if user.is_authenticated %}
-                        <span class="navbar-text me-3">
-                            Hello, {{ user.username }}
-                        </span>
-                        <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">Logout</a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm">Login</a>
-                    {% endif %}
-                </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="/">PropBench</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="{% url 'dictionaries:dictionary_list' %}">Dictionaries</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'properties:property_list' %}">Properties</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'groups:group_list' %}">Groups</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Management
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'requests:change_request_list' %}">Change Requests</a></li>
+                        <li><a class="dropdown-item" href="{% url 'audit:audit_list' %}">Audit History</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/admin/">Admin</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="d-flex">
+                {% if user.is_authenticated %}
+                    <span class="navbar-text me-3">Hello, {{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm">Login</a>
+                {% endif %}
             </div>
         </div>
-    </nav>
-    
-    <!-- Main Content -->
-    <div class="main-content">
-        {% if messages %}
-            <div class="container mb-4">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        
-        {% block content %}{% endblock %}
     </div>
-    
-    <!-- Footer -->
-    <footer class="footer border-top">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="mb-0">PropBench - ISO 23386 Compliant Property Management System</p>
+</nav>
+
+<div class="main-content">
+    {% if messages %}
+        <div class="container mb-4" id="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="mb-0">&copy; {% now "Y" %} PropBench. All rights reserved.</p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
-    </footer>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- jQuery (required for Select2) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
-    <!-- JSON Editor logic -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Format JSON in textareas with the json-editor class
-            document.querySelectorAll('.json-editor').forEach(function(element) {
-                if (element.value) {
-                    try {
-                        const json = JSON.parse(element.value);
-                        element.value = JSON.stringify(json, null, 2);
-                    } catch (e) {
-                        // If not valid JSON, leave as is
-                    }
-                }
-            });
-        });
-    </script>
-    
-    {% block extra_js %}{% endblock %}
+    {% endif %}
+    {% block content %}{% endblock %}
+</div>
+
+<footer class="footer border-top">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6"><p class="mb-0">PropBench - ISO 23386 Compliant Property Management System</p></div>
+            <div class="col-md-6 text-md-end"><p class="mb-0">&copy; {% now "Y" %} PropBench. All rights reserved.</p></div>
+        </div>
+    </div>
+</footer>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

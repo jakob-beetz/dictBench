@@ -1,5 +1,6 @@
 from django.urls import path, include
 from django.urls import path
+from django.shortcuts import render
 from . import grid_views, views
 from .views import PropertyCreateView, LoadReplacedPropertiesView, LoadParameterPropertiesView, PropertyCompactDetailView
 app_name = 'properties'
@@ -14,6 +15,7 @@ urlpatterns = [
     path('properties/<uuid:pk>/', views.property_detail, name='property_detail'),
     path('properties/<uuid:pk>/edit/', views.property_edit, name='property_edit'),
     path('properties/<uuid:pk>/delete/', views.property_delete, name='property_delete'),
+    path('properties/<uuid:pk>/edit2/', views.property_edit2, name='property_edit2'),
     
     
     #new crispy forms
@@ -41,4 +43,11 @@ urlpatterns = [
     path('import/iso16757/', views.iso16757_import_view, name='iso16757_import'),
     
     path('<uuid:pk>/compact/', PropertyCompactDetailView.as_view(), name='property_compact_detail'),
+    
+    # API routes for library
+    path('api/library/upload/', views.upload_library, name='library_upload_api'),
+    path('api/library/items/', views.library_items_autocomplete, name='library_items_autocomplete'),
+    path('api/library/items/options/', views.library_items_options, name='library_items_options'),
+    path('libraries/upload/', views.upload_library_view, name='library_upload'),
+    path('libraries/upload/success/', lambda r: render(r, 'properties/library_upload_success.html'), name='library_upload_success'),
 ]

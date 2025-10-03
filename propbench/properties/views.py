@@ -1,21 +1,27 @@
 from collections import defaultdict
 import math
-from django.shortcuts import render, get_object_or_404, redirect
+import csv, io, json, uuid
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, TemplateView, DetailView
-from django.db import transaction
-from django.db.models import OuterRef, Subquery, CharField, Q
+from django.utils.text import slugify
+from django.http import JsonResponse, HttpResponseBadRequest
 from dictionaries.models import PropertyDictionary
-from .models import Property, PropertyName
+from .models import Property, PropertyName, ExternalLibrary, LibraryItem, LibraryImport
 from .forms import PropertyForm, PropertyFormCrisp, PropertyNameFormSet, PropertyDefinitionFormSet, LANGUAGE_CHOICES
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.http import require_POST, require_GET
+
+from django.db import transaction
+from django.contrib import messages
+from django.db.models import OuterRef, Subquery, CharField, Q
+from django.views.generic import CreateView, TemplateView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .iso16757_import import parse_and_import
 from reversion.models import Revision, Version
+from django.template.loader import render_to_string
 
 def import_iso16757_view(request):
     """
@@ -160,49 +166,55 @@ def property_detail(request, pk):
     return render(request, 'properties/property_detail.html', {'property': prop, 'form': form})
 
 @login_required
-def property_create(request):
-    """Create a new property."""
+def property_create(request, dictionary_slug=None):
+    """Create a new property with dictionary context if provided."""
+    dictionary = None
+    if dictionary_slug:
+        dictionary = get_object_or_404(PropertyDictionary, slug=dictionary_slug)
+    
     if request.method == 'POST':
-        form = PropertyForm(request.POST, user=request.user)
+        form = PropertyForm(request.POST, user=request.user, request=request, library_slug=dictionary_slug)
         name_formset = PropertyNameFormSet(request.POST, prefix='names')
         definition_formset = PropertyDefinitionFormSet(request.POST, prefix='definitions')
         
         if form.is_valid() and name_formset.is_valid() and definition_formset.is_valid():
-            property_instance = form.save(commit=False)
+            # Save logic
+            property = form.save(commit=False)
+            property.created_by = request.user
+            property.save()
             
-            # Ensure user fields are set
-            property_instance.created_by = request.user
-            property_instance.updated_by = request.user
-            property_instance.save()
-            
-            # Save formsets
-            name_formset.instance = property_instance
-            name_formset.save()
-            
-            definition_formset.instance = property_instance
-            definition_formset.save()
-            
-            # Save many-to-many relationships
-            form.save_m2m()
-            
-            messages.success(request, 'Property created successfully!')
-            return redirect('properties:property_detail', pk=property_instance.pk)
+            # Process name formset
+            for name_form in name_formset:
+                if name_form.cleaned_data and not name_form.cleaned_data.get('DELETE', False):
+                    name = name_form.save(commit=False)
+                    name.property = property
+                    name.save()
+                    
+            # Process definition formset
+            for def_form in definition_formset:
+                if def_form.cleaned_data and not def_form.cleaned_data.get('DELETE', False):
+                    definition = def_form.save(commit=False)
+                    definition.property = property
+                    definition.save()
+                    
+            messages.success(request, "Property created successfully!")
+            return redirect('property_detail', pk=property.pk)
     else:
-        form = PropertyForm(user=request.user)
+        initial = {}
+        if dictionary:
+            initial['dictionary'] = dictionary
+            
+        form = PropertyForm(user=request.user, request=request, initial=initial, library_slug=dictionary_slug)
         name_formset = PropertyNameFormSet(prefix='names')
         definition_formset = PropertyDefinitionFormSet(prefix='definitions')
     
-    context = {
+    return render(request, 'properties/property_form.html', {
         'form': form,
         'name_formset': name_formset,
         'definition_formset': definition_formset,
-        'is_new': True,
         'language_choices': LANGUAGE_CHOICES,
-    }
-    return render(request, 'properties/property_form.html', context)
-
-
-
+        'is_new': True
+    })
 
 @login_required
 def property_edit(request, pk):
@@ -221,9 +233,19 @@ def property_edit(request, pk):
             print('DEBUG: failed to print request.POST')
 
         form = PropertyForm(request.POST, instance=prop, user=request.user)
-        name_formset = PropertyNameFormSet(request.POST, instance=prop)
-        definition_formset = PropertyDefinitionFormSet(request.POST, instance=prop)
+        name_formset = PropertyNameFormSet(request.POST, prefix='names', instance=prop)
+        definition_formset = PropertyDefinitionFormSet(request.POST, prefix='definitions', instance=prop)
         
+        # Debug the formsets
+        print(f"Names formset is bound: {name_formset.is_bound}")
+        print(f"Names TOTAL_FORMS: {request.POST.get('names-TOTAL_FORMS')}")
+        print(f"Names is valid: {name_formset.is_valid()}")
+        if not name_formset.is_valid():
+            print(f"Names errors: {name_formset.errors}")
+            print(f"Names non-form errors: {name_formset.non_form_errors()}")
+            
+        # Continue with your existing view logic...
+
         # After forms are created, print their validation errors if any
         try:
             print('DEBUG: form.is_valid ->', getattr(form, 'is_valid', lambda: '<no form>')())
@@ -253,53 +275,17 @@ def property_edit(request, pk):
 
         if form.is_valid() and name_formset.is_valid() and definition_formset.is_valid():
             with transaction.atomic():
-                # Save form but delay committing so we can ensure JSON fields are Python objects
                 property_instance = form.save(commit=False)
-
-                # list of model JSON fields that use the JSONEditor/CrispyJSONField
-                json_fields = [
-                    "countries_of_use", "subdivisions_of_use", "permissible_units",
-                    "value_domain", "external_identifiers", "dimension",
-                    "defining_names", "defining_values", "tolerance",
-                    "digital_format", "boundary_values", "property_media",
-                    "extended_attributes", "metadata",
-                ]
-
-                for fname in json_fields:
-                    if fname not in form.cleaned_data:
-                        continue
-                    val = form.cleaned_data.get(fname)
-                    # If widget returned a JSON string, parse it to Python objects
-                    if isinstance(val, str):
-                        v = val.strip()
-                        if v == "" or v.lower() == "null":
-                            parsed = None
-                        else:
-                            try:
-                                parsed = json.loads(v)
-                            except Exception:
-                                # fallback: keep raw string (avoid crash) or set None
-                                parsed = None
-                        setattr(property_instance, fname, parsed)
-                    else:
-                        # already a Python object (e.g. widget/set by form), assign directly
-                        setattr(property_instance, fname, val)
-
-                # ensure updater is recorded
+                # Removed manual json_fields parsing (default form handles JSONField)
                 property_instance.updated_by = request.user
                 property_instance.save()
-
-                # save m2m & formsets after instance exists
                 form.save_m2m()
                 name_formset.instance = property_instance
                 name_formset.save()
                 definition_formset.instance = property_instance
                 definition_formset.save()
-                
-                # Get primary name for success message
                 primary_name = property_instance.names.first()
                 name_display = primary_name.name if primary_name else "Property"
-                
                 messages.success(request, f'Property "{name_display}" updated successfully')
                 return redirect('properties:property_detail', pk=property_instance.guid)
     else:
@@ -314,6 +300,25 @@ def property_edit(request, pk):
         'language_choices': LANGUAGE_CHOICES,
         'property': prop, 
         'is_new': False
+    })
+
+@login_required
+def property_edit2(request, pk):
+    """Minimal property edit view using crispy forms with Select2."""
+    prop = get_object_or_404(Property, pk=pk)
+    
+    if request.method == 'POST':
+        form = PropertyForm(request.POST, instance=prop, user=request.user)
+        if form.is_valid():
+            property = form.save()
+            messages.success(request, f"Property updated successfully!")
+            return redirect('property_detail', pk=property.pk)
+    else:
+        form = PropertyForm(instance=prop, user=request.user)
+    
+    return render(request, 'properties/property_edit2.html', {
+        'form': form,
+        'property': prop,
     })
 
 @login_required
@@ -502,17 +507,17 @@ class PropertyCompactDetailView(LoginRequiredMixin, DetailView):
         for fld in form.fields.values():
             fld.disabled = True
             cls = fld.widget.attrs.get("class", "")
-            fld.widget.attrs["class"] = (cls + " form-control form-control-sm").strip()
+            fld.widget.attrs["class"] = (cls + " form-control form-control").strip()
             if hasattr(fld.widget, "attrs"):
                 if fld.widget.__class__.__name__.lower().find("select") != -1:
-                    fld.widget.attrs["class"] = (fld.widget.attrs.get("class", "") + " form-select form-select-sm").strip()
+                    fld.widget.attrs["class"] = (fld.widget.attrs.get("class", "") + " form-select form-select").strip()
 
         # ensure helper is not trying to render a form tag and labels are shown
         if hasattr(form, "helper"):
             form.helper.form_tag = False
             form.helper.form_class = "row g-2"
             form.helper.label_class = "form-label small"
-            form.helper.field_class = "form-control form-control-sm"
+            form.helper.field_class = "form-control form-control"
             form.helper.form_show_labels = True     # <-- ensure labels are enabled
 
         # --- multilingual names mapping ---
@@ -537,3 +542,147 @@ class PropertyCompactDetailView(LoginRequiredMixin, DetailView):
         ctx["form"] = form
         ctx["groups"] = groups
         return ctx
+
+@login_required
+@require_POST
+def upload_library(request):
+    """
+    POST multipart:
+      - file: CSV or JSON
+      - slug, name (optional), scope (global|dictionary|user), dictionary_id (optional)
+    """
+    f = request.FILES.get('file')
+    if not f:
+        return HttpResponseBadRequest("file required")
+
+    slug = request.POST.get('slug') or None
+    name = request.POST.get('name') or (slug or f.name)
+    scope = request.POST.get('scope', ExternalLibrary.SCOPE_GLOBAL)
+    dictionary_id = request.POST.get('dictionary_id')
+    library = None
+    # create or update library by slug if provided
+    if slug:
+        library, _ = ExternalLibrary.objects.get_or_create(slug=slug, defaults={
+            'name': name, 'scope': scope, 'owner': request.user if scope==ExternalLibrary.SCOPE_USER else None
+        })
+    # record import
+    raw = f.read()
+    li = LibraryImport.objects.create(library=library, uploaded_by=request.user, filename=f.name, raw=raw, content_type=f.content_type or '')
+    # parse file
+    text = raw.decode('utf-8-sig') if isinstance(raw, (bytes,bytearray)) else str(raw)
+    try:
+        if f.name.lower().endswith('.json') or (text.strip().startswith('{') or text.strip().startswith('[')):
+            payload = json.loads(text)
+            # expected structure: { "slug":..., "name":..., "items":[{code,label,description,data,active,order}] }
+            lib_slug = payload.get('slug') or slug or f.name
+            library, _ = ExternalLibrary.objects.update_or_create(slug=lib_slug, defaults={
+                'name': payload.get('name', name),
+                'description': payload.get('description',''),
+                'scope': payload.get('scope', scope),
+                'metadata': payload.get('metadata',{})
+            })
+            items = payload.get('items', [])
+            for it in items:
+                LibraryItem.objects.update_or_create(library=library, code=it.get('code'), defaults={
+                    'label': it.get('label', it.get('code')),
+                    'description': it.get('description',''),
+                    'data': it.get('data', {}),
+                    'active': it.get('active', True),
+                    'order': it.get('order', 0),
+                })
+        else:
+            # assume CSV; columns: code,label,description,data_json,active,order
+            reader = csv.DictReader(io.StringIO(text))
+            lib_slug = slug or f.name.rsplit('.',1)[0]
+            library, _ = ExternalLibrary.objects.update_or_create(slug=lib_slug, defaults={'name': name, 'scope': scope})
+            for row in reader:
+                data = {}
+                if row.get('data_json'):
+                    try:
+                        data = json.loads(row.get('data_json'))
+                    except Exception:
+                        data = {}
+                LibraryItem.objects.update_or_create(library=library, code=row.get('code') or row.get('Code') or row.get('Code'.lower()), defaults={
+                    'label': row.get('label') or row.get('Name') or row.get('Label') or row.get('code'),
+                    'description': row.get('description',''),
+                    'data': data,
+                    'active': (row.get('active','true').lower() in ('1','true','yes')),
+                    'order': int(row.get('order') or 0),
+                })
+    except Exception as e:
+        return HttpResponseBadRequest(str(e))
+
+    return JsonResponse({'status':'ok','library': library.slug})
+
+
+def library_items_autocomplete(request):
+    """JSON endpoint: ?q=&libraries=slug1,slug2&mode=union|priority&page=&per_page="""
+    q = request.GET.get('q', '').strip()
+    libs = request.GET.get('libraries', '')
+    mode = request.GET.get('mode', 'union')
+    per_page = int(request.GET.get('per_page', 25))
+    page = int(request.GET.get('page', 1))
+
+    qs = LibraryItem.objects.filter(active=True)
+    if libs:
+        slugs = [s for s in libs.split(',') if s]
+        qs = qs.filter(library__slug__in=slugs)
+    if q:
+        qs = qs.filter(Q(label__icontains=q) | Q(code__icontains=q))
+
+    if mode == 'priority' and libs:
+        # Walk libraries in order and collect unique codes
+        results = []
+        seen = set()
+        for slug in slugs:
+            lib_qs = LibraryItem.objects.filter(library__slug=slug, active=True)
+            if q:
+                lib_qs = lib_qs.filter(Q(label__icontains=q) | Q(code__icontains=q))
+            for it in lib_qs.order_by('order','label')[:per_page]:
+                if it.code in seen:
+                    continue
+                seen.add(it.code)
+                results.append({'id': str(it.guid), 'text': f"{it.label} ({it.code})", 'code': it.code, 'library': it.library.slug})
+                if len(results) >= 200:
+                    break
+        return JsonResponse({'results': results})
+
+    paginator = Paginator(qs.order_by('library__name','order','label'), per_page)
+    try:
+        p = paginator.page(page)
+    except Exception:
+        p = paginator.page(1)
+
+    results = [{'id': str(i.guid), 'text': f"{i.label} ({i.code})", 'code': i.code, 'library': i.library.slug} for i in p.object_list]
+    return JsonResponse({'results': results, 'count': paginator.count, 'page': page, 'pages': paginator.num_pages})
+
+
+def library_items_options(request):
+    """Return HTML <option> elements for HTMX widgets."""
+    lib = request.GET.get('library')
+    q = request.GET.get('q', '')
+    qs = LibraryItem.objects.filter(active=True)
+    if lib:
+        qs = qs.filter(library__slug=lib)
+    if q:
+        qs = qs.filter(Q(label__icontains=q) | Q(code__icontains=q))
+    items = qs.order_by('order','label')[:200]
+    html = render_to_string('properties/_library_options.html', {'items': items})
+    return HttpResponse(html, content_type='text/html')
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from dictionaries.models import PropertyDictionary
+
+@login_required
+def upload_library_view(request):
+    """
+    GET: render the user upload form.
+    POST: delegate to the existing upload_library() API handler.
+    """
+    if request.method == "POST":
+        return upload_library(request)  # assumes upload_library(request) exists and returns an HttpResponse/JsonResponse
+
+    dictionaries = PropertyDictionary.objects.all().order_by("name")
+    return render(request, "properties/upload_library.html", {"dictionaries": dictionaries})

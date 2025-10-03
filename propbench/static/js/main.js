@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Pretty-print hidden/json-editor textareas (moved from base.html)
+    document.querySelectorAll('.json-editor').forEach(function(el) {
+        if (el.value) {
+            try { el.value = JSON.stringify(JSON.parse(el.value), null, 2); } catch(e){}
+        }
+    });
+
     // Handle confirmation dialogs for dangerous actions
     document.body.addEventListener('htmx:confirm', function(evt) {
         // We can customize the confirmation dialog here

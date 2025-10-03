@@ -6,8 +6,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from django.views.generic import RedirectView
-from django.conf import settings
-from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     
@@ -21,9 +19,9 @@ urlpatterns = [
     # HTMX interface
     path('dictionaries/', include('dictionaries.htmx_urls', namespace='dictionaries')),
     
-    # Basic views with proper namespacing
-    path('properties/', include('properties.urls', namespace='properties')),
-    path('properties/', include('properties.urls')),
+    # Properties app (included once). The app's own urls currently include the 'properties/'
+    # segments, so include at the root to avoid doubling the prefix.
+    path('', include('properties.urls', namespace='properties')),
     path('groups/', include('groups.urls', namespace='groups')),
     path('requests/', include('requests.urls', namespace='requests')),
     path('audit/', include('audit.urls', namespace='audit')),

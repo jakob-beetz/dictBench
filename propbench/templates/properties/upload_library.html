@@ -1,0 +1,51 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Upload Library{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Upload Library</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>
+      <label>File (CSV or JSON)</label><br>
+      <input type="file" name="file" accept=".csv,.json" required>
+    </div>
+
+    <div>
+      <label>Slug (optional)</label><br>
+      <input type="text" name="slug" placeholder="my-library-slug">
+    </div>
+
+    <div>
+      <label>Name (optional)</label><br>
+      <input type="text" name="name" placeholder="My Library">
+    </div>
+
+    <div>
+      <label>Scope</label><br>
+      <select name="scope">
+        <option value="global">Global</option>
+        <option value="dictionary">Dictionary</option>
+        <option value="user">User</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Attach to dictionary (only used if scope=dictionary)</label><br>
+      <select name="dictionary_id">
+        <option value="">(none)</option>
+        {% for d in dictionaries %}
+          <option value="{{ d.pk }}">{{ d.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div style="margin-top:1rem;">
+      <button type="submit" class="btn btn-primary">Upload</button>
+      <a href="{% url 'properties:property_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 import uuid
+from properties.models import ExternalLibrary
 
 
 class PropertyDictionary(models.Model):
@@ -37,6 +38,10 @@ class PropertyDictionary(models.Model):
     date_of_activation = models.DateTimeField(blank=True, null=True)
     date_of_deprecation = models.DateTimeField(blank=True, null=True)
     date_of_deactivation = models.DateTimeField(blank=True, null=True)
+    
+    # New field for default external library
+    default_library = models.ForeignKey('properties.ExternalLibrary', null=True, blank=True, on_delete=models.SET_NULL,
+                                        help_text="Default lookup library for this dictionary")
     
     class Meta:
         verbose_name = "Property Dictionary"

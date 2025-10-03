@@ -1,0 +1,105 @@
+{% extends 'base/base.html' %}
+{% load static crispy_forms_tags %}
+
+{% block title %}Edit {{ property.pa_code|default:"Property" }} (Minimal) - PropBench{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Edit Property (Minimal View)</h2>
+        <a href="{% url 'properties:property_detail' property.guid %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Details
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% crispy form %}
+                
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- We're already loading this in base.html, but include it here for completeness -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<style>
+textinput.form-control-sm{
+    margin-bottom: 0.0rem !important; /* mb-4 = 1.5rem */
+    margin-top: 0.0rem !important; /* mb-4 = 1.5rem */
+}
+.form-label{
+    margin-top: 1.5rem !important; /* mb-4 = 1.5rem */
+}
+/* Custom styles for Tom Select */
+.ts-control {
+    padding: 0.375rem 0.75rem;
+    height: calc(1.5em + 0.75rem + 2px);
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.ts-dropdown {
+    z-index: 9999;
+}
+
+.ts-dropdown .active {
+    background-color: #2C3E50;
+    color: #fff;
+}
+
+.ts-dropdown .option:hover {
+    background-color: #5c7080;
+    color: #fff;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Tom Select on standard select fields
+    // These previously used the select2 class
+    document.querySelectorAll('select.select2').forEach(function(el) {
+        new TomSelect(el, {
+            plugins: ['clear_button'],
+            allowEmptyOption: true,
+            create: false,
+            maxItems: 1
+        });
+    });
+    
+    // Initialize Tom Select on multi-select fields
+    // These previously used the select2-multiple class
+    document.querySelectorAll('select.select2-multiple').forEach(function(el) {
+        new TomSelect(el, {
+            plugins: ['remove_button', 'clear_button'],
+            allowEmptyOption: true,
+            create: false,
+            maxItems: null
+        });
+    });
+    
+    // Handle any standard selects that don't have explicit classes
+    document.querySelectorAll('select:not(.select2):not(.select2-multiple)').forEach(function(el) {
+        // Skip any that already have Tom Select initialized
+        if (!el.tomselect) {
+            new TomSelect(el, {
+                plugins: ['clear_button'],
+                allowEmptyOption: true,
+                create: false
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
