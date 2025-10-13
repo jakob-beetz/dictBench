@@ -111,14 +111,14 @@ class PropertyForm(forms.ModelForm):
         self.library_slug = kwargs.pop('library_slug', None)
         super().__init__(*args, **kwargs)
 
-        # Apply Select2 classes to appropriate fields
+        # Apply Tom Select classes to appropriate fields
         select2_fields = ['dictionary', 'status', 'data_type', 'creators_language',
                           'physical_quantity', 'countries_of_use', 'country_of_origin']
         
         for field_name in select2_fields:
             if field_name in self.fields:
                 self.fields[field_name].widget.attrs.update({
-                    'class': 'select2 form-control'
+                    'class': 'tomselect-field form-control form-control-sm'
                 })
                 
         # Multi-select fields
@@ -126,7 +126,7 @@ class PropertyForm(forms.ModelForm):
         for field_name in multi_select_fields:
             if field_name in self.fields:
                 self.fields[field_name].widget.attrs.update({
-                    'class': 'select2-multiple form-control'
+                    'class': 'tomselect-multiple form-control form-control-sm'
                 })
 
         # Configure crispy form layout
@@ -135,7 +135,7 @@ class PropertyForm(forms.ModelForm):
         self.helper.form_tag = True
         self.helper.form_class = "row g-2 align-items-start"
         self.helper.label_class = "form-label small"
-        self.helper.field_class = "form-control"
+        self.helper.field_class = "form-control form-control-sm"
         
         # Define the layout with all fields
         self.helper.layout = Layout(
@@ -165,7 +165,7 @@ class PropertyForm(forms.ModelForm):
                 Column('countries_of_use', css_class='col-md-6'),
                 Column('country_of_origin', css_class='col-md-6'),
             ),
-            # Submit('save', 'Save', css_class='btn btn-primary mt-3')
+            Submit('save', 'Save', css_class='btn btn-primary mt-3')
         )
     
     class Meta:

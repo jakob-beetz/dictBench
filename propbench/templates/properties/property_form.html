@@ -1,4 +1,5 @@
-{% extends 'base/base.html' %}{% load static crispy_forms_tags crispy_forms_field %}
+{% extends 'base/base.html' %}
+{% load static crispy_forms_tags crispy_forms_field %}
 
 {% block title %}{% if is_new %}Create Property{% else %}Edit {{ property.names.first.name|default:"Property" }}{% endif %} - PropBench{% endblock %}
 
@@ -13,36 +14,31 @@
 
     <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-        {% crispy form %}
 
         <!-- Names formset -->
         <section class="mt-5">
             <h2 class="h5 border-bottom pb-2">Localized Names</h2>
-            <!-- Debug during development - remove style later -->
-            <div style="background:#f8f9fa; padding:10px; margin-bottom:10px; border:1px solid #ddd;">
-                {{ name_formset.management_form }}
-                <!-- Explicit fields as fallback -->
-                <input type="hidden" name="names-TOTAL_FORMS" value="{{ name_formset|length }}" id="id_names-TOTAL_FORMS">
-                <input type="hidden" name="names-INITIAL_FORMS" value="{{ name_formset.initial_forms|length }}" id="id_names-INITIAL_FORMS">
-                <input type="hidden" name="names-MIN_NUM_FORMS" value="0" id="id_names-MIN_NUM_FORMS">
-                <input type="hidden" name="names-MAX_NUM_FORMS" value="1000" id="id_names-MAX_NUM_FORMS">
-            </div>
-            
+            {{ name_formset.management_form }}
             <div id="name-formset" class="formset-collection">
-                {% for form in name_formset %}
-                    <div class="formset-row row g-2 mb-2" data-form-idx="{{ forloop.counter0 }}">
-                        <div class="col-md-3">
-                            {% crispy_field form.language %}
+                <div class="row">  <!-- Wrap the formset in a row -->
+                    {% for form in name_formset %}
+                        <div class="col-md-6">  <!-- Adjust column size as needed -->
+                            <div class="formset-row row " data-form-idx="{{ forloop.counter0 }}">
+                                <div class="row">
+                                    {% crispy_field form.name %} {% crispy_field form.language %} {% if form.instance.pk %}
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
+                                            <i class="fas fa-trash">Delete</i>
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-8">
-                            {% crispy_field form.name %}
-                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                        </div>
-                        <div class="col-md-1">
-                            <!-- Delete button -->
-                        </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
             <button type="button" id="add-name" class="btn btn-sm btn-outline-primary mt-2">Add name</button>
         </section>
@@ -50,188 +46,86 @@
         <!-- Definitions formset -->
         <section class="mt-5">
             <h2 class="h5 border-bottom pb-2">Localized Definitions</h2>
-            <!-- Debug during development - remove style later -->
-            <div style="background:#f8f9fa; padding:10px; margin-bottom:10px; border:1px solid #ddd;">
-                {{ definition_formset.management_form }}
-                <!-- Explicit fields as fallback -->
-                <input type="hidden" name="definitions-TOTAL_FORMS" value="{{ definition_formset|length }}" id="id_definitions-TOTAL_FORMS">
-                <input type="hidden" name="definitions-INITIAL_FORMS" value="{{ definition_formset.initial_forms|length }}" id="id_definitions-INITIAL_FORMS">
-                <input type="hidden" name="definitions-MIN_NUM_FORMS" value="0" id="id_definitions-MIN_NUM_FORMS">
-                <input type="hidden" name="definitions-MAX_NUM_FORMS" value="1000" id="id_definitions-MAX_NUM_FORMS">
-            </div>
-            
+            {{ definition_formset.management_form }}
             <div id="definition-formset" class="formset-collection">
-                {% for form in definition_formset %}
-                    <div class="formset-row row g-2 mb-2" data-form-idx="{{ forloop.counter0 }}">
-                        <div class="col-md-3">
-                            {% crispy_field form.language %}
+                <div class="row">  <!-- Wrap the formset in a row -->
+                    {% for form in definition_formset %}
+                        <div class="col-md-4">  <!-- Adjust column size as needed -->
+                            <div class="formset-row row g-2 mb-2" data-form-idx="{{ forloop.counter0 }}">
+                                <div class="col-md-3">
+                                    {% crispy_field form.language %}
+                                </div>
+                                <div class="col-md-8">
+                                    {% crispy_field form.definition %}
+                                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                                </div>
+                                <div class="col-md-1">
+                                    {% if form.instance.pk %}
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-8">
-                            {% crispy_field form.definition %}
-                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                        </div>
-                        <div class="col-md-1">
-                            <!-- Delete button -->
-                        </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
             <button type="button" id="add-definition" class="btn btn-sm btn-outline-primary mt-2">Add definition</button>
         </section>
-    <div class="mt-5">
-        <button type="submit" name="save" class="btn btn-primary">Save</button>
-    </div>
+        {% crispy form %}
     </form>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Initialize Select2 for all dropdowns
-$(document).ready(function() {
-    // Standard single select
-    $('.select2').select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        allowClear: true
-    });
-    
-    // Multi-select for groups and relationships
-    $('.select2-multiple').select2({
-        theme: 'bootstrap-5', 
-        width: '100%',
-        closeOnSelect: false,
-        placeholder: 'Select options'
-    });
-    
-    // Language dropdowns in formsets
-    $('.language-select').select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        minimumResultsForSearch: 10
-    });
-});
-
-// Formset management code
 document.addEventListener('DOMContentLoaded', function() {
-    // Language choices for new forms
-    const languageChoices = [
-        {% for code, name in language_choices %}
-        {code: '{{ code }}', name: '{{ name }}'},
-        {% endfor %}
-    ];
-    
-    // Handle adding new name forms
-    document.getElementById('add-name').addEventListener('click', function() {
-        addFormsetForm('names', 'name-formset', languageChoices, 'name');
-    });
-    
-    // Handle adding new definition forms
-    document.getElementById('add-definition').addEventListener('click', function() {
-        addFormsetForm('definitions', 'definition-formset', languageChoices, 'definition');
-    });
-    
-    // Implement formset functions
-    function addFormsetForm(prefix, containerId, langChoices, fieldType) {
+    // Function to add a new form to a formset
+    function addForm(prefix, containerId) {
         const container = document.getElementById(containerId);
-        const totalForms = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
-        const formIdx = parseInt(totalForms.value);
-        
-        const newFormHtml = createFormHtml(prefix, formIdx, langChoices, fieldType);
-        
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = newFormHtml;
-        const newRow = tempDiv.firstElementChild;
-        container.appendChild(newRow);
-        
-        // Initialize Select2 on new language dropdown
-        $(newRow).find('select').select2({
-            theme: 'bootstrap-5',
-            width: '100%'
-        });
-        
-        totalForms.value = formIdx + 1;
+        const formCount = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+        const formIdx = parseInt(formCount.value);
+
+        // Clone the empty form
+        let newForm = document.querySelector(`.${prefix}-empty-form`).cloneNode(true);
+        newForm.classList.remove(`${prefix}-empty-form`);
+        newForm.classList.add("formset-row");
+        newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formIdx);
+
+        // Update the form index
+        newForm.dataset.formIdx = formIdx;
+
+        // Append the new form to the container
+        container.appendChild(newForm);
+
+        // Increment the form count
+        formCount.value = formIdx + 1;
     }
-    
-    function updateFormsetIndices(container, prefix) {
-        const rows = container.querySelectorAll('.formset-row');
-        rows.forEach((row, index) => {
-            row.dataset.formIdx = index;
-            row.querySelectorAll('[name]').forEach(el => {
-                // Replace the -<oldindex>- segment only
-                el.name = el.name.replace(new RegExp(`${prefix}-(\\d+)-`), `${prefix}-${index}-`);
-                el.id = el.id.replace(new RegExp(`${prefix}-(\\d+)-`), `${prefix}-${index}-`);
-            });
-            row.querySelectorAll('label[for]').forEach(lab => {
-                lab.htmlFor = lab.htmlFor.replace(new RegExp(`${prefix}-(\\d+)-`), `${prefix}-${index}-`);
-            });
-        });
-    }
-    
-    function createFormHtml(prefix, formIdx, langChoices, fieldType) {
-        const fieldLabel = fieldType === 'name' ? 'Name' : 'Definition';
-        const fieldInput = fieldType === 'name' ? 
-            `<input type="text" name="${prefix}-${formIdx}-${fieldType}" class="form-control" placeholder="Property ${fieldType}" required id="id_${prefix}-${formIdx}-${fieldType}">` :
-            `<textarea name="${prefix}-${formIdx}-${fieldType}" class="form-control" rows="3" placeholder="Property ${fieldType}" required id="id_${prefix}-${formIdx}-${fieldType}"></textarea>`;
-        
-        let languageOptions = '';
-        langChoices.forEach(lang => {
-            const selected = lang.code === 'en' ? 'selected' : '';
-            languageOptions += `<option value="${lang.code}" ${selected}>${lang.name}</option>`;
-        });
-        
-        return `
-            <div class="formset-row" data-form-idx="${formIdx}">
-                <div class="row">
-                    <div class="col-md-${fieldType === 'name' ? '7' : '8'}">
-                        <label for="id_${prefix}-${formIdx}-${fieldType}" class="form-label">${fieldLabel}</label>
-                        ${fieldInput}
-                    </div>
-                    <div class="col-md-${fieldType === 'name' ? '3' : '2'}">
-                        <label for="id_${prefix}-${formIdx}-language" class="form-label">Language</label>
-                        <select name="${prefix}-${formIdx}-language" class="form-select" required id="id_${prefix}-${formIdx}-language">
-                            ${languageOptions}
-                        </select>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    
-    // Form validation
-    document.querySelector('form').addEventListener('submit', function(e) {
-        console.log('Form submit event triggered');
-        
-        const nameRows = document.querySelectorAll('#name-formset .formset-row:not(.marked-for-deletion)');
-        const definitionRows = document.querySelectorAll('#definition-formset .formset-row:not(.marked-for-deletion)');
-        
-        console.log('Name rows found:', nameRows.length);
-        console.log('Definition rows found:', definitionRows.length);
-        
-        if (nameRows.length === 0) {
-            e.preventDefault();
-            alert('At least one property name is required (ISO 23386 PA003 compliance).');
-            return false;
-        }
-        
-        if (definitionRows.length === 0) {
-            e.preventDefault();
-            alert('At least one property definition is required (ISO 23386 PA003 compliance).');
-            return false;
-        }
-        
-        console.log('Form validation passed, submitting...');
+
+    // Add event listeners to the add buttons
+    document.getElementById('add-name').addEventListener('click', function(e) {
+        e.preventDefault();
+        addForm('names', 'name-formset');
     });
-    
-    // Debug save button clicks
-    document.querySelector('button[type="submit"]').addEventListener('click', function(e) {
-        console.log('Save button clicked');
+
+    document.getElementById('add-definition').addEventListener('click', function(e) {
+        e.preventDefault();
+        addForm('definitions', 'definition-formset');
     });
 });
 </script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.names-empty-form,
+.definitions-empty-form {
+    display: none;
+}
+</style>
 {% endblock %}

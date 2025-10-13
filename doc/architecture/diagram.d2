@@ -1,0 +1,91 @@
+// PropBench - ExternalLibrary architecture (D2)
+# Config: layout = lr
+
+"User Interface"{  "Web UI\n- Admin pages\n- Library upload/import\n- Select widgets (Select2/HTMX)\n- Template preview" 
+}
+"REST / Autocomplete API" {
+  "API Endpoints\n- /api/libraries/\n- /api/library-items/\n- /api/autocomplete?q=&library=\n- JSON import/export"
+}
+
+"Importer / Exporter" {
+  "Excel/CSV/XLSX\n- import_library_xlsx()\n- export_library_xlsx()\n- iso16757 importer mapping"
+}
+
+"External Sources" {
+  "Remote registries\n(ETIM, ECLASS, IFC, prodBIM)\n- Sync jobs\n- Cached copies"
+}
+
+"Property Forms & Widgets" {
+  "ModelForms\n- FK/M2M to LibraryItem\n- Snapshot fields\n- Per-dictionary default library"
+}
+
+Database --> "ExternalLibrary"
+Database --> "LibraryItem"
+Database --> "Property"
+Database --> "PropertyDictionary"
+Database --> "User"
+
+"ExternalLibrary" {
+  "ExternalLibrary\n- guid, slug, name, version\n- description, owner, dictionary scope\n- active, metadata"
+}
+
+"LibraryItem" {
+  "LibraryItem\n- guid, library_id\n- code, label, description\n- data (JSON), active, order"
+}
+
+"Property" {
+  "Property\n- pa_code, data_type, unit (FK or code)\n- dictionary_id, version_number\n- snapshot_label, snapshot_code\n- extended_attributes, metadata"
+}
+
+"PropertyDictionary" {
+  "PropertyDictionary\n- guid, name, slug\n- default_library (FK to ExternalLibrary)"
+}
+
+User --> "Web UI"
+"Web UI" --> "REST / Autocomplete API"
+"Web UI" --> "Importer / Exporter"
+"Web UI" --> "Property Forms & Widgets"
+
+"Importer / Exporter" --> "ExternalLibrary" : import/export
+"Importer / Exporter" --> "LibraryItem" : creates/updates
+
+"REST / Autocomplete API" --> "LibraryItem" : query/search
+"REST / Autocomplete API" --> "ExternalLibrary" : list/metadata
+
+"Property Forms & Widgets" --> "LibraryItem" : choose item (FK)
+"Property Forms & Widgets" --> "ExternalLibrary" : respect dictionary default
+
+"External Sources" --> "Importer / Exporter" : sync job
+"External Sources" --> "ExternalLibrary" : seed / updates
+
+"Admin" {
+  "Django Admin\n- Manage libraries/items\n- Approve/activate\n- Upload XLSX/JSON"
+}
+"Admin" --> "ExternalLibrary"
+"Admin" --> "LibraryItem"
+
+"Workers / Sync" {
+  "Background jobs\n- fetch remote registries\n- reindex\n- validate imports"
+}
+"Workers / Sync" --> "ExternalLibrary"
+"Workers / Sync" --> "LibraryItem"
+
+"Security & Governance" {
+  "Permissions\n- who can create/activate libraries\n- validation / approve workflow\n- sandboxed templates"
+}
+
+"Security & Governance" --> "Admin"
+"Security & Governance" --> "REST / Autocomplete API"
+"Security & Governance" --> "Importer / Exporter"
+
+Database: {
+  "Postgres / Django ORM\n- ExternalLibrary table\n- LibraryItem table\n- Property, PropertyDictionary, User tables"
+}
+
+note right of "ExternalLibrary"
+  "Usage patterns:\n- Global libraries\n- Per-dictionary scoped libraries\n- Per-user defaults"
+end
+
+note left of "LibraryItem"
+  "Excel-friendly schema:\nmetadata + items sheets\n(code,label,description,data_json,active,order)"
+end

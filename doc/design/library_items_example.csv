@@ -1,0 +1,4 @@
+code,label,description,data_json,active,order
+kWh,kilowatt hour,energy unit,"{""conversion"":3600000}",true,1
+m3,cubic meter,volume unit,"{}",true,2
+°C,degree Celsius,temperature unit,"{}",true,3
