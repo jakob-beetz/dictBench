@@ -1,0 +1,25 @@
+/* keep filter controls on one line, allow horizontal scroll if needed */
+.filters {
+  -webkit-overflow-scrolling: touch;
+  gap: 0.75rem 1rem; /* row-gap then column-gap: vertical gap + horizontal gap */
+  /* If you want controls to wrap and use the vertical gap, remove `flex-nowrap` from the form
+     markup so `flex-wrap: wrap` can occur. */
+}
+
+/* each control should not shrink and keeps its intrinsic size */
+.filters .filter-control {
+  flex: 0 0 auto; /* do not grow, do not shrink, width = auto */
+  min-width: 160px; /* adjust as needed */
+  margin-bottom: 0.5rem; /* extra vertical spacing when controls wrap */
+}
+
+/* make search box wider by default */
+.filters .filter-control input.form-control {
+  min-width: 220px;
+}
+
+/* reduce label margin if needed */
+.filters .form-label {
+  display: block;
+  margin-bottom: .25rem;
+}
