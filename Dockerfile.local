@@ -1,0 +1,51 @@
+# Dockerfile für lokale Entwicklung und Tests
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    gcc \
+    pkg-config \
+    build-essential \
+    sqlite3 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY propbench/requirements.txt /app/requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY propbench /app/
+
+# Create necessary directories
+RUN mkdir -p /app/static /app/media /app/logs /app/staticfiles
+
+# Set ownership of app directory
+RUN chmod -R 755 /app
+
+# Create database and run migrations
+RUN python manage.py migrate --settings=propbench.settings
+
+# Collect static files - skip for now due to WhiteNoise issue
+# RUN python manage.py collectstatic --noinput --settings=propbench.settings
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/ || exit 1
+
+# Run the application
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000", "--settings=propbench.settings"]

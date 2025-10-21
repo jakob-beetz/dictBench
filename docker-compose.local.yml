@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./propbench:/app  # Mount local code for development
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - logs_volume:/app/logs
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-local-dev-key-12345
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  static_volume:
+  media_volume:
+  logs_volume:
