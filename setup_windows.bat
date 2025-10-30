@@ -62,9 +62,16 @@ echo Schritt 5: Database Migration...
 python manage.py migrate
 if errorlevel 1 (
     echo FEHLER: Migration fehlgeschlagen.
-    echo Pruefe ob alle Dependencies installiert sind.
-    pause
-    exit /b 1
+    echo Installiere fehlende Pakete...
+    pip install django-debug-toolbar django-json-widget
+    echo Versuche Migration erneut...
+    python manage.py migrate
+    if errorlevel 1 (
+        echo FEHLER: Migration immer noch fehlgeschlagen.
+        echo Siehe MIGRATION_FIX.md fuer weitere Hilfe.
+        pause
+        exit /b 1
+    )
 )
 
 echo.
