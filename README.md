@@ -14,63 +14,101 @@ PropBench is a Django-based collaborative editor system for managing properties 
 
 ## Setup
 
-1. Clone the repository
+### Automatisches Setup (Windows)
+
+Für eine einfache Installation unter Windows:
+
+1. **Repository klonen:**
 
    ```
    git clone https://github.com/yourusername/propbench.git
-   cd propbench
+   cd dictBench
    ```
 
-2. Install Python 3.11 and make sure that the path to `python.exe` (e.g. `C:\Users\<username>\AppData\Local\Programs\Python\Python311`) is at the top of your PATH environment variable.
+2. **Setup-Skript ausführen:**
 
-3. Create the virtual environment explicitly with Python 3.11:
+   **PowerShell:**
 
-   ```
-   "C:\Users\<username>\AppData\Local\Programs\Python\Python311\python.exe" -m venv venv-3.11
-   ```
-
-4. Activate the venv (Windows CMD):
-
-   ```
-   venv-3.11\Scripts\activate.bat
+   ```powershell
+   .\setup_windows.ps1
    ```
 
-   (For PowerShell: `venv-3.11\Scripts\Activate.ps1`)
+   **CMD:**
 
-5. Install the dependencies:
-
-   ```
-   pip install -r propbench/requirements.txt
+   ```cmd
+   setup_windows.bat
    ```
 
-6. If you get errors about missing packages when running `python manage.py migrate`, install them manually, e.g.:
-
-   ```
-   pip install django-debug-toolbar django-json-widget
-   ```
-
-   Repeat this for any other missing packages reported.
-
-7. Apply migrations
-
-   ```
-   cd propbench
-   python manage.py migrate
-   ```
-
-8. Create a superuser
+3. **Superuser erstellen:**
 
    ```
    python manage.py createsuperuser
    ```
 
-9. Run the development server
+4. **Development Server starten:**
+   ```
+   python manage.py runserver
+   ```
+
+### Manuelles Setup
+
+1. **Repository klonen:**
+
+   ```
+   git clone https://github.com/yourusername/propbench.git
+   cd dictBench
+   ```
+
+2. **Python 3.11 installieren** und sicherstellen, dass `python.exe` im PATH ist.
+
+3. **Virtual Environment erstellen:**
+
+   ```
+   python -m venv venv-3.11
+   ```
+
+4. **Virtual Environment aktivieren:**
+
+   **CMD:**
+
+   ```cmd
+   venv-3.11\Scripts\activate.bat
+   ```
+
+   **PowerShell:**
+
+   ```powershell
+   .\venv-3.11\Scripts\Activate.ps1
+   ```
+
+   Bei PowerShell-Problemen siehe [Setup Troubleshooting](SETUP_TROUBLESHOOTING.md).
+
+5. **Dependencies installieren:**
+
+   ```
+   cd propbench
+   pip install -r requirements.txt
+   ```
+
+6. **Database Migration:**
+
+   ```
+   python manage.py migrate
+   ```
+
+7. **Superuser erstellen:**
+
+   ```
+   python manage.py createsuperuser
+   ```
+
+8. **Development Server starten:**
 
    ```
    python manage.py runserver
    ```
 
-10. Access the admin interface at `http://127.0.0.1:8000/admin/`
+9. **Admin Interface öffnen:** `http://127.0.0.1:8000/admin/`
 
 ## Project Structure
 
@@ -94,5 +132,16 @@ RWTH Aachen University - Chair of Design Comptuation
 
 ### Troubleshooting
 
-- If after activating the venv you still see the wrong Python version, check your PATH variable and use the full path to Python 3.11.
-- For any error about missing modules, simply install the named package with `pip install <packagename>`.
+Bei Setup-Problemen siehe die detaillierte [Setup Troubleshooting Anleitung](SETUP_TROUBLESHOOTING.md).
+
+**Häufige Probleme:**
+
+- **PowerShell Aktivierung fehlgeschlagen:** Nutzen Sie CMD oder ändern Sie die Ausführungsrichtlinie
+- **Module nicht gefunden:** Virtual Environment nicht aktiviert oder Dependencies nicht installiert
+- **Django Import Fehler:** `pip install -r requirements.txt` im aktivierten venv ausführen
+
+**Quick Fixes:**
+
+- Virtual Environment prüfen: `python -c "import sys; print(sys.prefix)"`
+- Dependencies neu installieren: `pip install -r propbench\requirements.txt`
+- Clean Setup: venv-3.11 Ordner löschen und neu erstellen
