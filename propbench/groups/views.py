@@ -1,8 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import PropertyGroup
-from .forms import PropertyGroupForm, GroupNameFormSet, GroupDefinitionFormSet, LANGUAGE_CHOICES
+from django.contrib import messages
+from django.db import models
+from .models import PropertyGroup, PropertyGroupMembership
+from properties.models import Property
+from .forms import PropertyGroupForm, GroupNameFormSet, GroupDefinitionFormSet, LANGUAGE_CHOICES, GroupAddPropertiesForm
 
 
 @login_required
@@ -13,9 +15,17 @@ def group_list(request):
 
 @login_required
 def group_detail(request, pk):
-    """Show group details."""
     group = get_object_or_404(PropertyGroup, pk=pk)
-    return render(request, 'groups/group_detail.html', {'group': group})
+    
+    # Get memberships with related property data to avoid N+1 queries
+    memberships = PropertyGroupMembership.objects.filter(
+        group=group
+    ).select_related('property').prefetch_related('property__names').order_by('order', 'property__pa_code')
+    
+    return render(request, 'groups/group_detail.html', {
+        'group': group,
+        'memberships': memberships
+    })
 
 @login_required
 def group_create(request):
@@ -106,3 +116,69 @@ def group_delete(request, pk):
         messages.success(request, f'Group "{name}" deleted successfully')
         return redirect('groups:group_list')
     return render(request, 'groups/group_delete.html', {'group': group})
+
+@login_required
+def group_add_properties(request, pk):
+    group = get_object_or_404(PropertyGroup, pk=pk)
+    
+    if request.method == "POST":
+        form = GroupAddPropertiesForm(request.POST, group=group)
+        if form.is_valid():
+            props = form.cleaned_data['properties']
+            
+            # Get the max current order to append new properties at the end
+            # Use the correct related name from your PropertyGroupMembership model
+            try:
+                max_order = PropertyGroupMembership.objects.filter(
+                    group=group
+                ).aggregate(models.Max('order'))['order__max'] or 0
+            except:
+                max_order = 0
+            
+            # Create membership rows
+            added_count = 0
+            for idx, prop in enumerate(props, start=1):
+                membership, created = PropertyGroupMembership.objects.get_or_create(
+                    group=group,
+                    property=prop,
+                    defaults={
+                        'is_required': False,
+                        'order': max_order + idx
+                    }
+                )
+                if created:
+                    added_count += 1
+            
+            if added_count > 0:
+                messages.success(request, f'Added {added_count} properties to {group.name}')
+            else:
+                messages.info(request, 'No new properties were added (they may already be in the group)')
+            
+            return redirect('groups:group_detail', pk=group.pk)
+    else:
+        form = GroupAddPropertiesForm(group=group)
+    
+    return render(request, 'groups/group_add_properties.html', {
+        'group': group,
+        'form': form
+    })
+
+@login_required
+def group_remove_property(request, pk, property_pk):
+    """Remove a property from a group"""
+    group = get_object_or_404(PropertyGroup, pk=pk)
+    property_obj = get_object_or_404(Property, pk=property_pk)
+    
+    if request.method == "POST":
+        membership = PropertyGroupMembership.objects.filter(
+            group=group,
+            property=property_obj
+        ).first()
+        
+        if membership:
+            membership.delete()
+            messages.success(request, f'Removed {property_obj.pa_code} from {group.name}')
+        else:
+            messages.warning(request, 'Property was not in this group')
+    
+    return redirect('groups:group_detail', pk=group.pk)

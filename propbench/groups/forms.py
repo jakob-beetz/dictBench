@@ -2,7 +2,9 @@ from django import forms
 from django.forms import inlineformset_factory
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Field, HTML, Div, Fieldset
-from .models import PropertyGroup, GroupName, GroupDefinition
+
+from properties.models import Property
+from .models import PropertyGroup, GroupName, GroupDefinition, PropertyGroupMembership
 from dictionaries.models import PropertyDictionary
 
 
@@ -48,25 +50,17 @@ class GroupNameForm(forms.ModelForm):
         self.fields['language'].choices = LANGUAGE_CHOICES
 
 
-# Create formset for multiple names
-GroupNameFormSet = inlineformset_factory(
-    PropertyGroup, 
-    GroupName, 
-    form=GroupNameForm,
-    extra=1,  # Show 1 empty form by default
-    min_num=1,  # Require at least 1 name
-    validate_min=True,
-    can_delete=True
-)
-
-
 class GroupDefinitionForm(forms.ModelForm):
     """Form for property group definitions in different languages."""
     class Meta:
         model = GroupDefinition
         fields = ['definition', 'language']
         widgets = {
-            'definition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Property group definition and purpose'}),
+            'definition': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Property group definition'
+            }),
             'language': forms.Select(choices=LANGUAGE_CHOICES, attrs={'class': 'form-select'}),
         }
     
@@ -77,14 +71,23 @@ class GroupDefinitionForm(forms.ModelForm):
         self.fields['language'].choices = LANGUAGE_CHOICES
 
 
-# Create formset for multiple definitions
+# Create formsets for names and definitions
+GroupNameFormSet = inlineformset_factory(
+    PropertyGroup,
+    GroupName,
+    form=GroupNameForm,
+    extra=0,  # Change from 1 to 0 to prevent empty forms
+    min_num=1,  # Require at least one name
+    validate_min=True,
+    can_delete=True
+)
+
 GroupDefinitionFormSet = inlineformset_factory(
     PropertyGroup,
     GroupDefinition,
     form=GroupDefinitionForm,
-    extra=1,  # Show 1 empty form by default
-    min_num=1,  # Require at least 1 definition
-    validate_min=True,
+    extra=0,  # Change from 1 to 0 to prevent empty forms
+    min_num=0,  # Definitions are optional
     can_delete=True
 )
 
@@ -289,3 +292,33 @@ class PropertyGroupForm(forms.ModelForm):
             self.save_m2m()
         
         return instance
+
+
+class GroupAddPropertiesForm(forms.Form):
+    properties = forms.ModelMultipleChoiceField(
+        queryset=Property.objects.none(),  # Set in __init__
+        widget=forms.SelectMultiple(attrs={
+            'class': 'tomselect-multiple form-control',
+            'data-placeholder': 'Select properties to add...'
+        }),
+        required=True,
+        label="Select properties to add to the group"
+    )
+    
+    def __init__(self, *args, group=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Get properties with their primary names
+        queryset = Property.objects.all()
+        
+        if group:
+            # Exclude properties already in the group - use the correct field
+            # Check if Property uses 'pk', 'id', or 'guid' as primary key
+            existing_memberships = PropertyGroupMembership.objects.filter(group=group)
+            existing_prop_pks = existing_memberships.values_list('property__pk', flat=True)
+            queryset = queryset.exclude(pk__in=existing_prop_pks)
+        
+        self.fields['properties'].queryset = queryset.order_by('pa_code')
+        
+        # Optionally customize the label display
+        self.fields['properties'].label_from_instance = lambda obj: f"{obj.pa_code} - {obj.names.first().name if obj.names.exists() else 'Unnamed'}"

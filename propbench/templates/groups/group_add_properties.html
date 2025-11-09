@@ -1,0 +1,104 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Add Properties to {{ group.name }} - PropBench{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Add Properties to "{{ group.name }}"</h1>
+            <p class="text-muted">Search and select properties to add to this group</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.properties.id_for_label }}" class="form-label">
+                                {{ form.properties.label }}
+                            </label>
+                            {{ form.properties }}
+                            {% if form.properties.errors %}
+                                <div class="text-danger mt-2">{{ form.properties.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Type to search properties. Select multiple properties.
+                            </small>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Add Selected Properties
+                            </button>
+                            <a href="{% url 'groups:group_detail' pk=group.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Current Group Properties</h5>
+                </div>
+                <div class="card-body">
+                    {% if group.properties.count > 0 %}
+                        <ul class="list-unstyled small">
+                            {% for prop in group.properties.all|slice:":10" %}
+                                <li class="mb-1">
+                                    <i class="bi bi-check-circle text-success"></i>
+                                    {{ prop.pa_code }} - {{ prop.names.first.name|default:"Unnamed" }}
+                                </li>
+                            {% endfor %}
+                            {% if group.properties.count > 10 %}
+                                <li class="text-muted">... and {{ group.properties.count|add:"-10" }} more</li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No properties in this group yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Tom Select on the properties multi-select field
+    const propertySelect = document.querySelector('.tomselect-multiple');
+    
+    if (propertySelect && typeof TomSelect !== 'undefined') {
+        new TomSelect(propertySelect, {
+            plugins: ['remove_button', 'clear_button'],
+            maxItems: null,
+            create: false,
+            allowEmptyOption: false,
+            placeholder: 'Type to search properties...',
+            render: {
+                option: function(data, escape) {
+                    return '<div>' +
+                        '<span class="fw-bold">' + escape(data.text.split(' - ')[0]) + '</span>' +
+                        (data.text.split(' - ')[1] ? '<br><small class="text-muted">' + escape(data.text.split(' - ')[1]) + '</small>' : '') +
+                        '</div>';
+                },
+                item: function(data, escape) {
+                    return '<div>' + escape(data.text.split(' - ')[0]) + '</div>';
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
