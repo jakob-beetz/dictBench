@@ -24,6 +24,10 @@
                     {% for form in name_formset %}
                         <div class="col-md-6">  <!-- Adjust column size as needed -->
                             <div class="formset-row row " data-form-idx="{{ forloop.counter0 }}">
+                                {# Render hidden fields (id, DELETE, etc.) so management info is submitted #}
+                                {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
                                 <div class="row">
                                     {% crispy_field form.name %} {% crispy_field form.language %} {% if form.instance.pk %}
                                         <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
@@ -40,6 +44,24 @@
                     {% endfor %}
                 </div>
             </div>
+
+            {# Empty form template used by JS to clone new name rows #}
+            <div class="names-empty-form d-none">
+                {% with form=name_formset.empty_form %}
+                    <div class="formset-row row g-2 mb-2" data-form-idx="__prefix__">
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                        <div class="col-md-6">
+                            {% crispy_field form.name %}
+                        </div>
+                        <div class="col-md-6">
+                            {% crispy_field form.language %}
+                        </div>
+                    </div>
+                {% endwith %}
+            </div>
+
             <button type="button" id="add-name" class="btn btn-sm btn-outline-primary mt-2">Add name</button>
         </section>
 
@@ -52,6 +74,9 @@
                     {% for form in definition_formset %}
                         <div class="col-md-4">  <!-- Adjust column size as needed -->
                             <div class="formset-row row g-2 mb-2" data-form-idx="{{ forloop.counter0 }}">
+                                   {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
                                 <div class="col-md-3">
                                     {% crispy_field form.language %}
                                 </div>
@@ -75,6 +100,29 @@
                     {% endfor %}
                 </div>
             </div>
+
+            {# Empty form template used by JS to clone new definition rows #}
+            <div class="definitions-empty-form d-none">
+                {% with form=definition_formset.empty_form %}
+                    <div class="formset-row row g-2 mb-2" data-form-idx="__prefix__">
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                        <div class="col-md-3">
+                            {% crispy_field form.language %}
+                        </div>
+                        <div class="col-md-8">
+                            {% crispy_field form.definition %}
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endwith %}
+            </div>
+
             <button type="button" id="add-definition" class="btn btn-sm btn-outline-primary mt-2">Add definition</button>
         </section>
         {% crispy form %}
@@ -88,34 +136,66 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to add a new form to a formset
     function addForm(prefix, containerId) {
         const container = document.getElementById(containerId);
-        const formCount = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
-        const formIdx = parseInt(formCount.value);
+        const formCountEl = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+        const formIdx = formCountEl ? parseInt(formCountEl.value, 10) : 0;
 
-        // Clone the empty form
-        let newForm = document.querySelector(`.${prefix}-empty-form`).cloneNode(true);
-        newForm.classList.remove(`${prefix}-empty-form`);
-        newForm.classList.add("formset-row");
-        newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formIdx);
+        // Find empty-form template for this prefix
+        const templateRow = document.querySelector(`.${prefix === 'names' ? 'names-empty-form' : 'definitions-empty-form'} .formset-row`);
+        if (!templateRow) {
+            console.warn('No empty form template found for', prefix);
+            return;
+        }
 
-        // Update the form index
-        newForm.dataset.formIdx = formIdx;
+        // Clone the template and replace __prefix__ placeholders in attributes and content
+        const newRow = templateRow.cloneNode(true);
+        let html = newRow.innerHTML;
+        html = html.replace(/__prefix__/g, formIdx);
+        newRow.innerHTML = html;
 
         // Append the new form to the container
-        container.appendChild(newForm);
+        container.appendChild(newRow);
 
-        // Increment the form count
-        formCount.value = formIdx + 1;
+        // Increment TOTAL_FORMS
+        if (formCountEl) formCountEl.value = formIdx + 1;
+
+        // If any newly added row contains inputs that need JavaScript initialization,
+        // initialize them here (e.g., Tom Select). Example:
+        // initializeTomSelectIn(newRow);
     }
 
-    // Add event listeners to the add buttons
-    document.getElementById('add-name').addEventListener('click', function(e) {
-        e.preventDefault();
-        addForm('names', 'name-formset');
-    });
+    // Add event listeners to the add buttons (guard in case element missing)
+    const addNameBtn = document.getElementById('add-name');
+    if (addNameBtn) {
+        addNameBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            addForm('names', 'name-formset');
+        });
+    }
 
-    document.getElementById('add-definition').addEventListener('click', function(e) {
-        e.preventDefault();
-        addForm('definitions', 'definition-formset');
+    const addDefBtn = document.getElementById('add-definition');
+    if (addDefBtn) {
+        addDefBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            addForm('definitions', 'definition-formset');
+        });
+    }
+
+    // Delegate remove button clicks (works for existing + newly added rows)
+    document.body.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-form-btn')) {
+            const row = e.target.closest('.formset-row');
+            if (!row) return;
+            // mark DELETE checkbox if present
+            const deleteInput = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+            if (deleteInput) {
+                deleteInput.checked = true;
+                row.style.display = 'none';
+            } else {
+                row.remove();
+                // decrement TOTAL_FORMS only for unsaved clones; server-side validation depends on management form values
+                // do not automatically decrement TOTAL_FORMS for simplicity
+            }
+        }
     });
 });
 </script>

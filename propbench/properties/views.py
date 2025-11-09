@@ -168,11 +168,14 @@ def property_detail(request, pk):
 @login_required
 def property_create(request, dictionary_slug=None):
     """Create a new property with dictionary context if provided."""
+    print (f"DEBUG: Entered property_create view : {dictionary_slug=}")
     dictionary = None
     if dictionary_slug:
         dictionary = get_object_or_404(PropertyDictionary, slug=dictionary_slug)
     
+
     if request.method == 'POST':
+        print("DEBUG: Processing POST data for property creation")
         form = PropertyForm(request.POST, user=request.user, request=request, library_slug=dictionary_slug)
         name_formset = PropertyNameFormSet(request.POST, prefix='names')
         definition_formset = PropertyDefinitionFormSet(request.POST, prefix='definitions')
@@ -181,6 +184,7 @@ def property_create(request, dictionary_slug=None):
             # Save logic
             property = form.save(commit=False)
             property.created_by = request.user
+            property.updated_by = request.user
             property.save()
             
             # Process name formset
@@ -198,7 +202,7 @@ def property_create(request, dictionary_slug=None):
                     definition.save()
                     
             messages.success(request, "Property created successfully!")
-            return redirect('property_detail', pk=property.pk)
+            return redirect('properties:property_detail', pk=property.pk)
     else:
         initial = {}
         if dictionary:
