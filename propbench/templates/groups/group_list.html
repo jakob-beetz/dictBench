@@ -6,55 +6,72 @@
 {% block content %}
 <div class="container">
     <div class="row mb-4">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <h1>Property Groups</h1>
-            <p class="text-muted">ISO 23386 compliant property groups</p>
         </div>
-        <div class="col-md-6 text-end">
+        <div class="col-md-4 text-end">
             <a href="{% url 'groups:group_create' %}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Create New Group
             </a>
         </div>
     </div>
 
-    <div class="row">
-        {% if groups %}
-            {% for group in groups %}
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">{{ group.name }}</h5>
-                            <span class="badge bg-info">{{ group.type }}</span>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">{{ group.description|default:"No description"|truncatewords:20 }}</p>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    Dictionary: {{ group.dictionary.name }} | 
-                                    Properties: {{ group.properties.count }}
-                                </small>
-                            </p>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <div class="btn-group" role="group">
-                                <a href="{% url 'groups:group_detail' pk=group.guid %}" 
-                                   class="btn btn-sm btn-outline-primary">View</a>
-                                <a href="#" 
-                                   class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <a href="#" 
-                                   class="btn btn-sm btn-outline-danger">Delete</a>
-                            </div>
-                        </div>
-                    </div>
+    <div class="card">
+        <div class="card-body">
+            {% if groups %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Category</th>
+                                <th>Properties</th>
+                                <th>Version</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for group in groups %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'groups:group_detail' pk=group.pk %}">
+                                            {{ group.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ group.status }}">
+                                            {{ group.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ group.get_category_display|default:"-" }}</td>
+                                    <td>{{ group.properties.count }}</td>
+                                    <td>v{{ group.version_number }}.{{ group.revision_number }}</td>
+                                    <td>
+                                        <a href="{% url 'groups:group_detail' pk=group.pk %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'groups:group_edit' pk=group.pk %}" 
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-12">
-                <div class="alert alert-info">
-                    <p>No property groups found. Click the button above to create your first group.</p>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3">No property groups yet.</p>
+                    <a href="{% url 'groups:group_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Create Your First Group
+                    </a>
                 </div>
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

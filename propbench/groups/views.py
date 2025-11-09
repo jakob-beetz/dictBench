@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import models
-from .models import PropertyGroup, PropertyGroupMembership
+from .models import PropertyGroup, PropertyGroupMembership, GroupName, GroupDefinition
 from properties.models import Property
 from .forms import PropertyGroupForm, GroupNameFormSet, GroupDefinitionFormSet, LANGUAGE_CHOICES, GroupAddPropertiesForm
 
@@ -35,30 +35,40 @@ def group_create(request):
         name_formset = GroupNameFormSet(request.POST, prefix='names')
         definition_formset = GroupDefinitionFormSet(request.POST, prefix='definitions')
         
+        # Debug print
+        print("Name formset errors:", name_formset.errors)
+        print("Name non_form_errors:", name_formset.non_form_errors())
+        print("Definition formset errors:", definition_formset.errors)
+        print("Definition non_form_errors:", definition_formset.non_form_errors())
+        
         if form.is_valid() and name_formset.is_valid() and definition_formset.is_valid():
             group_instance = form.save(commit=False)
-            
-            # Ensure user fields are set
             group_instance.created_by = request.user
             group_instance.updated_by = request.user
             group_instance.save()
             
-            # Save formsets
             name_formset.instance = group_instance
             name_formset.save()
             
             definition_formset.instance = group_instance
             definition_formset.save()
             
-            # Save many-to-many relationships
             form.save_m2m()
             
             messages.success(request, 'Property Group created successfully!')
             return redirect('groups:group_detail', pk=group_instance.pk)
+        else:
+            # Show validation errors
+            if not form.is_valid():
+                messages.error(request, f'Form errors: {form.errors}')
+            if not name_formset.is_valid():
+                messages.error(request, f'Name formset errors: {name_formset.errors}')
+            if not definition_formset.is_valid():
+                messages.error(request, f'Definition formset errors: {definition_formset.errors}')
     else:
         form = PropertyGroupForm(user=request.user)
-        name_formset = GroupNameFormSet(prefix='names')
-        definition_formset = GroupDefinitionFormSet(prefix='definitions')
+        name_formset = GroupNameFormSet(prefix='names', queryset=GroupName.objects.none())
+        definition_formset = GroupDefinitionFormSet(prefix='definitions', queryset=GroupDefinition.objects.none())
     
     context = {
         'form': form,

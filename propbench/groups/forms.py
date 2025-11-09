@@ -7,7 +7,6 @@ from properties.models import Property
 from .models import PropertyGroup, GroupName, GroupDefinition, PropertyGroupMembership
 from dictionaries.models import PropertyDictionary
 
-
 # Language choices for ISO 23386 compliance
 LANGUAGE_CHOICES = [
     ('en', 'English'),
@@ -93,203 +92,250 @@ GroupDefinitionFormSet = inlineformset_factory(
 
 
 class PropertyGroupForm(forms.ModelForm):
-    """
-    ISO 23386 compliant form for creating and updating property groups with all mandatory and optional fields.
-    
-    This form provides comprehensive property group management capabilities including:
-    - Multi-dictionary support with hierarchical organization
-    - Parent-child relationships with circular reference prevention
-    - Multi-language name and definition support through related formsets
-    - Group type classification and metadata management
-    - Extended attributes for custom GA codes
-    - Generic metadata storage for flexible group information
-    
-    Form Sections:
-    🏛️ Core Information - Dictionary assignment, name, description, and type
-    📊 Hierarchical Structure - Parent-child group relationships
-    📖 Documentation & Metadata - Extended attributes and generic metadata
-    📋 System Information - Audit trail and timestamps
-    """
-    
-    # Extended attributes for custom GA codes
-    extended_attributes = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'class': 'form-control json-editor',
-            'rows': 4,
-            'placeholder': '{"GA001": "Custom group attribute", "GA002": "Another attribute"}'
-        }),
-        required=False,
-        help_text="JSON field for storing additional GA codes and custom group attributes"
-    )
-    
-    # Generic metadata
-    metadata = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'class': 'form-control json-editor',
-            'rows': 4,
-            'placeholder': '{"usage_context": "Building materials", "scope": "International", "keywords": ["thermal", "structural"]}'
-        }),
-        required=False,
-        help_text="JSON field for flexible metadata storage (usage context, keywords, etc.)"
-    )
+    """Form for creating/editing property groups with all GA code fields organized in accordions."""
     
     class Meta:
         model = PropertyGroup
         fields = [
-            # 🏛️ Core Information
-            'dictionary', 
-            'name',
-            'description',
+            # Basic info
+            'name', 'description', 'dictionary',
+            # GA002: Status
+            'status',
+            # GA004, GA006-GA008: Dates
+            'activated_at', 'revision_date', 'version_date', 'deactivated_at',
+            # GA009-GA010: Versioning
+            'version_number', 'revision_number',
+            # GA011-GA013: Deprecation
+            'replaced_groups', 'replacing_groups', 'deprecation_explanation',
+            # GA014-GA015: Internationalization
+            'interconnected_dictionaries', 'creators_language',
+            # GA018: Visual
+            'visual_representation',
+            # GA019-GA021: Geography
+            'countries_of_use', 'subdivisions_of_use', 'country_of_origin',
+            # GA022-GA023: Structure
+            'category', 'parent_group',
+            # Legacy
             'type',
-            
-            # 📊 Hierarchical Structure
-            'parent_group',
-            
-            # 📖 Documentation & Metadata
-            'extended_attributes',
-            'metadata'
+            # Additional
+            'extended_attributes', 'metadata',
         ]
-        
         widgets = {
-            # Core fields with Select2
-            'dictionary': forms.Select(attrs={
-                'class': 'select2',
-                'data-placeholder': 'Select dictionary...'
-            }),
-            'name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Unique name for this group (e.g., Structural Properties)'
-            }),
-            'description': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3,
-                'placeholder': 'Description of this property group and its purpose'
-            }),
-            'type': forms.Select(attrs={
-                'class': 'select2',
-                'data-placeholder': 'Select group type...'
-            }),
-            
-            # Hierarchical
-            'parent_group': forms.Select(attrs={
-                'class': 'select2',
-                'data-placeholder': 'Select parent group (optional)...'
-            }),
-            
-            # Documentation
-            'extended_attributes': forms.Textarea(attrs={
-                'class': 'form-control json-editor',
-                'rows': 4,
-                'placeholder': '{"authority": "ISO", "standard": "23386", "revision": "2020"}'
-            }),
-            'metadata': forms.Textarea(attrs={
-                'class': 'form-control json-editor',
-                'rows': 4,
-                'placeholder': '{"domain": "Construction", "usage": "International", "examples": ["Length", "Width", "Height"]}'
-            }),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Primary group name'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Primary description'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'activated_at': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'revision_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'version_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'deactivated_at': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'version_number': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+            'revision_number': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'deprecation_explanation': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'creators_language': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., en-EN'}),
+            'country_of_origin': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ISO 3166-1 code'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'parent_group': forms.Select(attrs={'class': 'form-select'}),
+            'type': forms.Select(attrs={'class': 'form-select'}),
+            'dictionary': forms.Select(attrs={'class': 'form-select'}),
         }
     
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.user = user
         
-        # Set up parent group queryset (exclude self to prevent circular references)
-        parent_qs = PropertyGroup.objects.all()
-        if self.instance and self.instance.pk:
-            parent_qs = parent_qs.exclude(pk=self.instance.pk)
-            # Also exclude any descendants to prevent circular references
-            descendants = self._get_descendants(self.instance)
-            if descendants:
-                parent_qs = parent_qs.exclude(pk__in=[d.pk for d in descendants])
+        # Set initial values for new instances
+        if not self.instance.pk:
+            self.fields['version_number'].initial = 1
+            self.fields['revision_number'].initial = 0
+            self.fields['status'].initial = 'inactive'
+            self.fields['creators_language'].initial = 'en-EN'
         
-        self.fields['parent_group'].queryset = parent_qs
-        
-        # Add comprehensive help text with field descriptions
-        field_help_texts = {
-            'dictionary': 'The dictionary this property group belongs to - groups organize properties within dictionaries',
-            'name': 'Unique name for this group (e.g., Structural Properties, Thermal Properties)',
-            'description': 'Description of this property group and its purpose within the dictionary',
-            'type': 'Classification type of this group according to ISO 23386 specifications',
-            'parent_group': 'Parent group for hierarchical organization (optional) - creates a tree structure',
-            'extended_attributes': 'JSON field for storing additional GA codes and custom group attributes',
-            'metadata': 'JSON field for flexible metadata storage (usage context, keywords, etc.)',
-        }
-        
-        # Update field help texts
-        for field_name, help_text in field_help_texts.items():
-            if field_name in self.fields:
-                self.fields[field_name].help_text = help_text
-        
-        # Mark required fields
-        required_fields = ['dictionary', 'name', 'type']
-        for field_name in required_fields:
-            if field_name in self.fields:
-                self.fields[field_name].required = True
-                if 'class' in self.fields[field_name].widget.attrs:
-                    self.fields[field_name].widget.attrs['class'] += ' required-field'
-                else:
-                    self.fields[field_name].widget.attrs['class'] = 'required-field'
-    
-    def _get_descendants(self, group):
-        """Get all descendant groups recursively to prevent circular references."""
-        descendants = []
-        children = PropertyGroup.objects.filter(parent_group=group)
-        for child in children:
-            descendants.append(child)
-            descendants.extend(self._get_descendants(child))
-        return descendants
-    
-    def clean(self):
-        """Validate form data with business rules."""
-        cleaned_data = super().clean()
-        parent_group = cleaned_data.get('parent_group')
-        
-        # Prevent circular references
-        if parent_group and self.instance.pk:
-            if parent_group.pk == self.instance.pk:
-                raise forms.ValidationError("A group cannot be its own parent.")
+        # Setup Crispy Forms helper with accordion layout
+        self.helper = FormHelper()
+        self.helper.form_tag = False  # Form tag handled in template
+        self.helper.layout = Layout(
+            # Basic Information - Always visible
+            Fieldset(
+                'Basic Information',
+                Row(
+                    Column('name', css_class='col-md-6'),
+                    Column('dictionary', css_class='col-md-6'),
+                ),
+                'description',
+                css_class='mb-4'
+            ),
             
-            # Check if the parent is actually a descendant
-            descendants = self._get_descendants(self.instance)
-            if parent_group in descendants:
-                raise forms.ValidationError("Cannot set a descendant group as parent - this would create a circular reference.")
-        
-        # Validate JSON fields
-        extended_attributes = cleaned_data.get('extended_attributes')
-        if extended_attributes:
-            try:
-                import json
-                json.loads(extended_attributes)
-            except (json.JSONDecodeError, TypeError):
-                raise forms.ValidationError({
-                    'extended_attributes': 'Must be valid JSON format.'
-                })
-        
-        metadata = cleaned_data.get('metadata')
-        if metadata:
-            try:
-                import json
-                json.loads(metadata)
-            except (json.JSONDecodeError, TypeError):
-                raise forms.ValidationError({
-                    'metadata': 'Must be valid JSON format.'
-                })
-        
-        return cleaned_data
+            # Accordion for all other sections
+            HTML('<div class="accordion" id="groupAccordion">'),
+            
+            # GA002: Status & Lifecycle
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#statusSection" aria-expanded="true">
+                            <i class="bi bi-activity me-2"></i> Status & Lifecycle (GA002-GA008)
+                        </button>
+                    </h2>
+                    <div id="statusSection" class="accordion-collapse collapse show" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Row(
+                Column('status', css_class='col-md-4'),
+                Column('activated_at', css_class='col-md-4'),
+                Column('deactivated_at', css_class='col-md-4'),
+            ),
+            Row(
+                Column('revision_date', css_class='col-md-6'),
+                Column('version_date', css_class='col-md-6'),
+            ),
+            HTML('</div></div></div>'),
+            
+            # GA009-GA010: Versioning
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#versionSection">
+                            <i class="bi bi-hash me-2"></i> Version Control (GA009-GA010)
+                        </button>
+                    </h2>
+                    <div id="versionSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Row(
+                Column('version_number', css_class='col-md-6'),
+                Column('revision_number', css_class='col-md-6'),
+            ),
+            HTML('<small class="text-muted">Version for major changes, Revision for minor changes</small>'),
+            HTML('</div></div></div>'),
+            
+            # GA011-GA013: Deprecation
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#deprecationSection">
+                            <i class="bi bi-exclamation-triangle me-2"></i> Deprecation (GA011-GA013)
+                        </button>
+                    </h2>
+                    <div id="deprecationSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Field('replaced_groups', css_class='mb-2'),
+            HTML('<small class="text-muted">JSON array of group GUIDs this group replaces</small>'),
+            Field('replacing_groups', css_class='mb-2 mt-3'),
+            HTML('<small class="text-muted">JSON array of group GUIDs that replace this group</small>'),
+            Field('deprecation_explanation', css_class='mt-3'),
+            HTML('</div></div></div>'),
+            
+            # GA014-GA015: Internationalization
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#i18nSection">
+                            <i class="bi bi-globe me-2"></i> Internationalization (GA014-GA015)
+                        </button>
+                    </h2>
+                    <div id="i18nSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Field('creators_language'),
+            HTML('<small class="text-muted">ISO 639 language code (e.g., en-EN, de-DE)</small>'),
+            Field('interconnected_dictionaries', css_class='mt-3'),
+            HTML('<small class="text-muted">JSON: pairs of (internalID, dataDictionaryID)</small>'),
+            HTML('</div></div></div>'),
+            
+            # GA018: Visual Representation
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#visualSection">
+                            <i class="bi bi-image me-2"></i> Visual Representation (GA018)
+                        </button>
+                    </h2>
+                    <div id="visualSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Field('visual_representation'),
+            HTML('<small class="text-muted">JSON: URLs or paths to sketches, photos, videos</small>'),
+            HTML('</div></div></div>'),
+            
+            # GA019-GA021: Geography
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#geoSection">
+                            <i class="bi bi-geo-alt me-2"></i> Geography (GA019-GA021)
+                        </button>
+                    </h2>
+                    <div id="geoSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Field('countries_of_use'),
+            HTML('<small class="text-muted">JSON array of ISO 3166-1 country codes</small>'),
+            Field('subdivisions_of_use', css_class='mt-3'),
+            HTML('<small class="text-muted">JSON array of ISO 3166-2 subdivision codes</small>'),
+            Field('country_of_origin', css_class='mt-3'),
+            HTML('<small class="text-muted">ISO 3166-1 country code where requirement originated</small>'),
+            HTML('</div></div></div>'),
+            
+            # GA022-GA023: Structure
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#structureSection">
+                            <i class="bi bi-diagram-3 me-2"></i> Structure & Category (GA022-GA023)
+                        </button>
+                    </h2>
+                    <div id="structureSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Row(
+                Column('category', css_class='col-md-6'),
+                Column('parent_group', css_class='col-md-6'),
+            ),
+            HTML('<small class="text-muted">Category defines group type; Parent creates hierarchical structure</small>'),
+            HTML('</div></div></div>'),
+            
+            # Advanced / Metadata
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#advancedSection">
+                            <i class="bi bi-gear me-2"></i> Advanced & Metadata
+                        </button>
+                    </h2>
+                    <div id="advancedSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Field('type'),
+            HTML('<small class="text-muted text-warning">⚠️ Deprecated: Use "category" field instead</small>'),
+            Field('extended_attributes', css_class='mt-3'),
+            HTML('<small class="text-muted">JSON: Additional non-standard GA codes (GA0001-GA9999)</small>'),
+            Field('metadata', css_class='mt-3'),
+            HTML('<small class="text-muted">JSON: Flexible storage for additional metadata</small>'),
+            HTML('</div></div></div>'),
+            
+            HTML('</div>'),  # Close accordion
+        )
     
     def save(self, commit=True):
         instance = super().save(commit=False)
         
-        # Ensure user fields are set if they exist in the model
+        # Set user fields if not already set
+        if not instance.pk and self.user:
+            instance.created_by = self.user
         if self.user:
-            if hasattr(instance, 'created_by') and not instance.pk:
-                instance.created_by = self.user
-            if hasattr(instance, 'updated_by'):
-                instance.updated_by = self.user
+            instance.updated_by = self.user
         
         if commit:
             instance.save()
-            self.save_m2m()
         
         return instance
 
@@ -312,8 +358,7 @@ class GroupAddPropertiesForm(forms.Form):
         queryset = Property.objects.all()
         
         if group:
-            # Exclude properties already in the group - use the correct field
-            # Check if Property uses 'pk', 'id', or 'guid' as primary key
+            # Exclude properties already in the group
             existing_memberships = PropertyGroupMembership.objects.filter(group=group)
             existing_prop_pks = existing_memberships.values_list('property__pk', flat=True)
             queryset = queryset.exclude(pk__in=existing_prop_pks)
