@@ -1,0 +1,30 @@
+.property-form .formset-collection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.property-form .formset-row .row {
+  --bs-gutter-x: 1rem;
+  align-items: flex-start;
+}
+
+.property-form .formset-row.marked-for-deletion {
+  opacity: .55;
+  text-decoration: line-through;
+}
+
+.property-form .select2-container--bootstrap-5 .select2-selection {
+  min-height: calc(2.25rem + 2px);
+  padding: .375rem .75rem;
+}
+
+.property-form .jsoneditor {
+  font-size: .85rem;
+}
+
+@media (min-width: 1200px) {
+  .property-form form {
+    max-width: 1400px;
+  }
+}
