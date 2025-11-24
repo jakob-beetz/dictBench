@@ -164,10 +164,28 @@ class PropertyGroupForm(forms.ModelForm):
                 'description',
                 css_class='mb-4'
             ),
+            # GA022-GA023: Structure
             
             # Accordion for all other sections
             HTML('<div class="accordion" id="groupAccordion">'),
             
+            HTML('''
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#structureSection">
+                            <i class="bi bi-diagram-3 me-2"></i> Structure & Category (GA022-GA023)
+                        </button>
+                    </h2>
+                    <div id="structureSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
+                        <div class="accordion-body">
+            '''),
+            Row(
+                Column('category', css_class='col-md-6'),
+                Column('parent_group', css_class='col-md-6'),
+            ),
+            HTML('<small class="text-muted">Category defines group type; Parent creates hierarchical structure</small>'),
+            HTML('</div></div></div>'),
             # GA002: Status & Lifecycle
             HTML('''
                 <div class="accordion-item">
@@ -283,25 +301,6 @@ class PropertyGroupForm(forms.ModelForm):
             HTML('<small class="text-muted">ISO 3166-1 country code where requirement originated</small>'),
             HTML('</div></div></div>'),
             
-            # GA022-GA023: Structure
-            HTML('''
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                data-bs-target="#structureSection">
-                            <i class="bi bi-diagram-3 me-2"></i> Structure & Category (GA022-GA023)
-                        </button>
-                    </h2>
-                    <div id="structureSection" class="accordion-collapse collapse" data-bs-parent="#groupAccordion">
-                        <div class="accordion-body">
-            '''),
-            Row(
-                Column('category', css_class='col-md-6'),
-                Column('parent_group', css_class='col-md-6'),
-            ),
-            HTML('<small class="text-muted">Category defines group type; Parent creates hierarchical structure</small>'),
-            HTML('</div></div></div>'),
-            
             # Advanced / Metadata
             HTML('''
                 <div class="accordion-item">
@@ -358,9 +357,18 @@ class GroupAddPropertiesForm(forms.Form):
         queryset = Property.objects.all()
         
         if group:
-            # Exclude properties already in the group
+            # Exclude properties already in the group (direct)
             existing_memberships = PropertyGroupMembership.objects.filter(group=group)
-            existing_prop_pks = existing_memberships.values_list('property__pk', flat=True)
+            existing_prop_pks = list(existing_memberships.values_list('property__pk', flat=True))
+            
+            # Also exclude inherited properties from parent groups
+            if group.parent_group:
+                parent = group.parent_group
+                while parent:
+                    parent_memberships = PropertyGroupMembership.objects.filter(group=parent)
+                    existing_prop_pks.extend(parent_memberships.values_list('property__pk', flat=True))
+                    parent = parent.parent_group
+            
             queryset = queryset.exclude(pk__in=existing_prop_pks)
         
         self.fields['properties'].queryset = queryset.order_by('pa_code')

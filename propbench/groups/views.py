@@ -11,7 +11,24 @@ from .forms import PropertyGroupForm, GroupNameFormSet, GroupDefinitionFormSet, 
 def group_list(request):
     """List all property groups."""
     groups = PropertyGroup.objects.all()
-    return render(request, 'groups/group_list.html', {'groups': groups})
+    
+    # Add inherited properties count for each group
+    groups_with_counts = []
+    for group in groups:
+        inherited_count = 0
+        if group.parent_group:
+            parent = group.parent_group
+            while parent:
+                inherited_count += PropertyGroupMembership.objects.filter(group=parent).count()
+                parent = parent.parent_group
+        
+        groups_with_counts.append({
+            'group': group,
+            'direct_count': PropertyGroupMembership.objects.filter(group=group).count(),
+            'inherited_count': inherited_count
+        })
+    
+    return render(request, 'groups/group_list.html', {'groups_with_counts': groups_with_counts})
 
 @login_required
 def group_detail(request, pk):
@@ -22,10 +39,72 @@ def group_detail(request, pk):
         group=group
     ).select_related('property').prefetch_related('property__names').order_by('order', 'property__pa_code')
     
+    # Get parent hierarchy (all ancestors)
+    parent_hierarchy = []
+    if group.parent_group:
+        parent = group.parent_group
+        while parent:
+            parent_hierarchy.append(parent)
+            parent = parent.parent_group
+    
+    # Get inherited properties from parent groups with ordering
+    inherited_properties = []
+    inherited_order_start = 0
+    if group.parent_group:
+        parent = group.parent_group
+        while parent:
+            parent_memberships = PropertyGroupMembership.objects.filter(
+                group=parent
+            ).select_related('property').prefetch_related('property__names').order_by('order', 'property__pa_code')
+            
+            for membership in parent_memberships:
+                inherited_properties.append({
+                    'membership': membership,
+                    'parent_group': parent,
+                    'display_order': inherited_order_start + (membership.order or 0)
+                })
+            
+            inherited_order_start += parent_memberships.count()
+            parent = parent.parent_group  # Traverse up the hierarchy
+    
+    # Calculate display order for direct properties (start after inherited)
+    direct_properties = []
+    direct_order_start = len(inherited_properties)
+    for membership in memberships:
+        direct_properties.append({
+            'membership': membership,
+            'display_order': direct_order_start + (membership.order or 0)
+        })
+    
     return render(request, 'groups/group_detail.html', {
         'group': group,
-        'memberships': memberships
+        'memberships': memberships,
+        'inherited_properties': inherited_properties,
+        'parent_hierarchy': parent_hierarchy,
+        'direct_properties': direct_properties,
     })
+
+@login_required
+def group_toggle_required(request, pk, property_pk):
+    """Toggle the required status of a property in a group"""
+    if request.method == "POST":
+        group = get_object_or_404(PropertyGroup, pk=pk)
+        property_obj = get_object_or_404(Property, pk=property_pk)
+        
+        membership = PropertyGroupMembership.objects.filter(
+            group=group,
+            property=property_obj
+        ).first()
+        
+        if membership:
+            membership.is_required = not membership.is_required
+            membership.save()
+            status = "required" if membership.is_required else "optional"
+            messages.success(request, f'Property {property_obj.pa_code} is now {status}')
+        else:
+            messages.error(request, 'Property membership not found')
+    
+    return redirect('groups:group_detail', pk=pk)
 
 @login_required
 def group_create(request):
@@ -131,13 +210,34 @@ def group_delete(request, pk):
 def group_add_properties(request, pk):
     group = get_object_or_404(PropertyGroup, pk=pk)
     
+    # Get direct properties
+    direct_properties = PropertyGroupMembership.objects.filter(
+        group=group
+    ).select_related('property').prefetch_related('property__names').order_by('order', 'property__pa_code')
+    
+    # Get inherited properties from parent groups
+    inherited_properties = []
+    if group.parent_group:
+        parent = group.parent_group
+        while parent:
+            parent_memberships = PropertyGroupMembership.objects.filter(
+                group=parent
+            ).select_related('property').prefetch_related('property__names').order_by('order', 'property__pa_code')
+            
+            for membership in parent_memberships:
+                inherited_properties.append({
+                    'membership': membership,
+                    'parent_group': parent
+                })
+            
+            parent = parent.parent_group
+    
     if request.method == "POST":
         form = GroupAddPropertiesForm(request.POST, group=group)
         if form.is_valid():
             props = form.cleaned_data['properties']
             
             # Get the max current order to append new properties at the end
-            # Use the correct related name from your PropertyGroupMembership model
             try:
                 max_order = PropertyGroupMembership.objects.filter(
                     group=group
@@ -170,7 +270,9 @@ def group_add_properties(request, pk):
     
     return render(request, 'groups/group_add_properties.html', {
         'group': group,
-        'form': form
+        'form': form,
+        'direct_properties': direct_properties,
+        'inherited_properties': inherited_properties,
     })
 
 @login_required

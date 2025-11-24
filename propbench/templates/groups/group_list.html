@@ -18,7 +18,7 @@
 
     <div class="card">
         <div class="card-body">
-            {% if groups %}
+            {% if groups_with_counts %}
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -32,27 +32,37 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for group in groups %}
+                            {% for item in groups_with_counts %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'groups:group_detail' pk=group.pk %}">
-                                            {{ group.name }}
+                                        <a href="{% url 'groups:group_detail' pk=item.group.pk %}">
+                                            {{ item.group.name }}
                                         </a>
+                                        {% if item.group.parent_group %}
+                                            <br><small class="text-muted">
+                                                <i class="bi bi-arrow-return-right"></i> Child of {{ item.group.parent_group.name }}
+                                            </small>
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ group.status }}">
-                                            {{ group.get_status_display }}
+                                        <span class="badge bg-{{ item.group.status }}">
+                                            {{ item.group.get_status_display }}
                                         </span>
                                     </td>
-                                    <td>{{ group.get_category_display|default:"-" }}</td>
-                                    <td>{{ group.properties.count }}</td>
-                                    <td>v{{ group.version_number }}.{{ group.revision_number }}</td>
+                                    <td>{{ item.group.get_category_display|default:"-" }}</td>
                                     <td>
-                                        <a href="{% url 'groups:group_detail' pk=group.pk %}" 
+                                        {{ item.direct_count }}
+                                        {% if item.inherited_count > 0 %}
+                                            <span class="text-muted">(+{{ item.inherited_count }} inherited)</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>v{{ item.group.version_number }}.{{ item.group.revision_number }}</td>
+                                    <td>
+                                        <a href="{% url 'groups:group_detail' pk=item.group.pk %}" 
                                            class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{% url 'groups:group_edit' pk=group.pk %}" 
+                                        <a href="{% url 'groups:group_edit' pk=item.group.pk %}" 
                                            class="btn btn-sm btn-outline-secondary">
                                             <i class="bi bi-pencil"></i>
                                         </a>

@@ -3,6 +3,15 @@
 
 {% block title %}Add Properties to {{ group.name }} - PropBench{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Make the card body taller for better dropdown visibility */
+    .properties-selection-card .card-body {
+        min-height: 400px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
@@ -14,7 +23,7 @@
 
     <div class="row">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card properties-selection-card">
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
@@ -28,7 +37,7 @@
                                 <div class="text-danger mt-2">{{ form.properties.errors }}</div>
                             {% endif %}
                             <small class="form-text text-muted">
-                                Type to search properties. Select multiple properties.
+                                Type to search properties. Select multiple properties. Properties already in this group or inherited from parent groups are excluded.
                             </small>
                         </div>
 
@@ -46,28 +55,59 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Current Group Properties</h5>
+            <!-- Direct Properties -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check"></i> Direct Properties
+                    </h5>
                 </div>
                 <div class="card-body">
-                    {% if group.properties.count > 0 %}
+                    {% if direct_properties %}
                         <ul class="list-unstyled small">
-                            {% for prop in group.properties.all|slice:":10" %}
+                            {% for membership in direct_properties %}
                                 <li class="mb-1">
                                     <i class="bi bi-check-circle text-success"></i>
-                                    {{ prop.pa_code }} - {{ prop.names.first.name|default:"Unnamed" }}
+                                    {{ membership.property.pa_code }} - {{ membership.property.names.first.name|default:"Unnamed" }}
                                 </li>
                             {% endfor %}
-                            {% if group.properties.count > 10 %}
-                                <li class="text-muted">... and {{ group.properties.count|add:"-10" }} more</li>
-                            {% endif %}
                         </ul>
+                        <div class="text-muted small mt-2">
+                            Total: {{ direct_properties|length }} properties
+                        </div>
                     {% else %}
-                        <p class="text-muted">No properties in this group yet</p>
+                        <p class="text-muted">No properties directly assigned to this group yet</p>
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Inherited Properties -->
+            {% if inherited_properties %}
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-diagram-2"></i> Inherited Properties
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small">
+                        {% for item in inherited_properties %}
+                            <li class="mb-2">
+                                <i class="bi bi-arrow-down-circle text-info"></i>
+                                {{ item.membership.property.pa_code }} - {{ item.membership.property.names.first.name|default:"Unnamed" }}
+                                <br>
+                                <small class="text-muted ms-3">
+                                    <i class="bi bi-arrow-up"></i> from {{ item.parent_group.name }}
+                                </small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="text-muted small mt-2">
+                        Total: {{ inherited_properties|length }} inherited properties
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

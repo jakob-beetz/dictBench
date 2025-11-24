@@ -9,6 +9,14 @@
         <div class="col-md-8">
             <h1>{{ group.name }}</h1>
             <p class="text-muted">{{ group.description|default:"No description" }}</p>
+            {% if group.parent_group %}
+                <p class="text-info">
+                    <i class="bi bi-diagram-3"></i> Child of: 
+                    <a href="{% url 'groups:group_detail' pk=group.parent_group.pk %}">
+                        {{ group.parent_group.name }}
+                    </a>
+                </p>
+            {% endif %}
         </div>
         <div class="col-md-4 text-end">
             <a href="{% url 'groups:group_add_properties' pk=group.pk %}" class="btn btn-sm btn-primary">
@@ -44,8 +52,34 @@
                             </span>
                         </dd>
                         
-                        <dt class="col-sm-5">Properties:</dt>
-                        <dd class="col-sm-7">{{ group.properties.count }}</dd>
+                        {% if parent_hierarchy %}
+                        <dt class="col-sm-5">Parent Groups:</dt>
+                        <dd class="col-sm-7">
+                            <ul class="list-unstyled mb-0">
+                                {% for parent in parent_hierarchy %}
+                                    <li class="mb-1">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                        <a href="{% url 'groups:group_detail' pk=parent.pk %}">
+                                            {{ parent.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </dd>
+                        {% endif %}
+                        
+                        <dt class="col-sm-5">Direct Properties:</dt>
+                        <dd class="col-sm-7">{{ memberships.count }}</dd>
+                        
+                        {% if inherited_properties %}
+                        <dt class="col-sm-5">Inherited:</dt>
+                        <dd class="col-sm-7">{{ inherited_properties|length }}</dd>
+                        
+                        <dt class="col-sm-5">Total:</dt>
+                        <dd class="col-sm-7">
+                            <strong>{{ memberships.count|add:inherited_properties|length }}</strong>
+                        </dd>
+                        {% endif %}
                     </dl>
                 </div>
             </div>
@@ -55,14 +89,20 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Properties in Group</h5>
-                    <span class="badge bg-primary">{{ group.properties.count }}</span>
+                    <div>
+                        <span class="badge bg-primary">{{ memberships.count }} direct</span>
+                        {% if inherited_properties %}
+                            <span class="badge bg-info">{{ inherited_properties|length }} inherited</span>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="card-body">
-                    {% if group.properties.exists %}
+                    {% if memberships or inherited_properties %}
                         <div class="table-responsive">
                             <table class="table table-sm table-hover">
                                 <thead>
                                     <tr>
+                                        <th>Source</th>
                                         <th>PA Code</th>
                                         <th>Name</th>
                                         <th>Required</th>
@@ -71,8 +111,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!-- Direct Properties -->
                                     {% for membership in memberships %}
                                         <tr>
+                                            <td>
+                                                <span class="badge bg-primary">Direct</span>
+                                            </td>
                                             <td>
                                                 <a href="{% url 'properties:property_detail' pk=membership.property.pk %}">
                                                     {{ membership.property.pa_code }}
@@ -94,6 +138,42 @@
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    
+                                    <!-- Inherited Properties -->
+                                    {% for item in inherited_properties %}
+                                        <tr class="table-light">
+                                            <td>
+                                                <span class="badge bg-info" title="Inherited from {{ item.parent_group.name }}">
+                                                    <i class="bi bi-arrow-down-circle"></i> Inherited
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'properties:property_detail' pk=item.membership.property.pk %}">
+                                                    {{ item.membership.property.pa_code }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {{ item.membership.property.names.first.name|default:"Unnamed" }}
+                                                <br>
+                                                <small class="text-muted">
+                                                    from <a href="{% url 'groups:group_detail' pk=item.parent_group.pk %}">{{ item.parent_group.name }}</a>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                {% if item.membership.is_required %}
+                                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                                {% else %}
+                                                    <i class="bi bi-circle text-muted"></i>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ item.membership.order|default:"-" }}</td>
+                                            <td>
+                                                <span class="text-muted small">
+                                                    <i class="bi bi-lock"></i> Inherited
+                                                </span>
                                             </td>
                                         </tr>
                                     {% endfor %}
